@@ -40,11 +40,11 @@ public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
  {
   storage=stor;
   
-  sampleClass = storage.getSemanticModel().getAgeClass( ESDConfigManager.SAMPLE_CLASS_NAME );
-  groupClass = storage.getSemanticModel().getAgeClass( ESDConfigManager.SAMPLEGROUP_CLASS_NAME );
-  sampleInGroupRelClass = storage.getSemanticModel().getAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
+  sampleClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLE_CLASS_NAME );
+  groupClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLEGROUP_CLASS_NAME );
+  sampleInGroupRelClass = storage.getSemanticModel().getDefinedAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
   
-  desciptionAttributeClass = storage.getSemanticModel().getAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
+  desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
   
   OrExpression orExp = new OrExpression();
   
