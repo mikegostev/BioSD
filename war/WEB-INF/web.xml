@@ -30,7 +30,7 @@
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>AgeAdminServiceImpl</servlet-name>
-  	<url-pattern>/uk.ac.ebi.age.admin.Admin/ageAdminGWT</url-pattern>
+  	<url-pattern>/admin/ageAdminGWT</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>UploadSvc</servlet-name>
