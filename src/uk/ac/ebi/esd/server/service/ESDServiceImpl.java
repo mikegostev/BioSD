@@ -26,6 +26,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
 {
+ private static final long serialVersionUID = 3121270409596910271L;
+
  private AgeStorage storage;
  
  private AgeIndex attrTextIndex;
@@ -118,7 +120,9 @@ public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
      sgRep = new SampleGroupReport();
 
      sgRep.setId( grpObj.getId() );
-     sgRep.setDescription( grpObj.getAttribute(desciptionAttributeClass).toString() );
+     
+     Object descVal = grpObj.getAttributeValue(desciptionAttributeClass);
+     sgRep.setDescription( descVal!=null?descVal.toString():null );
      
      repMap.put(grpObj, sgRep);
     }
@@ -135,7 +139,7 @@ public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
  {
   for(AgeRelation rel : obj.getRelations() )
   {
-   if( rel.getRelationClass() == sampleInGroupRelClass && rel.getTargetObject().getAgeElClass() == groupClass )
+   if( rel.getAgeElClass() == sampleInGroupRelClass && rel.getTargetObject().getAgeElClass() == groupClass )
     return rel.getTargetObject();
   }
   

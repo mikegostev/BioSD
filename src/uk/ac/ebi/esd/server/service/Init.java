@@ -7,6 +7,7 @@ import javax.servlet.ServletContextListener;
 
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.admin.server.mng.SemanticUploader;
+import uk.ac.ebi.age.admin.server.mng.SubmissionUploader;
 import uk.ac.ebi.age.admin.server.mng.UploadManager;
 import uk.ac.ebi.age.admin.server.user.impl.SessionPoolImpl;
 import uk.ac.ebi.age.admin.server.user.impl.TestUserDataBase;
@@ -55,6 +56,7 @@ public class Init implements ServletContextListener
   conf.setUploadManager( new UploadManager() );
 
   conf.getUploadManager().addUploadCommandListener("SetModel", new SemanticUploader(storage));
+  conf.getUploadManager().addUploadCommandListener("Submission", new SubmissionUploader(storage));
  }
 
  /**
