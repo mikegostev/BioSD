@@ -19,15 +19,10 @@ import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
-import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.SampleGroupReport;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
+public class ESDServiceImpl extends ESDService
 {
- private static final long serialVersionUID = 3121270409596910271L;
-
  private AgeStorage storage;
  
  private AgeIndex attrTextIndex;
@@ -72,17 +67,8 @@ public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
   
   attrTextIndex = storage.createTextIndex(q, extr);
  }
- 
- 
- public String greetServer(String input)
- {
-  String serverInfo = getServletContext().getServerInfo();
-  String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-  return "Hello, " + input + "!<br><br>I am running " + serverInfo + ".<br><br>It looks like you are using:<br>" + userAgent;
- }
 
-
-
+ @Override
  public List<SampleGroupReport> selectSampleGroups(String value, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl)
  {
   StringBuilder sb = new StringBuilder();
@@ -125,9 +111,29 @@ public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
      sgRep.setDescription( descVal!=null?descVal.toString():null );
      
      repMap.put(grpObj, sgRep);
+    
+     res.add(sgRep);
     }
-
+    
     sgRep.addMatchedSample( obj.getId() );
+   }
+   else if( obj.getAgeElClass() == groupClass )
+   {
+    SampleGroupReport sgRep = repMap.get(obj);
+    
+    if( sgRep == null )
+    {
+     sgRep = new SampleGroupReport();
+
+     sgRep.setId( obj.getId() );
+     
+     Object descVal = obj.getAttributeValue(desciptionAttributeClass);
+     sgRep.setDescription( descVal!=null?descVal.toString():null );
+     
+     repMap.put(obj, sgRep);
+    
+     res.add(sgRep);
+    }
    }
   }
   
@@ -149,6 +155,7 @@ public class ESDServiceImpl extends RemoteServiceServlet implements QueryService
 
  public void shutdown()
  {
+  storage.shutdown();
  }
  
  class AttrValuesExtractor implements TextValueExtractor

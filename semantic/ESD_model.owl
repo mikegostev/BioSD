@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns="http://www.ebi.ac.uk/esd/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.ebi.ac.uk/esd/">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/sample_group">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample group</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_16"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/span#ProcessualEntity">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >process</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cohort_member">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/role"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cohort member</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/originating_organisation">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >originating organisation</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/role"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/role">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#SpecificallyDependentContinuant"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/source_role">
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/role"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >source role</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organization">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >organization</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/sample_role">
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/role"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample role</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/submission">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/information"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >submission</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_16">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_role"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="http://www.ebi.ac.uk/esd/sample_role"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/source">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >source</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism_part">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/derived_from"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >organism part</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/disease">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >disease</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#SpecificallyDependentContinuant"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/assay">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >assay</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.ifomis.org/bfo/1.1/span#ProcessualEntity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >organism</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/submitter">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/is_role_of"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organization"/>
+              <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/role"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >submitter</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/information">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >information</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cohort">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cohort</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.ebi.ac.uk/esd/cohort_member"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_role"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cell_line">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cell line</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/study">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.ebi.ac.uk/esd/assay"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.ifomis.org/bfo/1.1/span#ProcessualEntity"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >study</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#SpecificallyDependentContinuant">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >material property</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >material</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/sample_name">
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/information"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample name</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cell">
+    <rdfs:subClassOf rdf:resource="http://www.ifomis.org/bfo/1.1/snap#MaterialEntity"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cell</rdfs:label>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/is_part_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part">
+    <owl:inverseOf rdf:resource="http://www.ebi.ac.uk/esd/is_part_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_role">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_role</rdfs:label>
+    <rdfs:range rdf:resource="http://www.ebi.ac.uk/esd/role"/>
+  </owl:ObjectProperty>
+  <rdf:Description rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_role</rdfs:label>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.2, Build 562)  http://protege.stanford.edu -->

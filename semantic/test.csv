@@ -1,0 +1,14 @@
+{A},{subbeta1},{beta},{rel}
+ID1,attr11,attr21,CID1
+ID2,attr12,attr22,CID1
+ID3,attr13,attr23,CID1
+ID4,attr14,attr24,CID1
+,,,DID1
+,,,
+{C},{beta},,
+CID1,attr21,,
+CID2,Mike,,
+,,,
+{D},,,
+DID1,,,
+DID2,,,

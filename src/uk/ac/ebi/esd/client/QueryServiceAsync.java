@@ -11,7 +11,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface QueryServiceAsync
 {
- void greetServer(String input, AsyncCallback<String> callback);
-
  void selectSampleGroups(String value, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, AsyncCallback<List<SampleGroupReport>> acb);
 }

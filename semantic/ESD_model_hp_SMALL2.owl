@@ -1,0 +1,353 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns="http://www.ebi.ac.uk/esd/"
+    xmlns:age="http://www.ebi.ac.uk/age/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.ebi.ac.uk/esd/">
+  <owl:Ontology rdf:about="">
+    <age:attributesRoot rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://www.ebi.ac.uk/esd/annotation_attributes</age:attributesRoot>
+    <age:attributeProperty rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://www.ebi.ac.uk/esd/objectProperty_8</age:attributeProperty>
+    <age:classesRoot rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://www.ebi.ac.uk/esd/Class_6</age:classesRoot>
+  </owl:Ontology>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_19">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >non biological attributes</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Used to contain name, NVT, description etc.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/annotation_attributes"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cohort_member">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_18"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Annotation of cohort membership e.g. case, control, 1956 birth cohort etc.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cohort</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/sample_group">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample group</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_6"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part"/>
+            </owl:onProperty>
+            <owl:allValuesFrom>
+              <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_16"/>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:minCardinality>
+            <owl:valuesFrom>
+              <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_16"/>
+            </owl:valuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A biologically, or experimentally relevant group of samples. E.g. All the samples belonging to a project such as Hapmap or all samples with some shared attribute e.g. all from the Sargasso Sea</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_9">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/source"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A  human individual. Modelled explicity as there are special cases for human sample data.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >human individual</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_10"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_10">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Homo sapiens</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_16">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A physical sample derived from some individual or environment e.g. a blood sample from Helen.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_6"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_18"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/derived_from"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/source"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_11">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A special case of sample, where the intent is that cell lines supplied by e.g. ATCC or Encode will be created as samples.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_16"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:valuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cell_line"/>
+        </owl:valuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sample is cell line</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/source">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An identifiable individual such as Helen Parkinson, or a museum specimen, this object physically exists and can have identifiers attached.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_6"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >individual</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/annotation_attributes">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Attributes which we expect to see as annotations on objects.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism_part">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_18"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/derived_from"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >organism part</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An annotation of some tissue, or other organism part e.g. heart, lung</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/disease">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >disease</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Annotation of some disease e.g. type 2 diabetes</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_18"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_18">
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/annotation_attributes"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Biological or experimental attributes are annotations which we expect to come from EFO or some other ontology(ies). The list below is not exhaustive and could be replaced with imports from EFO.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >biological and experimental attributes</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_17">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >container object for different types of named ids. Common attributes of these are URI, name, version, etc</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.ebi.ac.uk/esd/Class_19"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_6"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >identifier</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_1">
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_16"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.ebi.ac.uk/esd/Class_9"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/derived_from"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >human sample</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/organism">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The species or strain designation of a sample. E.g. Mus musculus musculus or Homo sapiens.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >organism</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_18"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_34">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >URI</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_19"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cell_line">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cell line</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_18"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >an annotation of a cell line, e.g. HeLa</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_6">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="http://www.ebi.ac.uk/esd/annotation_attributes"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >OWL thing</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        ></rdfs:comment>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Objects in the schema. Things there will be instances of in the database.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >object</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_3">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >description</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A description of an object expressed as free text</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_19"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_37">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_19"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Units of measure</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/cell">
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_18"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >e.g. fibroblast</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cell type</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.ebi.ac.uk/esd/Class_7">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A name value pair annotation to be used on an object.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NVT</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.ebi.ac.uk/esd/Class_19"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/is_part_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_27">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_output</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_output</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/is_role_of"/>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_26">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >input</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_input</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_part">
+    <owl:inverseOf rdf:resource="http://www.ebi.ac.uk/esd/is_part_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_35">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >is_about</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_32">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_value</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_8">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_attribute</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_9">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >relationship to indicate ownership of data, samples etc</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_owner</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/objectProperty_29">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_variable</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/has_role">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_role</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.ebi.ac.uk/esd/derived_from">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >derived_from</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/classesRoot"/>
+  <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/attributesRoot"/>
+  <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/attributeProperty"/>
+  <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/relationsRoot"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.2, Build 562)  http://protege.stanford.edu -->

@@ -30,9 +30,6 @@ public interface QueryService extends RemoteService
  }
  
  
- String greetServer(String name);
- 
-
  List<SampleGroupReport> selectSampleGroups(String value, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl);
 
 }

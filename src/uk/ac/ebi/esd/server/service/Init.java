@@ -22,8 +22,6 @@ import uk.ac.ebi.age.storage.exeption.StorageInstantiationException;
  */
 public class Init implements ServletContextListener
 {
- private AgeStorageAdm storage;
- private ESDServiceImpl service;
  
  public Init()
  {
@@ -35,12 +33,13 @@ public class Init implements ServletContextListener
  public void contextInitialized(ServletContextEvent arg0)
  {
   ESDConfigManager cfg = ESDConfigManager.instance();
+  AgeStorageAdm storage;
   
   try
   {
    storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getDBPath() );
    
-   service = new ESDServiceImpl(storage);
+   ESDService.setDefaultInstance( new ESDServiceImpl( storage ) );
   }
   catch(StorageInstantiationException e)
   {
@@ -64,11 +63,11 @@ public class Init implements ServletContextListener
   */
  public void contextDestroyed(ServletContextEvent arg0)
  {
+  ESDService service = ESDService.getInstance();
+
+  
   if( service != null )
    service.shutdown();
-
-  if( storage != null )
-   storage.shutdown();
   
   Configuration.getDefaultConfiguration().getSessionPool().shutdown();
 

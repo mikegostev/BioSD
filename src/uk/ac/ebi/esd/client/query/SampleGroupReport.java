@@ -3,7 +3,9 @@ package uk.ac.ebi.esd.client.query;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class SampleGroupReport
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class SampleGroupReport implements IsSerializable
 {
  private String id;
  private String descr;

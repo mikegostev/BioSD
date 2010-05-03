@@ -4,9 +4,9 @@
   </welcome-file-list>
   <servlet>
     <javaee:description></javaee:description>
-    <javaee:display-name>QueryServiceImpl</javaee:display-name>
-    <servlet-name>QueryServiceImpl</servlet-name>
-    <servlet-class>uk.ac.ebi.esd.server.service.ESDServiceImpl</servlet-class>
+    <javaee:display-name>QueryService</javaee:display-name>
+    <servlet-name>QueryService</servlet-name>
+    <servlet-class>uk.ac.ebi.esd.server.service.GWTServlet</servlet-class>
   </servlet>
   <servlet>
   	<description>
@@ -25,8 +25,8 @@
   	uk.ac.ebi.age.admin.server.service.UploadSvc</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>QueryServiceImpl</servlet-name>
-    <url-pattern>/ageQueryGWT</url-pattern>
+    <servlet-name>QueryService</servlet-name>
+    <url-pattern>/esd/ageQueryGWT</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>AgeAdminServiceImpl</servlet-name>
