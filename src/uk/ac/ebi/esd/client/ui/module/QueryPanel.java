@@ -24,8 +24,12 @@ public class QueryPanel extends VLayout
  private ComboBoxItem where;
  private ComboBoxItem what;
  
- public QueryPanel()
+ private AsyncCallback<List<SampleGroupReport>> resultCallback;
+ 
+ public QueryPanel( AsyncCallback<List<SampleGroupReport>> cb )
  {
+  resultCallback = cb;
+  
 //  setAlign(Alignment.CENTER);
   setPadding(8);
   
@@ -49,9 +53,9 @@ public class QueryPanel extends VLayout
   where.setTitle("Search within");
   
   LinkedHashMap<String, String> vm = new LinkedHashMap<String, String>();
+  vm.put("both", "samples & groups");
   vm.put("sample", "samples");
   vm.put("group", "groups");
-  vm.put("both", "samples & groups");
   
   where.setValueMap(vm);
   where.setValue("samples");
@@ -60,9 +64,9 @@ public class QueryPanel extends VLayout
   what.setTitle("Among");
 
   LinkedHashMap<String, String> st = new LinkedHashMap<String, String>();
+  st.put("both", "attribute name & values");
   st.put("val", "attribute values");
   st.put("name", "attribute names");
-  st.put("both", "attribute name & values");
   
   what.setValueMap(st);
   what.setValue("attribute values");
@@ -117,29 +121,12 @@ public class QueryPanel extends VLayout
      
      QueryService.Util.getInstance().selectSampleGroups((String) queryField.getValue(),
        searchGroupDescription, searchSampleAttribNames,searchSampleAttribValues,
-       new AsyncCallback<List<SampleGroupReport>>()
-     {
-
-      public void onSuccess(List<SampleGroupReport> arg0)
-      {
-       showResult(arg0);
-      }
-
-      public void onFailure(Throwable arg0)
-      {
-       System.out.println("Call error");
-      }
-     });
+       resultCallback  
+     );
 
     }
    });
   }
  }
 
-  
- private void showResult( List<SampleGroupReport> res )
- {
-  
- }
- 
 }

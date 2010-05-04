@@ -1,5 +1,9 @@
 package uk.ac.ebi.esd.client.ui.module;
 
+import java.util.List;
+
+import uk.ac.ebi.esd.client.query.SampleGroupReport;
+
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -16,4 +20,10 @@ public class ResultPane extends VLayout
   
   addMember(lb);
  }
+ 
+ public void showResult( List<SampleGroupReport> res )
+ {
+  
+ }
+
 }
