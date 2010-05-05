@@ -112,6 +112,9 @@ public class ESDServiceImpl extends ESDService
      
      repMap.put(grpObj, sgRep);
     
+     for( AgeAttribute atr : grpObj.getAttributes() )
+      sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString());
+     
      res.add(sgRep);
     }
     
