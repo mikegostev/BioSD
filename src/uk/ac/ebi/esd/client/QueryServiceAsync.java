@@ -2,7 +2,7 @@ package uk.ac.ebi.esd.client;
 
 import java.util.List;
 
-import uk.ac.ebi.esd.client.query.SampleGroupReport;
+import uk.ac.ebi.esd.client.query.ObjectReport;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -11,5 +11,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface QueryServiceAsync
 {
- void selectSampleGroups(String value, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, AsyncCallback<List<SampleGroupReport>> acb);
+ void selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, AsyncCallback<List<ObjectReport>> acb);
+
+ void getSamplesByGroup(String grpID, AsyncCallback<List<ObjectReport>> asyncCallback);
 }

@@ -32,3 +32,36 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
+
+.leftBanner
+{
+	background-image: url(images/esdbanleft.png)
+}
+
+.rightBanner
+{
+	background-image: url(images/esdbanright.png)
+}
+
+.reqForm
+{
+	background-image: url(images/esdbancenter.png);
+	background-repeat: x-repeat;
+	font-size: 18pt;
+}
+
+.reqForm form
+{
+	padding-top: 20px;
+}
+
+
+.reqFormXXX .formTitle
+{
+	font-size: 13pt;
+}
+
+.reportGrid .listTable td
+{
+	border-bottom: 1px dotted black;
+}

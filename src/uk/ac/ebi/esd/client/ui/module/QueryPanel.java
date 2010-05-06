@@ -4,11 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import uk.ac.ebi.esd.client.QueryService;
-import uk.ac.ebi.esd.client.query.SampleGroupReport;
+import uk.ac.ebi.esd.client.query.ObjectReport;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
@@ -16,6 +17,7 @@ import com.smartgwt.client.widgets.form.fields.SpacerItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 public class QueryPanel extends VLayout
@@ -24,19 +26,36 @@ public class QueryPanel extends VLayout
  private ComboBoxItem where;
  private ComboBoxItem what;
  
- private AsyncCallback<List<SampleGroupReport>> resultCallback;
+ private AsyncCallback<List<ObjectReport>> resultCallback;
  
- public QueryPanel( AsyncCallback<List<SampleGroupReport>> cb )
+ public QueryPanel( AsyncCallback<List<ObjectReport>> cb )
  {
   resultCallback = cb;
   
 //  setAlign(Alignment.CENTER);
-  setPadding(8);
+  setPadding(3);
+  
+  HLayout hstrip = new HLayout();
+  hstrip.setWidth100();
+  hstrip.setHeight(125);
+  
+  Canvas left = new Canvas();
+  left.setWidth(456);
+  left.setHeight100();
+  left.setStyleName("leftBanner");
+  
+  
+  Canvas right = new Canvas();
+  right.setWidth(229);
+  left.setHeight100();
+  right.setStyleName("rightBanner");
   
   DynamicForm f1 = new DynamicForm();
+  f1.setStyleName("reqForm");
   
-  f1.setColWidths("40%","1","1","1","*");
+  f1.setColWidths("200","1","1","1","*");
   f1.setNumCols(5);
+
   
 //  f1.setCellBorder(1);
   
@@ -58,7 +77,7 @@ public class QueryPanel extends VLayout
   vm.put("group", "groups");
   
   where.setValueMap(vm);
-  where.setValue("samples");
+  where.setDefaultToFirstOption(true);
 
   what = new ComboBoxItem();
   what.setTitle("Among");
@@ -69,15 +88,20 @@ public class QueryPanel extends VLayout
   st.put("name", "attribute names");
   
   what.setValueMap(st);
-  what.setValue("attribute values");
+  what.setDefaultToFirstOption(true);
+//  what.setValue("attribute name & values");
 
   SpacerItem sp = new SpacerItem();
   sp.setEndRow(true);
   
   f1.setFields(queryField, bt, sp, where, what);
-  f1.setBorder("1px solid blue");
+//  f1.setBorder("1px solid blue");
   
-  addMember(f1);
+  hstrip.addMember(left);
+  hstrip.addMember(f1);
+  hstrip.addMember(right);
+  
+  addMember(hstrip);
  }
  
  
@@ -90,37 +114,40 @@ public class QueryPanel extends VLayout
    {
     public void execute()
     {
-     boolean searchSampleAttribNames=false;
-     boolean searchSampleAttribValues=false;
-     boolean searchGroupDescription=false;
+     boolean searchAttribNames=false;
+     boolean searchAttribValues=false;
+     boolean searchGroup=false;
+     boolean searchSample=false;
 
      
      if( "val".equals(what.getValue()) )
-      searchSampleAttribValues = true;
+      searchAttribValues = true;
      else if( "name".equals(what.getValue()) )
-      searchSampleAttribNames = true;
+      searchAttribNames = true;
      else if( "both".equals(what.getValue()) )
      {
-      searchSampleAttribValues = true;
-      searchSampleAttribNames = true;
+      searchAttribValues = true;
+      searchAttribNames = true;
      }
 
      if( where.getValue().equals("sample") )
      {
-      searchGroupDescription=false;
+      searchSample=true;
+      searchGroup=false;
      }
      else if( where.getValue().equals("group") )
      {
-      searchGroupDescription=true;
-      searchSampleAttribValues = false;
-      searchSampleAttribNames = false;
+      searchSample=false;
+      searchGroup=true;
      }
      else if( where.getValue().equals("both") )
-      searchGroupDescription=true;
-
+     {
+      searchSample=true;
+      searchGroup=true;
+     }
      
      QueryService.Util.getInstance().selectSampleGroups((String) queryField.getValue(),
-       searchGroupDescription, searchSampleAttribNames,searchSampleAttribValues,
+       searchSample,searchGroup, searchAttribNames,searchAttribValues,
        resultCallback  
      );
 

@@ -19,7 +19,7 @@ import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
-import uk.ac.ebi.esd.client.query.SampleGroupReport;
+import uk.ac.ebi.esd.client.query.ObjectReport;
 
 public class ESDServiceImpl extends ESDService
 {
@@ -69,7 +69,7 @@ public class ESDServiceImpl extends ESDService
  }
 
  @Override
- public List<SampleGroupReport> selectSampleGroups(String value, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl)
+ public List<ObjectReport> selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl)
  {
   StringBuilder sb = new StringBuilder();
   
@@ -86,26 +86,29 @@ public class ESDServiceImpl extends ESDService
   
   List<AgeObject> sel = storage.queryTextIndex(attrTextIndex, sb.toString() );
   
-  List<SampleGroupReport> res = new ArrayList<SampleGroupReport>();
+  List<ObjectReport> res = new ArrayList<ObjectReport>();
   
-  Map<AgeObject,SampleGroupReport> repMap = new HashMap<AgeObject, SampleGroupReport>();
+  Map<AgeObject,ObjectReport> repMap = new HashMap<AgeObject, ObjectReport>();
   
   for( AgeObject obj : sel )
   {
-   if( obj.getAgeElClass() == sampleClass )
+   if( obj.getAgeElClass() == sampleClass && searchSmp )
    {
     AgeObject grpObj = getGroupForSample(obj);
     
     if( grpObj == null )
      continue;
     
-    SampleGroupReport sgRep = repMap.get(grpObj);
+    ObjectReport sgRep = repMap.get(grpObj);
     
     if( sgRep == null )
     {
-     sgRep = new SampleGroupReport();
+     sgRep = new ObjectReport();
 
      sgRep.setId( grpObj.getId() );
+
+     sgRep.addAttribute("Submission ID", grpObj.getSubmission().getId());
+     sgRep.addAttribute("ID", grpObj.getId());
      
      Object descVal = grpObj.getAttributeValue(desciptionAttributeClass);
      sgRep.setDescription( descVal!=null?descVal.toString():null );
@@ -120,15 +123,16 @@ public class ESDServiceImpl extends ESDService
     
     sgRep.addMatchedSample( obj.getId() );
    }
-   else if( obj.getAgeElClass() == groupClass )
+   else if( obj.getAgeElClass() == groupClass && searchGrp )
    {
-    SampleGroupReport sgRep = repMap.get(obj);
+    ObjectReport sgRep = repMap.get(obj);
     
     if( sgRep == null )
     {
-     sgRep = new SampleGroupReport();
+     sgRep = new ObjectReport();
 
      sgRep.setId( obj.getId() );
+     sgRep.addAttribute("ID", obj.getId());
      
      Object descVal = obj.getAttributeValue(desciptionAttributeClass);
      sgRep.setDescription( descVal!=null?descVal.toString():null );
@@ -196,6 +200,44 @@ public class ESDServiceImpl extends ESDService
     
    return sb.toString();
   }
+ }
+
+ @Override
+ public List<ObjectReport> getSamplesByGroup(String grpID)
+ {
+  AgeObject grpObj = storage.getObjectById(grpID);
+  
+  if( grpObj == null )
+   return null;
+  
+  List<ObjectReport> res = new ArrayList<ObjectReport>(30);
+  
+  for( AgeRelation rel : grpObj.getRelations() )
+  {
+   if( rel.getAgeElClass() == sampleInGroupRelClass )
+   {
+    AgeObject sample = rel.getTargetObject();
+    
+    ObjectReport rp = new ObjectReport();
+    
+    rp.setId(sample.getId());
+    
+    rp.addAttribute( "ID", sample.getId());
+    
+    for( AgeAttribute attr : sample.getAttributes() )
+    {
+     String prm = attr.getParameter();
+     
+     String attrname = prm==null?attr.getAgeElClass().getName():attr.getAgeElClass().getName()+"["+prm+"]";
+     
+     rp.addAttribute( attrname, attr.getValue().toString());
+    }
+    
+    res.add( rp );
+   }
+  }
+  
+  return res;
  }
 
 

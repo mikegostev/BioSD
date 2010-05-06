@@ -2,19 +2,20 @@ package uk.ac.ebi.esd.client.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
+
+import uk.ac.ebi.esd.client.shared.Pair;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class SampleGroupReport implements IsSerializable
+public class ObjectReport implements IsSerializable
 {
  private String id;
  private String descr;
  
  private Collection<String> matchedSamples = new ArrayList<String>(50);
  private Collection<String> allSamples = new ArrayList<String>(50);
- private Map<String,String> attr = new TreeMap<String,String>();
+ private List<Pair<String,String>> attr = new ArrayList<Pair<String,String>>();
  
  
  public void addMatchedSample(String obj)
@@ -59,10 +60,10 @@ public class SampleGroupReport implements IsSerializable
 
  public void addAttribute(String nm, String val)
  {
-  attr.put(nm,val);
+  attr.add(new Pair<String, String>(nm, val));
  }
  
- public Map<String,String> getAttributes()
+ public List<Pair<String, String>> getAttributes()
  {
   return attr;
  }
