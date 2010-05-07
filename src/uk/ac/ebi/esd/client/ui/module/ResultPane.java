@@ -1,12 +1,18 @@
 package uk.ac.ebi.esd.client.ui.module;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.ObjectReport;
-import uk.ac.ebi.esd.client.shared.Pair;
+import uk.ac.ebi.esd.client.shared.AttributeReport;
+import uk.ac.ebi.esd.client.ui.AttributeFieldInfo;
+import uk.ac.ebi.esd.client.ui.SampleListGrid;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
@@ -14,6 +20,7 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.types.ExpansionMode;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
@@ -41,6 +48,9 @@ public class ResultPane extends ListGrid
   setShowAllRecords(true);  
   setWrapCells(true);
   setFixedRecordHeights(false);
+  
+  setBodyOverflow(Overflow.VISIBLE);
+  setOverflow(Overflow.VISIBLE);
   
   setStyleName("reportGrid");
   
@@ -110,10 +120,10 @@ public class ResultPane extends ListGrid
 
    Record det = new ListGridRecord();
    
-   for( Pair<String, String> me : sgr.getAttributes() )
+   for( AttributeReport ar : sgr.getAttributes() )
    {
-    System.out.println("Attr: "+me.getFirst()+" "+me.getSecond());
-    det.setAttribute(me.getFirst(), me.getSecond() );
+    System.out.println("Attr: "+ar.getName()+" "+ar.getValue());
+    det.setAttribute( ar.getName(), ar.getValue() );
    }
    
    rec.setAttribute("details", new Record[]{det});
@@ -176,6 +186,7 @@ public class ResultPane extends ListGrid
  
   li.addClickHandler( new ClickHandler()
   {
+
    @Override
    public void onClick(ClickEvent event)
    {
@@ -199,7 +210,7 @@ public class ResultPane extends ListGrid
   
  }
  
- private void showSamples(VLayout lay, String grpID)
+ private void showSamples(final VLayout lay, String grpID)
  {
   QueryService.Util.getInstance().getSamplesByGroup(grpID,new AsyncCallback<List<ObjectReport>>(){
 
@@ -212,16 +223,77 @@ public class ResultPane extends ListGrid
    @Override
    public void onSuccess(List<ObjectReport> smpls)
    {
-    Set<String> hdr = new TreeSet<String>();
+
+    DataSource ds = new DataSource();
+    ds.setClientOnly(true);
+    
+    ListGridRecord[] records = new ListGridRecord[smpls.size()];
+    
+    int rc=0;
+    
+    Map<String,AttributeFieldInfo> hdr = new TreeMap<String,AttributeFieldInfo>();
+
+    Set<String> localHdr = new TreeSet<String>();
 
     for( ObjectReport o : smpls )
     {
-     for( Pair<String, String> at :  o.getAttributes() )
+     localHdr.clear();
+     
+     ListGridRecord rec = new ListGridRecord();
+     
+     for( AttributeReport at :  o.getAttributes() )
      {
-      hdr.add(at.getFirst());
+      String fname = null;
+      int i=0;
+      while( true )
+      {
+       fname = at.getName()+"#"+(at.isCustom()?"C":"D")+"#"+i;
+       
+       if( ! localHdr.contains(fname) )
+        break;
+      }
+
+      localHdr.add(fname);
+      
+      AttributeFieldInfo h = hdr.get(fname);
+      
+      if( h == null )
+       hdr.put(fname, new AttributeFieldInfo(at.getName(), fname, at.getOrder()));
+      else
+       h.add(at.getOrder());
+      
+      rec.setAttribute(fname, at.getValue());
      }
+     
+     records[rc++]=rec;
     }
    
+    
+    ArrayList<AttributeFieldInfo> hlist = new ArrayList<AttributeFieldInfo>(hdr.size());
+    hlist.addAll(hdr.values());
+    Collections.sort(hlist);
+    
+    ListGrid attrList = new SampleListGrid();
+    attrList.setShowAllRecords(true);
+    
+    attrList.setHeight(1);  
+    attrList.setBodyOverflow(Overflow.VISIBLE);  
+    attrList.setOverflow(Overflow.VISIBLE);  
+    attrList.setLeaveScrollbarGap(false); 
+    
+    ListGridField[] lfl = new ListGridField[hlist.size()];
+    
+    for(int i=0; i < lfl.length; i++ )
+     lfl[i]=new ListGridField(hlist.get(i).getField(), hlist.get(i).getTitle());
+    
+    attrList.setFields(lfl);
+    attrList.setData(records);
+
+    
+    lay.addMember(attrList);
+    
    }});
  }
+ 
+
 }

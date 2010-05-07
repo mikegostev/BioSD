@@ -30,6 +30,7 @@ public class ESDServiceImpl extends ESDService
  private AgeClass sampleClass;
  private AgeClass groupClass;
  private AgeRelationClass sampleInGroupRelClass;
+ private AgeRelationClass groupToSampleRelClass;
  
  private AgeAttributeClass desciptionAttributeClass;
  
@@ -40,6 +41,7 @@ public class ESDServiceImpl extends ESDService
   sampleClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLE_CLASS_NAME );
   groupClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLEGROUP_CLASS_NAME );
   sampleInGroupRelClass = storage.getSemanticModel().getDefinedAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
+  groupToSampleRelClass = sampleInGroupRelClass.getInverseClass();
   
   desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
   
@@ -107,8 +109,8 @@ public class ESDServiceImpl extends ESDService
 
      sgRep.setId( grpObj.getId() );
 
-     sgRep.addAttribute("Submission ID", grpObj.getSubmission().getId());
-     sgRep.addAttribute("ID", grpObj.getId());
+     sgRep.addAttribute("Submission ID", grpObj.getSubmission().getId(), true, 0);
+     sgRep.addAttribute("ID", grpObj.getId(), true, 0);
      
      Object descVal = grpObj.getAttributeValue(desciptionAttributeClass);
      sgRep.setDescription( descVal!=null?descVal.toString():null );
@@ -116,7 +118,7 @@ public class ESDServiceImpl extends ESDService
      repMap.put(grpObj, sgRep);
     
      for( AgeAttribute atr : grpObj.getAttributes() )
-      sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString());
+      sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
      
      res.add(sgRep);
     }
@@ -132,7 +134,7 @@ public class ESDServiceImpl extends ESDService
      sgRep = new ObjectReport();
 
      sgRep.setId( obj.getId() );
-     sgRep.addAttribute("ID", obj.getId());
+     sgRep.addAttribute("ID", obj.getId(), true, 0);
      
      Object descVal = obj.getAttributeValue(desciptionAttributeClass);
      sgRep.setDescription( descVal!=null?descVal.toString():null );
@@ -214,7 +216,7 @@ public class ESDServiceImpl extends ESDService
   
   for( AgeRelation rel : grpObj.getRelations() )
   {
-   if( rel.getAgeElClass() == sampleInGroupRelClass )
+   if( rel.getAgeElClass() == groupToSampleRelClass )
    {
     AgeObject sample = rel.getTargetObject();
     
@@ -222,7 +224,7 @@ public class ESDServiceImpl extends ESDService
     
     rp.setId(sample.getId());
     
-    rp.addAttribute( "ID", sample.getId());
+    rp.addAttribute( "ID", sample.getId(), true, 0);
     
     for( AgeAttribute attr : sample.getAttributes() )
     {
@@ -230,7 +232,7 @@ public class ESDServiceImpl extends ESDService
      
      String attrname = prm==null?attr.getAgeElClass().getName():attr.getAgeElClass().getName()+"["+prm+"]";
      
-     rp.addAttribute( attrname, attr.getValue().toString());
+     rp.addAttribute( attrname, attr.getValue().toString(), attr.getAgeElClass().isCustom(),attr.getOrder());
     }
     
     res.add( rp );

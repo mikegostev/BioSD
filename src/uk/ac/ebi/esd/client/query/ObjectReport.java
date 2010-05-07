@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import uk.ac.ebi.esd.client.shared.Pair;
+import uk.ac.ebi.esd.client.shared.AttributeReport;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -15,7 +15,7 @@ public class ObjectReport implements IsSerializable
  
  private Collection<String> matchedSamples = new ArrayList<String>(50);
  private Collection<String> allSamples = new ArrayList<String>(50);
- private List<Pair<String,String>> attr = new ArrayList<Pair<String,String>>();
+ private List<AttributeReport> attr = new ArrayList<AttributeReport>();
  
  
  public void addMatchedSample(String obj)
@@ -58,12 +58,19 @@ public class ObjectReport implements IsSerializable
   return allSamples;
  }
 
- public void addAttribute(String nm, String val)
+ public void addAttribute(String nm, String val, boolean cust, int ord)
  {
-  attr.add(new Pair<String, String>(nm, val));
+  AttributeReport atr = new AttributeReport();
+  
+  atr.setName(nm);
+  atr.setValue(val);
+  atr.setOrder(ord);
+  atr.setCustom(cust);
+  
+  attr.add(atr);
  }
  
- public List<Pair<String, String>> getAttributes()
+ public List<AttributeReport> getAttributes()
  {
   return attr;
  }
