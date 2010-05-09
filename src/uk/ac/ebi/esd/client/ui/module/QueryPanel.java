@@ -5,10 +5,12 @@ import java.util.List;
 
 import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.ui.ResultRenderer;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
@@ -26,9 +28,9 @@ public class QueryPanel extends VLayout
  private ComboBoxItem where;
  private ComboBoxItem what;
  
- private AsyncCallback<List<ObjectReport>> resultCallback;
+ private ResultRenderer resultCallback;
  
- public QueryPanel( AsyncCallback<List<ObjectReport>> cb )
+ public QueryPanel( ResultRenderer cb )
  {
   resultCallback = cb;
   
@@ -146,9 +148,29 @@ public class QueryPanel extends VLayout
       searchGroup=true;
      }
      
+     final boolean sSmp = searchAttribNames;
+     final boolean sGrp = searchAttribValues;
+     final boolean sAtrNm = searchGroup;
+     final boolean sAtrVl = searchSample;
+
      QueryService.Util.getInstance().selectSampleGroups((String) queryField.getValue(),
        searchSample,searchGroup, searchAttribNames,searchAttribValues,
-       resultCallback  
+       new AsyncCallback<List<ObjectReport>>()
+       {
+
+        @Override
+        public void onFailure(Throwable arg0)
+        {
+         arg0.printStackTrace();
+         SC.say("Query error: "+arg0.getMessage());
+        }
+
+        @Override
+        public void onSuccess(List<ObjectReport> resLst)
+        {
+         resultCallback.showResult(resLst, (String) queryField.getValue(), sSmp, sGrp, sAtrNm, sAtrVl);
+        }
+       }
      );
 
     }

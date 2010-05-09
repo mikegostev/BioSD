@@ -12,6 +12,7 @@ import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.ObjectReport;
 import uk.ac.ebi.esd.client.shared.AttributeReport;
 import uk.ac.ebi.esd.client.ui.AttributeFieldInfo;
+import uk.ac.ebi.esd.client.ui.ResultRenderer;
 import uk.ac.ebi.esd.client.ui.SampleListGrid;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,7 +33,7 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.viewer.DetailViewer;
 
-public class ResultPane extends ListGrid
+public class ResultPane extends ListGrid implements ResultRenderer
 {
  public ResultPane()
  {
@@ -106,7 +107,7 @@ public class ResultPane extends ListGrid
 //  addMember(lb);
  }
  
- public void showResult( List<ObjectReport> res )
+ public void showResult( List<ObjectReport> res, String query, boolean sSmp, boolean sGrp, boolean sAtrNm, boolean sAtrVl )
  {
   selectAllRecords();
   removeSelectedData();
@@ -200,7 +201,15 @@ public class ResultPane extends ListGrid
   li2.setTitle("Show");
   li2.setLinkTitle("selected samples");
   
-  
+  li2.addClickHandler( new ClickHandler()
+  {
+   @Override
+   public void onClick(ClickEvent event)
+   {
+    showSamples(lay,record.getAttributeAsString("id"));
+   }
+  });
+
   
   lnkform.setFields( li, li2 );
   
