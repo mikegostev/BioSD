@@ -134,6 +134,8 @@ public class ESDServiceImpl extends ESDService
      sgRep = new ObjectReport();
 
      sgRep.setId( obj.getId() );
+
+     sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
      sgRep.addAttribute("ID", obj.getId(), true, 0);
      
      Object descVal = obj.getAttributeValue(desciptionAttributeClass);
@@ -238,6 +240,56 @@ public class ESDServiceImpl extends ESDService
     res.add( rp );
    }
   }
+  
+  return res;
+ }
+
+ @Override
+ public List<ObjectReport> getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl)
+ {
+  StringBuilder sb = new StringBuilder();
+  
+  if( searchAttrNm )
+   sb.append(ESDConfigManager.NAME_FIELD_NAME).append(":(").append(query).append(')');
+
+  if( searchAttrVl )
+  {
+   if( sb.length() > 0 )
+    sb.append(" OR ");
+   
+   sb.append(ESDConfigManager.VALUE_FIELD_NAME).append(":(").append(query).append(')');
+  }
+  
+  List<AgeObject> sel = storage.queryTextIndex(attrTextIndex, sb.toString() );
+  
+  List<ObjectReport> res = new ArrayList<ObjectReport>();
+  
+  
+  for( AgeObject obj : sel )
+  {
+   if( obj.getAgeElClass() == sampleClass )
+   {
+    AgeObject grpObj = getGroupForSample(obj);
+    
+    if( grpObj == null || ! grpObj.getId().equals(grpId)  )
+     continue;
+    
+    ObjectReport sampRep = new ObjectReport();
+
+     sampRep.setId( obj.getId() );
+
+     sampRep.addAttribute("ID", obj.getId(), true, 0);
+     
+     Object descVal = obj.getAttributeValue(desciptionAttributeClass);
+     sampRep.setDescription( descVal!=null?descVal.toString():null );
+     
+     for( AgeAttribute atr : obj.getAttributes() )
+      sampRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+     
+     res.add(sampRep);
+   }
+  }
+  
   
   return res;
  }

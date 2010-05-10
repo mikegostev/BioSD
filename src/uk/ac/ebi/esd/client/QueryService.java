@@ -35,4 +35,7 @@ public interface QueryService extends RemoteService
 
  List<ObjectReport> getSamplesByGroup(String grpID);
 
+
+ List<ObjectReport> getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues);
+
 }

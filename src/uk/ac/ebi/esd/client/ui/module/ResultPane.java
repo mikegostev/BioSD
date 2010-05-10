@@ -35,6 +35,12 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 public class ResultPane extends ListGrid implements ResultRenderer
 {
+ private String query;
+ private boolean searchSamples;
+ private boolean searchGroups;
+ private boolean searchAtNames;
+ private boolean searchAtValues;
+ 
  public ResultPane()
  {
   setHeight("100%");
@@ -107,8 +113,14 @@ public class ResultPane extends ListGrid implements ResultRenderer
 //  addMember(lb);
  }
  
- public void showResult( List<ObjectReport> res, String query, boolean sSmp, boolean sGrp, boolean sAtrNm, boolean sAtrVl )
+ public void showResult( List<ObjectReport> res, String qry, boolean sSmp, boolean sGrp, boolean sAtrNm, boolean sAtrVl )
  {
+  query = qry;
+  searchSamples=sSmp;
+  searchGroups=sGrp;
+  searchAtNames=sAtrNm;
+  searchAtValues=sAtrVl;
+  
   selectAllRecords();
   removeSelectedData();
   
@@ -187,14 +199,24 @@ public class ResultPane extends ListGrid implements ResultRenderer
  
   li.addClickHandler( new ClickHandler()
   {
-
    @Override
    public void onClick(ClickEvent event)
    {
-    showSamples(lay,record.getAttributeAsString("id"));
+    QueryService.Util.getInstance().getSamplesByGroup(record.getAttributeAsString("id"),new AsyncCallback<List<ObjectReport>>(){
+
+     @Override
+     public void onFailure(Throwable arg0)
+     {
+      arg0.printStackTrace();
+     }
+
+     @Override
+     public void onSuccess(List<ObjectReport> arg0)
+     {
+      renderSampleList(lay,arg0);
+     }
+    });
    }
-
-
   });
   
   LinkItem li2 = new LinkItem("selsamples");
@@ -206,7 +228,22 @@ public class ResultPane extends ListGrid implements ResultRenderer
    @Override
    public void onClick(ClickEvent event)
    {
-    showSamples(lay,record.getAttributeAsString("id"));
+    QueryService.Util.getInstance().getSamplesByGroupAndQuery(record.getAttributeAsString("id"), query, searchAtNames, searchAtValues,
+     
+    new AsyncCallback<List<ObjectReport>>(){
+
+     @Override
+     public void onFailure(Throwable arg0)
+     {
+      arg0.printStackTrace();
+     }
+
+     @Override
+     public void onSuccess(List<ObjectReport> arg0)
+     {
+      renderSampleList(lay,arg0);
+     }
+    });
    }
   });
 
@@ -219,90 +256,82 @@ public class ResultPane extends ListGrid implements ResultRenderer
   
  }
  
- private void showSamples(final VLayout lay, String grpID)
+ 
+ private void renderSampleList(final VLayout lay, List<ObjectReport> smpls)
  {
-  QueryService.Util.getInstance().getSamplesByGroup(grpID,new AsyncCallback<List<ObjectReport>>(){
+  DataSource ds = new DataSource();
+  ds.setClientOnly(true);
 
-   @Override
-   public void onFailure(Throwable arg0)
+  ListGridRecord[] records = new ListGridRecord[smpls.size()];
+
+  int rc = 0;
+
+  Map<String, AttributeFieldInfo> hdr = new TreeMap<String, AttributeFieldInfo>();
+
+  Set<String> localHdr = new TreeSet<String>();
+
+  for(ObjectReport o : smpls)
+  {
+   localHdr.clear();
+
+   ListGridRecord rec = new ListGridRecord();
+
+   for(AttributeReport at : o.getAttributes())
    {
-    arg0.printStackTrace();
+    String fname = null;
+    int i = 0;
+    while(true)
+    {
+     fname = at.getName() + "#" + (at.isCustom() ? "C" : "D") + "#" + i;
+
+     if(!localHdr.contains(fname))
+      break;
+    }
+
+    localHdr.add(fname);
+
+    AttributeFieldInfo h = hdr.get(fname);
+
+    if(h == null)
+     hdr.put(fname, new AttributeFieldInfo(at.getName(), fname, at.getOrder()));
+    else
+     h.add(at.getOrder());
+
+    rec.setAttribute(fname, at.getValue());
    }
 
-   @Override
-   public void onSuccess(List<ObjectReport> smpls)
-   {
+   records[rc++] = rec;
+  }
 
-    DataSource ds = new DataSource();
-    ds.setClientOnly(true);
-    
-    ListGridRecord[] records = new ListGridRecord[smpls.size()];
-    
-    int rc=0;
-    
-    Map<String,AttributeFieldInfo> hdr = new TreeMap<String,AttributeFieldInfo>();
+  ArrayList<AttributeFieldInfo> hlist = new ArrayList<AttributeFieldInfo>(hdr.size());
+  hlist.addAll(hdr.values());
+  Collections.sort(hlist);
 
-    Set<String> localHdr = new TreeSet<String>();
+  ListGrid attrList = new SampleListGrid();
+  
+  attrList.setShowAllRecords(true);
 
-    for( ObjectReport o : smpls )
-    {
-     localHdr.clear();
-     
-     ListGridRecord rec = new ListGridRecord();
-     
-     for( AttributeReport at :  o.getAttributes() )
-     {
-      String fname = null;
-      int i=0;
-      while( true )
-      {
-       fname = at.getName()+"#"+(at.isCustom()?"C":"D")+"#"+i;
-       
-       if( ! localHdr.contains(fname) )
-        break;
-      }
+  attrList.setHeight(1);
+  attrList.setBodyOverflow(Overflow.VISIBLE);
+  attrList.setOverflow(Overflow.VISIBLE);
+  attrList.setLeaveScrollbarGap(false);
 
-      localHdr.add(fname);
-      
-      AttributeFieldInfo h = hdr.get(fname);
-      
-      if( h == null )
-       hdr.put(fname, new AttributeFieldInfo(at.getName(), fname, at.getOrder()));
-      else
-       h.add(at.getOrder());
-      
-      rec.setAttribute(fname, at.getValue());
-     }
-     
-     records[rc++]=rec;
-    }
-   
-    
-    ArrayList<AttributeFieldInfo> hlist = new ArrayList<AttributeFieldInfo>(hdr.size());
-    hlist.addAll(hdr.values());
-    Collections.sort(hlist);
-    
-    ListGrid attrList = new SampleListGrid();
-    attrList.setShowAllRecords(true);
-    
-    attrList.setHeight(1);  
-    attrList.setBodyOverflow(Overflow.VISIBLE);  
-    attrList.setOverflow(Overflow.VISIBLE);  
-    attrList.setLeaveScrollbarGap(false); 
-    
-    ListGridField[] lfl = new ListGridField[hlist.size()];
-    
-    for(int i=0; i < lfl.length; i++ )
-     lfl[i]=new ListGridField(hlist.get(i).getField(), hlist.get(i).getTitle());
-    
-    attrList.setFields(lfl);
-    attrList.setData(records);
+  ListGridField[] lfl = new ListGridField[hlist.size()];
 
-    
-    lay.addMember(attrList);
-    
-   }});
+  for(int i = 0; i < lfl.length; i++)
+   lfl[i] = new ListGridField(hlist.get(i).getField(), hlist.get(i).getTitle());
+
+  attrList.setFields(lfl);
+  attrList.setData(records);
+
+  Canvas[] membs = lay.getMembers();
+  
+  if( membs[membs.length-1] instanceof ListGrid )
+   lay.removeMember(membs[membs.length-1]);
+  
+  lay.addMember(attrList);
+
  }
  
-
+ 
 }

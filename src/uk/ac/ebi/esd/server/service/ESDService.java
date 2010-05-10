@@ -23,4 +23,6 @@ public abstract class ESDService
  public abstract void shutdown();
 
  public abstract List<ObjectReport> getSamplesByGroup(String grpID);
+
+ public abstract List<ObjectReport> getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues);
 }

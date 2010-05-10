@@ -9,8 +9,13 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class SampleListGrid extends ListGrid
 {
- private static final String AELinkFieldName = "temp";
- 
+ private static final String AELinkFieldName = "AE Link";
+ private static final String PRIDELinkFieldName = "PRIDE Link";
+
+ private static final String AELinkIcon = "AE Link";
+ private static final String PRIDELinkIcon = "PRIDE Link";
+ private static final String OtherLinkIcon = "PRIDE Link";
+
  public SampleListGrid()
  {
   setShowRecordComponents(true);          
@@ -22,15 +27,32 @@ public class SampleListGrid extends ListGrid
  {
   String title = getField(colNum).getTitle();
   
-  if(title.equals(AELinkFieldName))
+  String linkIcon = null;
+  
+  if( title.equals(AELinkFieldName) )
+   linkIcon = AELinkIcon;
+  else if( title.equals(PRIDELinkFieldName) )
+   linkIcon = PRIDELinkIcon;
+  else
+  {
+   String val = record.getAttribute(getFieldName(colNum));
+   if( val.length() > 11 )
+   {
+    String beg = val.substring(0,8);
+    if( beg.equalsIgnoreCase("http://") )
+     linkIcon = OtherLinkIcon;
+   }
+  } 
+   
+  if(linkIcon != null )
   {
    ImgButton aeImg = new ImgButton();
    aeImg.setShowDown(false);
    aeImg.setShowRollOver(false);
    aeImg.setAlign(Alignment.CENTER);
-   aeImg.setSrc("ae.png");
-   aeImg.setPrompt("View Chart");
-   aeImg.setHeight(16);
+   aeImg.setSrc(linkIcon);
+   aeImg.setPrompt("Follow the link");
+   aeImg.setHeight(22);
    aeImg.setWidth(16);
    aeImg.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler()
    {

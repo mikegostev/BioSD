@@ -24,4 +24,10 @@ public class GWTServlet extends RemoteServiceServlet implements QueryService
   return ESDService.getInstance().getSamplesByGroup(grpID);
  }
 
+ @Override
+ public List<ObjectReport> getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues)
+ {
+  return ESDService.getInstance().getSamplesByGroupAndQuery(grpId, query, searchAtNames, searchAtValues);
+ }
+
 }

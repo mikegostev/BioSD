@@ -42,7 +42,7 @@ public class QueryPanel extends VLayout
   hstrip.setHeight(125);
   
   Canvas left = new Canvas();
-  left.setWidth(456);
+  left.setWidth(300);
   left.setHeight100();
   left.setStyleName("leftBanner");
   
@@ -58,14 +58,15 @@ public class QueryPanel extends VLayout
   f1.setColWidths("200","1","1","1","*");
   f1.setNumCols(5);
 
-  
 //  f1.setCellBorder(1);
   
-  queryField = new TextItem("refreshPicker", "Query");
+  queryField = new TextItem("refreshPicker","Query");
   queryField.setColSpan(3);
   queryField.setWidth(400);
+  queryField.setTitleStyle("queryFieldTitle");
+//  queryField.setShowTitle(false);
   
-  ButtonItem bt = new ButtonItem("Button","Search");
+  ButtonItem bt = new ButtonItem("Button","GO");
   bt.setStartRow(false);
   bt.addClickHandler( new QueryAction() );
 

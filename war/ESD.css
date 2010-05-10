@@ -35,7 +35,7 @@ h1 {
 
 .leftBanner
 {
-	background-image: url(images/esdbanleft.png)
+	background-image: url(images/esdbanleft3.png)
 }
 
 .rightBanner
@@ -47,18 +47,23 @@ h1 {
 {
 	background-image: url(images/esdbancenter.png);
 	background-repeat: x-repeat;
-	font-size: 18pt;
+	padding-top: 10px;
 }
 
 .reqForm form
 {
 	padding-top: 20px;
+	background-image: url(images/formPlate.png);
+	background-repeat: no-repeat;
+	height: 100px
+	
 }
 
 
-.reqFormXXX .formTitle
+.reqForm .formTitle, .reqForm .formTitleFocused
 {
-	font-size: 13pt;
+	font-size: 12pt;
+	font-weight: bold
 }
 
 .reportGrid .listTable td

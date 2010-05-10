@@ -14,4 +14,6 @@ public interface QueryServiceAsync
  void selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, AsyncCallback<List<ObjectReport>> acb);
 
  void getSamplesByGroup(String grpID, AsyncCallback<List<ObjectReport>> asyncCallback);
+
+ void getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, AsyncCallback<List<ObjectReport>> asyncCallback);
 }
