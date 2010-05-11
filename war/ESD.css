@@ -43,20 +43,35 @@ h1 {
 	background-image: url(images/esdbanright.png)
 }
 
-.reqForm
+.centerrightBanner
 {
 	background-image: url(images/esdbancenter.png);
 	background-repeat: x-repeat;
+}
+
+
+.reqForm
+{
+	background-image: url(images/formPlate3.png);
+	background-repeat: no-repeat;
 	padding-top: 10px;
 }
 
 .reqForm form
 {
-	padding-top: 20px;
-	background-image: url(images/formPlate.png);
 	background-repeat: no-repeat;
-	height: 100px
-	
+}
+
+.whatTitle, .whatTitleFocused
+{
+		background-image: url(images/among.png);
+		background-repeat: no-repeat;
+}
+
+.whereTitle, .whereTitleFocused
+{
+		background-image: url(images/within.png);
+		background-repeat: no-repeat;
 }
 
 
