@@ -230,11 +230,15 @@ public class ESDServiceImpl extends ESDService
     
     for( AgeAttribute attr : sample.getAttributes() )
     {
-     String prm = attr.getParameter();
-     
-     String attrname = prm==null?attr.getAgeElClass().getName():attr.getAgeElClass().getName()+"["+prm+"]";
+     String attrname = attr.getAgeElClass().getName();
      
      rp.addAttribute( attrname, attr.getValue().toString(), attr.getAgeElClass().isCustom(),attr.getOrder());
+     
+     if( attr.getQualifiers() != null )
+     {
+      for( AgeAttribute qlf  : attr.getQualifiers() )
+       rp.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), attr.getAgeElClass().isCustom(), qlf.getOrder());
+     }
     }
     
     res.add( rp );
