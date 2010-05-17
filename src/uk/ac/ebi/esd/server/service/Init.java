@@ -5,12 +5,8 @@ import java.io.File;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
-import uk.ac.ebi.age.admin.server.mng.SemanticUploader;
-import uk.ac.ebi.age.admin.server.mng.SubmissionUploader;
-import uk.ac.ebi.age.admin.server.mng.UploadManager;
-import uk.ac.ebi.age.admin.server.user.impl.SessionPoolImpl;
-import uk.ac.ebi.age.admin.server.user.impl.TestUserDataBase;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
 import uk.ac.ebi.age.storage.AgeStorageManager;
 import uk.ac.ebi.age.storage.AgeStorageManager.DB_TYPE;
@@ -22,6 +18,7 @@ import uk.ac.ebi.age.storage.exeption.StorageInstantiationException;
  */
 public class Init implements ServletContextListener
 {
+ private AgeAdmin adm;
  
  public Init()
  {
@@ -50,12 +47,15 @@ public class Init implements ServletContextListener
   Configuration conf = Configuration.getDefaultConfiguration();
   
   conf.setTmpDir( new File(cfg.getTmpPath()) );
-  conf.setSessionPool(new SessionPoolImpl() );
-  conf.setUserDatabase( new TestUserDataBase() );
-  conf.setUploadManager( new UploadManager() );
 
-  conf.getUploadManager().addUploadCommandListener("SetModel", new SemanticUploader(storage));
-  conf.getUploadManager().addUploadCommandListener("Submission", new SubmissionUploader(storage));
+  adm = new AgeAdmin(conf, storage);
+  
+//  conf.setSessionPool(new SessionPoolImpl() );
+//  conf.setUserDatabase( new TestUserDataBase() );
+//  conf.setUploadManager( new UploadManager() );
+//
+//  conf.getUploadManager().addUploadCommandListener("SetModel", new SemanticUploader(storage));
+//  conf.getUploadManager().addUploadCommandListener("Submission", new SubmissionUploader(storage));
  }
 
  /**
@@ -69,7 +69,8 @@ public class Init implements ServletContextListener
   if( service != null )
    service.shutdown();
   
-  Configuration.getDefaultConfiguration().getSessionPool().shutdown();
+  if( adm != null )
+   adm.shutdown();
 
  }
 
