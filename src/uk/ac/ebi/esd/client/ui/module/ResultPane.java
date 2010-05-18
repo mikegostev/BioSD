@@ -68,6 +68,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
   ds.setClientOnly(true);
   
   ds.addField(new DataSourceTextField("id", "ID"));
+  ds.addField(new DataSourceTextField("sampCnt", "Samples", 100));
   ds.addField(new DataSourceTextField("desc", "Description", 2000));
   ds.addField(new DataSourceIntegerField("prop", "Property", 111));
   
@@ -76,6 +77,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
   setCanExpandRecords(true); 
   
   ListGridField idField = new ListGridField("id","ID", 100);  
+  ListGridField sCntField = new ListGridField("sampCnt","Samples",100);
   ListGridField descField = new ListGridField("desc","Description");
 //  ListGridField propField = new ListGridField("prop","AdditionalProp");
   
@@ -83,7 +85,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
   
   idField.setWidth(200);
      
-  setFields(idField, descField );
+  setFields(idField,sCntField, descField );
   setExpansionMode(ExpansionMode.DETAIL_FIELD);
   
 //  ListGridRecord rec = new ListGridRecord();
@@ -129,6 +131,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
    ListGridRecord rec = new ListGridRecord();
    
    rec.setAttribute("id", sgr.getId());
+   rec.setAttribute("sampCnt", sgr.getRefCount());
    rec.setAttribute("desc", sgr.getDescription());
 
    Record det = new ListGridRecord();
@@ -138,7 +141,10 @@ public class ResultPane extends ListGrid implements ResultRenderer
     System.out.println("Attr: "+ar.getName()+" "+ar.getValue());
     det.setAttribute( ar.getName(), ar.getValue() );
    }
-   
+  
+   det.setAttribute("Total samples", sgr.getRefCount());
+   det.setAttribute("Selected samples", sgr.getMatchedSamples()==null?0:sgr.getMatchedSamples().size());
+  
    rec.setAttribute("details", new Record[]{det});
    
    addData(rec);
@@ -167,6 +173,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
    rec.setAttribute(s, r.getAttributeAsString(s));
   }
    
+
   
 //  ds.addField(new DataSourceTextField("id", "ID"));
 //  ds.addField(new DataSourceTextField("desc", "Description", 2000));

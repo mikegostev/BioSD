@@ -1,6 +1,7 @@
 package uk.ac.ebi.esd.server.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,21 +130,9 @@ public class ESDServiceImpl extends ESDService
     
     if( sgRep == null )
     {
-     sgRep = new ObjectReport();
-
-     sgRep.setId( grpObj.getId() );
-
-     sgRep.addAttribute("Submission ID", grpObj.getSubmission().getId(), true, 0);
-     sgRep.addAttribute("ID", grpObj.getId(), true, 0);
-     
-     Object descVal = grpObj.getAttributeValue(desciptionAttributeClass);
-     sgRep.setDescription( descVal!=null?descVal.toString():null );
+     sgRep = createGroupObject(grpObj);
      
      repMap.put(grpObj, sgRep);
-    
-     for( AgeAttribute atr : grpObj.getAttributes() )
-      sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
-     
      res.add(sgRep);
     }
     
@@ -155,18 +144,9 @@ public class ESDServiceImpl extends ESDService
     
     if( sgRep == null )
     {
-     sgRep = new ObjectReport();
+     sgRep = createGroupObject(obj);
 
-     sgRep.setId( obj.getId() );
-
-     sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
-     sgRep.addAttribute("ID", obj.getId(), true, 0);
-     
-     Object descVal = obj.getAttributeValue(desciptionAttributeClass);
-     sgRep.setDescription( descVal!=null?descVal.toString():null );
-     
      repMap.put(obj, sgRep);
-    
      res.add(sgRep);
     }
    }
@@ -174,6 +154,37 @@ public class ESDServiceImpl extends ESDService
   
   
   return res;
+ }
+ 
+ private ObjectReport createGroupObject( AgeObject obj )
+ {
+  ObjectReport sgRep = new ObjectReport();
+
+  sgRep.setId( obj.getId() );
+
+  sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
+  sgRep.addAttribute("ID", obj.getId(), true, 0);
+  
+  Object descVal = obj.getAttributeValue(desciptionAttributeClass);
+  sgRep.setDescription( descVal!=null?descVal.toString():null );
+  
+ 
+  for( AgeAttribute atr : obj.getAttributes() )
+   sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+
+  Collection<? extends AgeRelation> rels =  obj.getRelations(groupToSampleRelClass);
+  
+  int sCount=0;
+  if( rels != null )
+  {
+   for( AgeRelation rl : rels )
+    if( rl.getTargetObject().getAgeElClass() == sampleClass )
+     sCount++;
+  }
+  
+  sgRep.setRefCount( sCount );
+  
+  return sgRep;
  }
  
  private AgeObject getGroupForSample(AgeObject obj)
