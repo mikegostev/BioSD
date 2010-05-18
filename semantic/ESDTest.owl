@@ -21,71 +21,84 @@
     <age:attributesRoot rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://www.owl-ontologies.com/Ontology1268324321.owl#attributes</age:attributesRoot>
   </owl:Ontology>
-  <owl:Class rdf:ID="description">
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="common"/>
-    </rdfs:subClassOf>
-    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >STRING</age:datatype>
-  </owl:Class>
-  <owl:Class rdf:ID="beta">
+  <owl:Class rdf:ID="Organism">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf>
-      <owl:Class rdf:ID="gamma"/>
+      <owl:Class rdf:ID="sample_attributes"/>
     </rdfs:subClassOf>
   </owl:Class>
-  <owl:Class rdf:about="#common">
+  <owl:Class rdf:ID="common">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="attributes"/>
     </rdfs:subClassOf>
   </owl:Class>
-  <owl:Class rdf:about="#gamma">
+  <owl:Class rdf:about="#sample_attributes">
     <rdfs:subClassOf rdf:resource="#attributes"/>
   </owl:Class>
-  <owl:Class rdf:ID="sample_attributes">
-    <rdfs:subClassOf rdf:resource="#attributes"/>
-  </owl:Class>
-  <owl:Class rdf:ID="alpha">
-    <rdfs:subClassOf rdf:resource="#attributes"/>
-  </owl:Class>
-  <owl:Class rdf:ID="classes"/>
-  <owl:Class rdf:ID="group">
-    <owl:disjointWith>
-      <owl:Class rdf:ID="sample"/>
-    </owl:disjointWith>
+  <owl:Class rdf:ID="UnitType">
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
     <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:someValuesFrom rdf:resource="#common"/>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="has_attr"/>
-        </owl:onProperty>
-      </owl:Restriction>
+      <owl:Class rdf:ID="qualifiers"/>
     </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="contains"/>
-        </owl:onProperty>
-        <owl:someValuesFrom>
-          <owl:Class rdf:about="#sample"/>
-        </owl:someValuesFrom>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="#classes"/>
   </owl:Class>
-  <owl:Class rdf:ID="subbeta1">
-    <rdfs:subClassOf rdf:resource="#beta"/>
+  <owl:Class rdf:ID="Description">
+    <rdfs:subClassOf rdf:resource="#common"/>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
+  <owl:Class rdf:ID="UnitValue">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#qualifiers"/>
+    </rdfs:subClassOf>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
+  <owl:Class rdf:ID="UnitTSR">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#qualifiers"/>
+    </rdfs:subClassOf>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
+  <owl:Class rdf:ID="TSR">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#qualifiers"/>
+    </rdfs:subClassOf>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
+  <owl:Class rdf:ID="classes"/>
   <owl:Class rdf:ID="name">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
   </owl:Class>
-  <owl:Class rdf:about="#sample">
-    <owl:disjointWith rdf:resource="#group"/>
+  <owl:Class rdf:ID="Sample">
+    <rdfs:subClassOf rdf:resource="#classes"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="belongsTo"/>
+        </owl:onProperty>
+        <owl:valuesFrom>
+          <owl:Class rdf:ID="Group"/>
+        </owl:valuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#belongsTo"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Group"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:someValuesFrom>
@@ -96,48 +109,55 @@
             </owl:unionOf>
           </owl:Class>
         </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_attr"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sample</rdfs:label>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Group"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Group">
+    <rdfs:subClassOf rdf:resource="#classes"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="contains"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Sample"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#common"/>
         <owl:onProperty rdf:resource="#has_attr"/>
       </owl:Restriction>
     </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#group"/>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="belongsTo"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >1</owl:cardinality>
-        <owl:valuesFrom rdf:resource="#group"/>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#belongsTo"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="#classes"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >sample</rdfs:label>
+    <owl:disjointWith rdf:resource="#Sample"/>
+  </owl:Class>
+  <owl:Class rdf:about="#qualifiers">
+    <rdfs:subClassOf rdf:resource="#attributes"/>
   </owl:Class>
   <owl:ObjectProperty rdf:about="#contains">
-    <rdfs:domain rdf:resource="#group"/>
-    <rdfs:range rdf:resource="#sample"/>
+    <rdfs:domain rdf:resource="#Group"/>
+    <rdfs:range rdf:resource="#Sample"/>
     <owl:inverseOf>
       <owl:ObjectProperty rdf:about="#belongsTo"/>
     </owl:inverseOf>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#belongsTo">
     <owl:inverseOf rdf:resource="#contains"/>
-    <rdfs:domain rdf:resource="#sample"/>
-    <rdfs:range rdf:resource="#group"/>
+    <rdfs:domain rdf:resource="#Sample"/>
+    <rdfs:range rdf:resource="#Group"/>
   </owl:ObjectProperty>
+  <owl:AllDifferent/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/classesRoot"/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/datatype"/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/attributesRoot"/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/attributeProperty"/>
-  <owl:AllDifferent/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.4.4, Build 579)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4.2, Build 562)  http://protege.stanford.edu -->

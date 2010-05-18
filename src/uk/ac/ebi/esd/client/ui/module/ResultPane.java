@@ -81,7 +81,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
   
 //  propField.setHidden(true);
   
-  idField.setWidth(150);
+  idField.setWidth(200);
      
   setFields(idField, descField );
   setExpansionMode(ExpansionMode.DETAIL_FIELD);
@@ -191,7 +191,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
   DynamicForm lnkform = new DynamicForm();
   lnkform.setWidth(500);
   
-  lnkform.setNumCols(4);
+  lnkform.setNumCols(6);
   
   LinkItem li = new LinkItem("allsamples");
   li.setTitle("Show");
@@ -247,8 +247,23 @@ public class ResultPane extends ListGrid implements ResultRenderer
    }
   });
 
+  LinkItem li3 = new LinkItem("hidesamples");
+  li3.setTitle("Hide");
+  li3.setLinkTitle("samples");
   
-  lnkform.setFields( li, li2 );
+  li3.addClickHandler( new ClickHandler()
+  {
+   @Override
+   public void onClick(ClickEvent event)
+   {
+    Canvas[] membs = lay.getMembers();
+    
+    if( membs[membs.length-1] instanceof ListGrid )
+     lay.removeMember(membs[membs.length-1]);
+   }
+  });
+
+  lnkform.setFields( li, li2, li3 );
   
   lay.addMember(lnkform);
   
@@ -259,6 +274,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
  
  private void renderSampleList(final VLayout lay, List<ObjectReport> smpls)
  {
+  
   DataSource ds = new DataSource();
   ds.setClientOnly(true);
 
@@ -310,7 +326,8 @@ public class ResultPane extends ListGrid implements ResultRenderer
   ListGrid attrList = new SampleListGrid();
   
   attrList.setShowAllRecords(true);
-
+  attrList.setShowRowNumbers(true); 
+  
   attrList.setHeight(1);
   attrList.setBodyOverflow(Overflow.VISIBLE);
   attrList.setOverflow(Overflow.VISIBLE);
@@ -321,9 +338,14 @@ public class ResultPane extends ListGrid implements ResultRenderer
   for(int i = 0; i < lfl.length; i++)
    lfl[i] = new ListGridField(hlist.get(i).getField(), hlist.get(i).getTitle());
 
-  attrList.setFields(lfl);
-  attrList.setData(records);
-
+  if( lfl.length > 0 )
+  {
+   attrList.setFields(lfl);
+   attrList.setData(records);
+  }
+  else
+   attrList.setFields(new ListGridField("ID","ID"));
+  
   Canvas[] membs = lay.getMembers();
   
   if( membs[membs.length-1] instanceof ListGrid )

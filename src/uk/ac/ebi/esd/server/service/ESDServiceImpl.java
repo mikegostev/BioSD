@@ -41,9 +41,33 @@ public class ESDServiceImpl extends ESDService
   sampleClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLE_CLASS_NAME );
   groupClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLEGROUP_CLASS_NAME );
   sampleInGroupRelClass = storage.getSemanticModel().getDefinedAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
-  groupToSampleRelClass = sampleInGroupRelClass.getInverseClass();
-  
   desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
+  
+  if( sampleClass == null )
+  {
+   System.out.println("Can't find Sample class");
+   return;
+  }
+
+  if( groupClass == null )
+  {
+   System.out.println("Can't find Group class");
+   return;
+  }
+ 
+  if( desciptionAttributeClass == null )
+  {
+   System.out.println("Can't find "+ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME+" class");
+   return;
+  }
+ 
+  if( sampleInGroupRelClass == null )
+  {
+   System.out.println("Can't find "+ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME+" relation");
+   return;
+  }
+  
+  groupToSampleRelClass = sampleInGroupRelClass.getInverseClass();
   
   OrExpression orExp = new OrExpression();
   
@@ -183,6 +207,18 @@ public class ESDServiceImpl extends ESDService
     
     if( val instanceof String )
      sb.append( val ).append(' ');
+    
+    if( attr.getQualifiers() != null )
+    {
+     for( AgeAttribute qual : attr.getQualifiers() )
+     {
+      Object qval = qual.getValue();
+      
+      if( qval instanceof String )
+       sb.append( qval ).append(' ');
+     }
+    }
+
    }
     
    return sb.toString();
@@ -200,6 +236,14 @@ public class ESDServiceImpl extends ESDService
    for( AgeAttribute attr : obj.getAttributes() )
    {
     sb.append( attr.getAgeElClass().getName() ).append(' ');
+    
+    if( attr.getQualifiers() != null )
+    {
+     for( AgeAttribute qual : attr.getQualifiers() )
+     {
+      sb.append( qual.getAgeElClass().getName() ).append(' ');
+     }
+    }
    }
     
    return sb.toString();
@@ -288,8 +332,18 @@ public class ESDServiceImpl extends ESDService
      sampRep.setDescription( descVal!=null?descVal.toString():null );
      
      for( AgeAttribute atr : obj.getAttributes() )
-      sampRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
-     
+     {
+      String attrname = atr.getAgeElClass().getName();
+
+      sampRep.addAttribute(attrname, atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+
+      if( atr.getQualifiers() != null )
+      {
+       for( AgeAttribute qlf  : atr.getQualifiers() )
+        sampRep.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), atr.getAgeElClass().isCustom(), qlf.getOrder());
+      }
+
+     }
      res.add(sampRep);
    }
   }

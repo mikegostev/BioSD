@@ -19,7 +19,9 @@ public class SampleListGrid extends ListGrid
  public SampleListGrid()
  {
   setShowRecordComponents(true);          
-  setShowRecordComponentsByCell(true);  
+  setShowRecordComponentsByCell(true);
+  
+  setWidth("98%");
  }
  
  @Override
@@ -36,7 +38,7 @@ public class SampleListGrid extends ListGrid
   else
   {
    String val = record.getAttribute(getFieldName(colNum));
-   if( val.length() > 11 )
+   if( val!=null && val.length() > 11 )
    {
     String beg = val.substring(0,8);
     if( beg.equalsIgnoreCase("http://") )
