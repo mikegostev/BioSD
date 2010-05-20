@@ -309,6 +309,8 @@ public class ResultPane extends ListGrid implements ResultRenderer
 
      if(!localHdr.contains(fname))
       break;
+     
+     i++;
     }
 
     localHdr.add(fname);
@@ -316,9 +318,13 @@ public class ResultPane extends ListGrid implements ResultRenderer
     AttributeFieldInfo h = hdr.get(fname);
 
     if(h == null)
-     hdr.put(fname, new AttributeFieldInfo(at.getName(), fname, at.getOrder()));
-    else
+    {
+     hdr.put(fname, h = new AttributeFieldInfo(at.getName(), fname, at.getOrder()));
      h.add(at.getOrder());
+    }
+     
+//    else
+//     h.add(at.getOrder());
 
     rec.setAttribute(fname, at.getValue());
    }
