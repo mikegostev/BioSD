@@ -119,6 +119,7 @@ public class QueryPanel extends VLayout
 //  what.setValue("attribute name & values");
 
   SpacerItem sp0 = new SpacerItem();
+  sp0.setHeight(30);
   sp0.setEndRow(true);
 
   SpacerItem sp1 = new SpacerItem();
