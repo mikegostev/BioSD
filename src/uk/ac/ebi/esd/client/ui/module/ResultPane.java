@@ -15,14 +15,21 @@ import uk.ac.ebi.esd.client.ui.AttributeFieldInfo;
 import uk.ac.ebi.esd.client.ui.ResultRenderer;
 import uk.ac.ebi.esd.client.ui.SampleListGrid;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ExpansionMode;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.events.DrawEvent;
+import com.smartgwt.client.widgets.events.DrawHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
@@ -187,10 +194,15 @@ public class ResultPane extends ListGrid implements ResultRenderer
   ds.addData(rec);
  
   DetailViewer dv = new DetailViewer();
-  
+  dv.setWidth("90%");
   dv.setDataSource(ds);
   
   dv.setAutoFetchData(true);
+  
+  Canvas spc = new Canvas();
+  spc.setHeight(15);
+
+  lay.addMember(spc);
   
   lay.addMember(dv);
   
@@ -209,18 +221,29 @@ public class ResultPane extends ListGrid implements ResultRenderer
    @Override
    public void onClick(ClickEvent event)
    {
+    WaitWindow.showWait();
+    
     QueryService.Util.getInstance().getSamplesByGroup(record.getAttributeAsString("id"),new AsyncCallback<List<ObjectReport>>(){
 
      @Override
      public void onFailure(Throwable arg0)
      {
+      WaitWindow.hideWait();
       arg0.printStackTrace();
      }
 
      @Override
-     public void onSuccess(List<ObjectReport> arg0)
+     public void onSuccess(final List<ObjectReport> arg0)
      {
-      renderSampleList(lay,arg0);
+      DeferredCommand.addCommand(new Command()
+      {
+       @Override
+       public void execute()
+       {
+        renderSampleList(lay,arg0);
+        WaitWindow.hideWait();
+       }
+      });
      }
     });
    }
@@ -235,6 +258,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
    @Override
    public void onClick(ClickEvent event)
    {
+    WaitWindow.showWait();
     QueryService.Util.getInstance().getSamplesByGroupAndQuery(record.getAttributeAsString("id"), query, searchAtNames, searchAtValues,
      
     new AsyncCallback<List<ObjectReport>>(){
@@ -243,12 +267,14 @@ public class ResultPane extends ListGrid implements ResultRenderer
      public void onFailure(Throwable arg0)
      {
       arg0.printStackTrace();
+      WaitWindow.hideWait();
      }
 
      @Override
-     public void onSuccess(List<ObjectReport> arg0)
+     public void onSuccess( final List<ObjectReport> arg0)
      {
       renderSampleList(lay,arg0);
+      WaitWindow.hideWait();
      }
     });
    }
@@ -278,6 +304,49 @@ public class ResultPane extends ListGrid implements ResultRenderer
   
  }
  
+ private void renderResultList(final VLayout lay, final List<ObjectReport> smpls)
+ {
+  if( smpls.size() < 50 )
+  {
+   renderSampleList(lay,smpls);
+   return;
+  }
+  
+  final Window waitW = new Window();
+  
+  waitW.setHeight(100);
+  waitW.setWidth(250);
+  waitW.setShowMinimizeButton(false);  
+  waitW.setIsModal(true);  
+  waitW.setShowModalMask(true);  
+  waitW.centerInPage();
+
+  Label msg = new Label("<b>Please wait for result rendering</b>");
+  msg.setAlign(Alignment.CENTER);
+  
+  waitW.addItem(msg);
+  
+  waitW.addDrawHandler(new DrawHandler()
+  {
+   @Override
+   public void onDraw(DrawEvent event)
+   {
+    DeferredCommand.addCommand(new Command()
+    {
+     @Override
+     public void execute()
+     {
+      renderSampleList(lay,smpls);
+      waitW.destroy();
+     }
+    });
+   }
+  });
+  
+  waitW.show();
+  
+ }
+
  
  private void renderSampleList(final VLayout lay, List<ObjectReport> smpls)
  {
@@ -341,6 +410,7 @@ public class ResultPane extends ListGrid implements ResultRenderer
   attrList.setShowAllRecords(true);
   attrList.setShowRowNumbers(true); 
   
+  attrList.setWidth("99%");
   attrList.setHeight(1);
   attrList.setBodyOverflow(Overflow.VISIBLE);
   attrList.setOverflow(Overflow.VISIBLE);
@@ -363,6 +433,12 @@ public class ResultPane extends ListGrid implements ResultRenderer
   
   if( membs[membs.length-1] instanceof ListGrid )
    lay.removeMember(membs[membs.length-1]);
+  else
+  {
+   Canvas spc = new Canvas();
+   spc.setHeight(15);
+   lay.addMember(spc);
+  }
   
   lay.addMember(attrList);
 
