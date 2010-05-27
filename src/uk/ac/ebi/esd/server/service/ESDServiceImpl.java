@@ -98,6 +98,10 @@ public class ESDServiceImpl extends ESDService
  @Override
  public List<ObjectReport> selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl)
  {
+//  List<AgeObject> sel = null;
+  
+  
+  
   StringBuilder sb = new StringBuilder();
   
   if( searchAttrNm )
