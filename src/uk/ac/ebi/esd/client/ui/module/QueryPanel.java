@@ -1,10 +1,11 @@
 package uk.ac.ebi.esd.client.ui.module;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
+import uk.ac.ebi.esd.client.LinkClickListener;
+import uk.ac.ebi.esd.client.LinkManager;
 import uk.ac.ebi.esd.client.QueryService;
-import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.query.Report;
 import uk.ac.ebi.esd.client.ui.ResultRenderer;
 
 import com.google.gwt.user.client.Command;
@@ -24,13 +25,20 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 
-public class QueryPanel extends VLayout
+public class QueryPanel extends VLayout implements LinkClickListener
 {
  private TextItem queryField;
  private ComboBoxItem where;
  private ComboBoxItem what;
  
  private ResultRenderer resultCallback;
+ 
+ private boolean  searchAttribNames;
+ private boolean searchAttribValues;
+ private boolean searchGroup;
+ private boolean searchSample;
+ private String query;
+
  
  public QueryPanel( ResultRenderer cb )
  {
@@ -138,6 +146,9 @@ public class QueryPanel extends VLayout
   hstrip.addMember(right);
   
   addMember(hstrip);
+ 
+ 
+  LinkManager.getInstance().addLinkClickListener("groupPage", this);
  }
  
  
@@ -157,15 +168,16 @@ public class QueryPanel extends VLayout
 
   public void execute()
   {
-   boolean searchAttribNames = false;
-   boolean searchAttribValues = false;
-   boolean searchGroup = false;
-   boolean searchSample = false;
-
    if("val".equals(what.getValue()))
+   {
+    searchAttribNames = false;
     searchAttribValues = true;
+   }
    else if("name".equals(what.getValue()))
+   {
     searchAttribNames = true;
+    searchAttribValues = false;
+   }
    else if("both".equals(what.getValue()))
    {
     searchAttribValues = true;
@@ -188,13 +200,10 @@ public class QueryPanel extends VLayout
     searchGroup = true;
    }
 
-   final boolean sSmp = searchAttribNames;
-   final boolean sGrp = searchAttribValues;
-   final boolean sAtrNm = searchGroup;
-   final boolean sAtrVl = searchSample;
+   query = (String) queryField.getValue();
 
-   QueryService.Util.getInstance().selectSampleGroups((String) queryField.getValue(), searchSample, searchGroup,
-     searchAttribNames, searchAttribValues, new AsyncCallback<List<ObjectReport>>()
+   QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
+     searchAttribNames, searchAttribValues, 0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
      {
 
       @Override
@@ -205,14 +214,46 @@ public class QueryPanel extends VLayout
       }
 
       @Override
-      public void onSuccess(List<ObjectReport> resLst)
+      public void onSuccess(Report resLst)
       {
-       resultCallback.showResult(resLst, (String) queryField.getValue(), sSmp, sGrp, sAtrNm, sAtrVl);
+       resultCallback.showResult(resLst, (String) queryField.getValue(), searchSample, searchGroup, searchAttribNames, searchAttribValues,1);
       }
      });
 
   }
 
  }
+
+
+ @Override
+ public void linkClicked(String param)
+ {
+  int pNum=1;
+  
+  try
+  {
+   pNum = Integer.parseInt(param);
+  }
+  catch(Exception e)
+  {
+  }
+  
+  QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
+    searchAttribNames, searchAttribValues, (pNum-1)*ResultPane.MAX_GROUPS_PER_PAGE, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
+    {
+
+     @Override
+     public void onFailure(Throwable arg0)
+     {
+      arg0.printStackTrace();
+      SC.say("Query error: " + arg0.getMessage());
+     }
+
+     @Override
+     public void onSuccess(Report resLst)
+     {
+      resultCallback.showResult(resLst, (String) queryField.getValue(), searchSample, searchGroup, searchAttribNames, searchAttribValues,1);
+     }
+    }); }
 
 }

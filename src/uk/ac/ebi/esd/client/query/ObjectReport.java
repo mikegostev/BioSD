@@ -13,6 +13,8 @@ public class ObjectReport implements IsSerializable
  private String id;
  private String descr;
  
+ private int matchedCount;
+ 
  private Collection<String> matchedSamples = new ArrayList<String>(50);
  private Collection<String> allSamples = new ArrayList<String>(50);
  private List<AttributeReport> attr = new ArrayList<AttributeReport>();
@@ -85,6 +87,16 @@ public class ObjectReport implements IsSerializable
  public int getRefCount()
  {
   return refCount;
+ }
+
+ public int getMatchedCount()
+ {
+  return matchedCount;
+ }
+
+ public void setMatchedCount(int matchedCount)
+ {
+  this.matchedCount = matchedCount;
  }
 
 }

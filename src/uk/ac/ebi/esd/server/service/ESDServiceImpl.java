@@ -2,9 +2,7 @@ package uk.ac.ebi.esd.server.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import uk.ac.ebi.age.model.AgeAttribute;
 import uk.ac.ebi.age.model.AgeAttributeClass;
@@ -14,19 +12,22 @@ import uk.ac.ebi.age.model.AgeRelation;
 import uk.ac.ebi.age.model.AgeRelationClass;
 import uk.ac.ebi.age.query.AgeQuery;
 import uk.ac.ebi.age.query.ClassNameExpression;
-import uk.ac.ebi.age.query.OrExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
 import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
 import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.query.Report;
 
 public class ESDServiceImpl extends ESDService
 {
  private AgeStorage storage;
  
- private AgeIndex attrTextIndex;
+ private AgeIndex groupsIndex;
+ private AgeIndex samplesIndex;
+ 
+ private List<AgeObject> groupList;
  
  private AgeClass sampleClass;
  private AgeClass groupClass;
@@ -70,94 +71,163 @@ public class ESDServiceImpl extends ESDService
   
   groupToSampleRelClass = sampleInGroupRelClass.getInverseClass();
   
-  OrExpression orExp = new OrExpression();
+//  OrExpression orExp = new OrExpression();
+//  
+//  ClassNameExpression clsExp = new ClassNameExpression();
+//  clsExp.setClassName( ESDConfigManager.SAMPLE_CLASS_NAME );
+//  clsExp.setClassType( ClassType.DEFINED );
+//  
+//  orExp.addExpression(clsExp);
   
   ClassNameExpression clsExp = new ClassNameExpression();
-  clsExp.setClassName( ESDConfigManager.SAMPLE_CLASS_NAME );
-  clsExp.setClassType( ClassType.DEFINED );
-  
-  orExp.addExpression(clsExp);
-  
-  clsExp = new ClassNameExpression();
   clsExp.setClassName( ESDConfigManager.SAMPLEGROUP_CLASS_NAME );
   clsExp.setClassType( ClassType.DEFINED );
 
-  orExp.addExpression(clsExp);
+//  orExp.addExpression(clsExp);
 
   
-  AgeQuery q = AgeQuery.create(orExp);
+  AgeQuery q = AgeQuery.create(clsExp);
   
-  ArrayList<TextFieldExtractor> extr = new ArrayList<TextFieldExtractor>(2);
+  ArrayList<TextFieldExtractor> extr = new ArrayList<TextFieldExtractor>(4);
   
-  extr.add( new TextFieldExtractor(ESDConfigManager.NAME_FIELD_NAME, new AttrNamesExtractor() ) );
-  extr.add( new TextFieldExtractor(ESDConfigManager.VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
+  extr.add( new TextFieldExtractor(ESDConfigManager.SAMPLE_NAME_FIELD_NAME, new SampleAttrNamesExtractor() ) );
+  extr.add( new TextFieldExtractor(ESDConfigManager.SAMPLE_VALUE_FIELD_NAME, new SampleAttrValuesExtractor() ) );
+  extr.add( new TextFieldExtractor(ESDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
+  extr.add( new TextFieldExtractor(ESDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
   
-  attrTextIndex = storage.createTextIndex(q, extr);
- }
+  groupsIndex = storage.createTextIndex(q, extr);
+
+  Collection<AgeObject> grps = storage.executeQuery(q);
+  
+  if( grps instanceof List<?> )
+   groupList = (List<AgeObject>)grps;
+  else
+  {
+   groupList = new ArrayList<AgeObject>( grps.size() );
+   groupList.addAll(grps);
+  }
+ 
+  clsExp = new ClassNameExpression();
+  clsExp.setClassName( ESDConfigManager.SAMPLE_CLASS_NAME );
+  clsExp.setClassType( ClassType.DEFINED );
+
+  q = AgeQuery.create(clsExp);
+  
+  extr = new ArrayList<TextFieldExtractor>(3);
+  
+  extr.add( new TextFieldExtractor(ESDConfigManager.GROUP_ID_FIELD_NAME, new GroupIDExtractor() ) );
+  extr.add( new TextFieldExtractor(ESDConfigManager.SAMPLE_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
+  extr.add( new TextFieldExtractor(ESDConfigManager.SAMPLE_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
+  
+  samplesIndex = storage.createTextIndex(q, extr);
+}
 
  @Override
- public List<ObjectReport> selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl)
+ public Report selectSampleGroups(String query, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
  {
 //  List<AgeObject> sel = null;
   
+  if( query == null )
+   return getAllGroups(offset, count);
   
+  query=query.trim();
+  
+  if( query.length() == 0 )
+   return getAllGroups(offset, count);
   
   StringBuilder sb = new StringBuilder();
   
+  sb.append("( ");
+  
   if( searchAttrNm )
-   sb.append(ESDConfigManager.NAME_FIELD_NAME).append(":(").append(value).append(')');
+  {
+   if( searchGrp )
+    sb.append(ESDConfigManager.GROUP_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+
+   if( searchSmp )
+    sb.append(ESDConfigManager.SAMPLE_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+  }
 
   if( searchAttrVl )
   {
-   if( sb.length() > 0 )
-    sb.append(" OR ");
-   
-   sb.append(ESDConfigManager.VALUE_FIELD_NAME).append(":(").append(value).append(')');
+   if( searchGrp )
+    sb.append(ESDConfigManager.GROUP_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
+
+   if( searchSmp )
+    sb.append(ESDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
   }
   
-  List<AgeObject> sel = storage.queryTextIndex(attrTextIndex, sb.toString() );
+  sb.setLength(sb.length()-4);
+  sb.append(" )");
+  
+  String lucQuery = sb.toString();
+  int qLen = lucQuery.length();
+  
+  List<AgeObject> sel = storage.queryTextIndex(groupsIndex, lucQuery );
   
   List<ObjectReport> res = new ArrayList<ObjectReport>();
   
-  Map<AgeObject,ObjectReport> repMap = new HashMap<AgeObject, ObjectReport>();
+  int lim = offset+count;
   
-  for( AgeObject obj : sel )
+  if( lim > sel.size() )
+   lim=sel.size();
+  
+  for( int i=offset; i< lim; i++ )
   {
-   if( obj.getAgeElClass() == sampleClass && searchSmp )
+   ObjectReport gr = createGroupObject(sel.get(i));
+   
+   if( searchSmp )
    {
-    AgeObject grpObj = getGroupForSample(obj);
-    
-    if( grpObj == null )
-     continue;
-    
-    ObjectReport sgRep = repMap.get(grpObj);
-    
-    if( sgRep == null )
-    {
-     sgRep = createGroupObject(grpObj);
-     
-     repMap.put(grpObj, sgRep);
-     res.add(sgRep);
-    }
-    
-    sgRep.addMatchedSample( obj.getId() );
+    sb.setLength(qLen);
+   
+    sb.append(" AND "+ESDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(gr.getId());
+    gr.setMatchedCount( storage.queryTextIndex(samplesIndex, sb.toString() ).size() );
    }
-   else if( obj.getAgeElClass() == groupClass && searchGrp )
-   {
-    ObjectReport sgRep = repMap.get(obj);
-    
-    if( sgRep == null )
-    {
-     sgRep = createGroupObject(obj);
-
-     repMap.put(obj, sgRep);
-     res.add(sgRep);
-    }
-   }
+   
+   res.add(gr);
   }
   
+//  Map<AgeObject,ObjectReport> repMap = new HashMap<AgeObject, ObjectReport>();
+//  
+//  for( AgeObject obj : sel )
+//  {
+//   if( obj.getAgeElClass() == sampleClass && searchSmp )
+//   {
+//    AgeObject grpObj = getGroupForSample(obj);
+//    
+//    if( grpObj == null )
+//     continue;
+//    
+//    ObjectReport sgRep = repMap.get(grpObj);
+//    
+//    if( sgRep == null )
+//    {
+//     sgRep = createGroupObject(grpObj);
+//     
+//     repMap.put(grpObj, sgRep);
+//     res.add(sgRep);
+//    }
+//    
+//    sgRep.addMatchedSample( obj.getId() );
+//   }
+//   else if( obj.getAgeElClass() == groupClass && searchGrp )
+//   {
+//    ObjectReport sgRep = repMap.get(obj);
+//    
+//    if( sgRep == null )
+//    {
+//     sgRep = createGroupObject(obj);
+//
+//     repMap.put(obj, sgRep);
+//     res.add(sgRep);
+//    }
+//   }
+//  }
+  Report rep = new Report();
+  rep.setObjects(res);
+  rep.setTotalRecords(sel.size());
   
-  return res;
+  return rep;
  }
  
  private ObjectReport createGroupObject( AgeObject obj )
@@ -212,11 +282,11 @@ public class ESDServiceImpl extends ESDService
  {
   StringBuilder sb = new StringBuilder();
  
-  public String getValue(AgeObject obj)
+  public String getValue(AgeObject gobj)
   {
    sb.setLength(0);
    
-   for( AgeAttribute attr : obj.getAttributes() )
+   for( AgeAttribute attr : gobj.getAttributes() )
    {
     Object val = attr.getValue();
     
@@ -240,15 +310,86 @@ public class ESDServiceImpl extends ESDService
   }
  }
  
+ class SampleAttrValuesExtractor implements TextValueExtractor
+ {
+  StringBuilder sb = new StringBuilder();
+ 
+  public String getValue(AgeObject gobj)
+  {
+   sb.setLength(0);
+
+   for(AgeRelation rel : gobj.getRelations())
+   {
+    if(rel.getAgeElClass() == groupToSampleRelClass)
+    {
+     AgeObject obj = rel.getTargetObject();
+
+     for(AgeAttribute attr : obj.getAttributes())
+     {
+      Object val = attr.getValue();
+      
+      if( val instanceof String )
+       sb.append( val ).append(' ');
+
+      if(attr.getQualifiers() != null)
+      {
+       for(AgeAttribute qual : attr.getQualifiers())
+       {
+        Object qval = qual.getValue();
+        
+        if( qval instanceof String )
+         sb.append( qval ).append(' ');
+       }
+      }
+     }
+    }
+   }
+   return sb.toString();
+  }
+ }
+ 
+ class SampleAttrNamesExtractor implements TextValueExtractor
+ {
+  StringBuilder sb = new StringBuilder();
+
+  public String getValue(AgeObject gobj)
+  {
+   sb.setLength(0);
+
+   for(AgeRelation rel : gobj.getRelations())
+   {
+    if(rel.getAgeElClass() == groupToSampleRelClass)
+    {
+     AgeObject obj = rel.getTargetObject();
+
+     for(AgeAttribute attr : obj.getAttributes())
+     {
+      sb.append(attr.getAgeElClass().getName()).append(' ');
+
+      if(attr.getQualifiers() != null)
+      {
+       for(AgeAttribute qual : attr.getQualifiers())
+       {
+        sb.append(qual.getAgeElClass().getName()).append(' ');
+       }
+      }
+     }
+    }
+   }
+
+   return sb.toString();
+  }
+ }
+
  class AttrNamesExtractor implements TextValueExtractor
  {
   StringBuilder sb = new StringBuilder();
  
-  public String getValue(AgeObject obj)
+  public String getValue(AgeObject gobj)
   {
    sb.setLength(0);
    
-   for( AgeAttribute attr : obj.getAttributes() )
+   for( AgeAttribute attr : gobj.getAttributes() )
    {
     sb.append( attr.getAgeElClass().getName() ).append(' ');
     
@@ -264,9 +405,26 @@ public class ESDServiceImpl extends ESDService
    return sb.toString();
   }
  }
+ 
+ class GroupIDExtractor implements TextValueExtractor
+ {
+ 
+  public String getValue(AgeObject gobj)
+  {
+   for(AgeRelation rel : gobj.getRelations())
+   {
+    if(rel.getAgeElClass() == sampleInGroupRelClass)
+    {
+     return rel.getTargetObject().getId();
+    }
+   }
+   return "";
+  }
+ }
 
+ 
  @Override
- public List<ObjectReport> getSamplesByGroup(String grpID)
+ public Report getSamplesByGroup(String grpID, int offset, int count)
  {
   AgeObject grpObj = storage.getObjectById(grpID);
   
@@ -275,10 +433,25 @@ public class ESDServiceImpl extends ESDService
   
   List<ObjectReport> res = new ArrayList<ObjectReport>(30);
   
+  int total=0;
+  
   for( AgeRelation rel : grpObj.getRelations() )
   {
    if( rel.getAgeElClass() == groupToSampleRelClass )
    {
+    total++;
+    
+    if( offset > 0 )
+    {
+     offset--;
+     continue;
+    }
+ 
+    if( count == 0 )
+     continue;
+   
+    count--;
+    
     AgeObject sample = rel.getTargetObject();
     
     ObjectReport rp = new ObjectReport();
@@ -304,67 +477,136 @@ public class ESDServiceImpl extends ESDService
    }
   }
   
-  return res;
+  Report rep = new Report();
+  rep.setObjects(res);
+  rep.setTotalRecords(total);
+  
+  return rep;
  }
 
  @Override
- public List<ObjectReport> getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl)
+ public Report getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
  {
   StringBuilder sb = new StringBuilder();
   
+  sb.append("( ");
+  
   if( searchAttrNm )
-   sb.append(ESDConfigManager.NAME_FIELD_NAME).append(":(").append(query).append(')');
+   sb.append(ESDConfigManager.SAMPLE_NAME_FIELD_NAME).append(":(").append(query).append(')');
 
   if( searchAttrVl )
   {
    if( sb.length() > 0 )
     sb.append(" OR ");
    
-   sb.append(ESDConfigManager.VALUE_FIELD_NAME).append(":(").append(query).append(')');
+   sb.append(ESDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(')');
   }
   
-  List<AgeObject> sel = storage.queryTextIndex(attrTextIndex, sb.toString() );
+  sb.append(" ) AND ").append(ESDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(grpId);
+  
+  List<AgeObject> sel = storage.queryTextIndex(samplesIndex, sb.toString() );
   
   List<ObjectReport> res = new ArrayList<ObjectReport>();
-  
+ 
+  int total = res.size();
   
   for( AgeObject obj : sel )
   {
-   if( obj.getAgeElClass() == sampleClass )
+   if( offset > 0 )
    {
-    AgeObject grpObj = getGroupForSample(obj);
-    
-    if( grpObj == null || ! grpObj.getId().equals(grpId)  )
-     continue;
-    
-    ObjectReport sampRep = new ObjectReport();
-
-     sampRep.setId( obj.getId() );
-
-     sampRep.addAttribute("ID", obj.getId(), true, 0);
-     
-     Object descVal = obj.getAttributeValue(desciptionAttributeClass);
-     sampRep.setDescription( descVal!=null?descVal.toString():null );
-     
-     for( AgeAttribute atr : obj.getAttributes() )
-     {
-      String attrname = atr.getAgeElClass().getName();
-
-      sampRep.addAttribute(attrname, atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
-
-      if( atr.getQualifiers() != null )
-      {
-       for( AgeAttribute qlf  : atr.getQualifiers() )
-        sampRep.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), atr.getAgeElClass().isCustom(), qlf.getOrder());
-      }
-
-     }
-     res.add(sampRep);
+    offset--;
+    continue;
    }
+
+   if( count == 0 )
+    continue;
+  
+   count--;
+
+   ObjectReport sampRep = new ObjectReport();
+
+   sampRep.setId( obj.getId() );
+
+   sampRep.addAttribute("ID", obj.getId(), true, 0);
+   
+   Object descVal = obj.getAttributeValue(desciptionAttributeClass);
+   sampRep.setDescription( descVal!=null?descVal.toString():null );
+   
+   for( AgeAttribute atr : obj.getAttributes() )
+   {
+    String attrname = atr.getAgeElClass().getName();
+
+    sampRep.addAttribute(attrname, atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+
+    if( atr.getQualifiers() != null )
+    {
+     for( AgeAttribute qlf  : atr.getQualifiers() )
+      sampRep.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), atr.getAgeElClass().isCustom(), qlf.getOrder());
+    }
+
+   }
+   res.add(sampRep);
   }
   
+//  for( AgeObject obj : sel )
+//  {
+//   if( obj.getAgeElClass() == sampleClass )
+//   {
+//    AgeObject grpObj = getGroupForSample(obj);
+//    
+//    if( grpObj == null || ! grpObj.getId().equals(grpId)  )
+//     continue;
+//    
+//    ObjectReport sampRep = new ObjectReport();
+//
+//     sampRep.setId( obj.getId() );
+//
+//     sampRep.addAttribute("ID", obj.getId(), true, 0);
+//     
+//     Object descVal = obj.getAttributeValue(desciptionAttributeClass);
+//     sampRep.setDescription( descVal!=null?descVal.toString():null );
+//     
+//     for( AgeAttribute atr : obj.getAttributes() )
+//     {
+//      String attrname = atr.getAgeElClass().getName();
+//
+//      sampRep.addAttribute(attrname, atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+//
+//      if( atr.getQualifiers() != null )
+//      {
+//       for( AgeAttribute qlf  : atr.getQualifiers() )
+//        sampRep.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), atr.getAgeElClass().isCustom(), qlf.getOrder());
+//      }
+//
+//     }
+//     res.add(sampRep);
+//   }
+//  }
+  Report rep = new Report();
+  rep.setObjects(res);
+  rep.setTotalRecords(total);
   
-  return res;
+  return rep;
+ }
+
+ @Override
+ public Report getAllGroups(int offset, int count)
+ {
+  int lim = offset+count;
+  
+  if( lim > groupList.size() )
+   lim=groupList.size();
+  
+  List<ObjectReport> res = new ArrayList<ObjectReport>(count);
+  
+  for( ; offset < lim; offset++)
+   res.add( createGroupObject(groupList.get(offset)) );
+  
+  Report rep = new Report();
+  rep.setObjects(res);
+  rep.setTotalRecords(groupList.size());
+  
+  return rep;
  }
 
 

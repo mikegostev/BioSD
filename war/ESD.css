@@ -80,7 +80,37 @@ h1 {
 	font-weight: bold
 }
 
+.reportGrid .sampleGrid .listTable td
+{
+	border-left: 1px solid gray;
+	font-size: 11pt;
+    font-weight: normal
+	
+}
 .reportGrid .listTable td
 {
-	border-bottom: 1px dotted black;
+	font-size: 12pt;
+	font-weight: bold
+}
+
+.groupDetails td
+{
+	font-size: 11pt
+}
+
+span.groupPageRuler
+{
+	margin-left: 30px;
+	font-size: 11pt;
+}
+
+span.groupPageRuler .el
+{
+	margin-left: 8px;
+	font-size: 11pt;
+}
+
+span.groupPageRuler span.pagerSpacer
+{
+	margin-left: 28px;
 }

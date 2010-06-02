@@ -1,8 +1,6 @@
 package uk.ac.ebi.esd.server.service;
 
-import java.util.List;
-
-import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.query.Report;
 
 public abstract class ESDService
 {
@@ -18,11 +16,12 @@ public abstract class ESDService
   service=srv;
  }
 
- public abstract List<ObjectReport> selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl);
+ public abstract Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offset, int count);
+ public abstract Report getAllGroups(int offset, int count);
 
  public abstract void shutdown();
 
- public abstract List<ObjectReport> getSamplesByGroup(String grpID);
+ public abstract Report getSamplesByGroup(String grpID, int offset, int count);
 
- public abstract List<ObjectReport> getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues);
+ public abstract Report getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count);
 }
