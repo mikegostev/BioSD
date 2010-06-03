@@ -14,6 +14,7 @@ import uk.ac.ebi.age.query.AgeQuery;
 import uk.ac.ebi.age.query.ClassNameExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
 import uk.ac.ebi.age.storage.AgeStorage;
+import uk.ac.ebi.age.storage.DataChangeListener;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
@@ -27,6 +28,7 @@ public class ESDServiceImpl extends ESDService
  private AgeIndex groupsIndex;
  private AgeIndex samplesIndex;
  
+ private AgeQuery groupSelectQuery;
  private List<AgeObject> groupList;
  
  private AgeClass sampleClass;
@@ -86,7 +88,7 @@ public class ESDServiceImpl extends ESDService
 //  orExp.addExpression(clsExp);
 
   
-  AgeQuery q = AgeQuery.create(clsExp);
+  groupSelectQuery = AgeQuery.create(clsExp);
   
   ArrayList<TextFieldExtractor> extr = new ArrayList<TextFieldExtractor>(4);
   
@@ -95,9 +97,27 @@ public class ESDServiceImpl extends ESDService
   extr.add( new TextFieldExtractor(ESDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(ESDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
   
-  groupsIndex = storage.createTextIndex(q, extr);
+  groupsIndex = storage.createTextIndex(groupSelectQuery, extr);
 
-  Collection<AgeObject> grps = storage.executeQuery(q);
+  Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
+  
+  storage.addDataChangeListener( new DataChangeListener() 
+  {
+   @Override
+   public void dataChanged()
+   {
+    Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
+    
+    if( grps instanceof List<?> )
+     groupList = (List<AgeObject>)grps;
+    else
+    {
+     groupList = new ArrayList<AgeObject>( grps.size() );
+     groupList.addAll(grps);
+    }
+
+   }
+  } );
   
   if( grps instanceof List<?> )
    groupList = (List<AgeObject>)grps;
@@ -111,7 +131,7 @@ public class ESDServiceImpl extends ESDService
   clsExp.setClassName( ESDConfigManager.SAMPLE_CLASS_NAME );
   clsExp.setClassType( ClassType.DEFINED );
 
-  q = AgeQuery.create(clsExp);
+  AgeQuery q = AgeQuery.create(clsExp);
   
   extr = new ArrayList<TextFieldExtractor>(3);
   

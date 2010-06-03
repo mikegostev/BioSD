@@ -272,7 +272,7 @@ public class GroupDetailsPanel extends VLayout
 
     if(h == null)
     {
-     hdr.put(fname, h = new AttributeFieldInfo(at.getName(), fname, at.getOrder()));
+     hdr.put(fname, h = new AttributeFieldInfo(at.isCustom()?at.getName():"<b>"+at.getName()+"</b>", fname, at.getOrder()));
      h.add(at.getOrder());
     }
      

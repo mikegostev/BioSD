@@ -1,0 +1,9 @@
+{group},{description},,,,
+G3,This is group 2,,,,
+,Description,,,,
+,,,,,
+{sample},{name},temp(TYPE=INTEGER),{belongsTo},AE Link(TYPE=STRING),PRIDE Link(TYPE=STRING)
+SG34,Sample 4,33,G3,http://www.ebi.ac.uk/microarray-as/aer/result?queryFor=PhysicalArrayDesign&aAccession=A-MEXP-620,http://www.ebi.ac.uk/pride/searchSummary.do
+SG35,Mike,44,G3,,
+SG36,Sample 6,33,G3,,
+SG37,Mike,44,G3,,
