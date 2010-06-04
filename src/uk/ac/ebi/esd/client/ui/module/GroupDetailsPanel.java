@@ -64,7 +64,11 @@ public class GroupDetailsPanel extends VLayout
     continue;
    
    ds.addField(new DataSourceTextField(s, s));
-   rec.setAttribute(s, r.getAttributeAsString(s));
+   
+   if("AE Link".equals(s))
+    rec.setAttribute(s, "<a target='_blank' border=0 href='"+r.getAttributeAsString(s)+"'><img border=0 src='images/ae.png'></a>");
+   else
+    rec.setAttribute(s, r.getAttributeAsString(s));
 
    //   System.out.println("At: "+s+" "+r.getAttributeAsString(s));
   }
@@ -325,6 +329,9 @@ public class GroupDetailsPanel extends VLayout
    @Override
    public String hoverHTML(Object value, ListGridRecord record, int rowNum, int colNum)
    {
+    if( colNum == 0)
+     return null;
+    
     return record.getAttributeAsString(lfl[colNum-1].getName());
    }
   });

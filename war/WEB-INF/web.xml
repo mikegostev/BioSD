@@ -24,6 +24,14 @@
   	<servlet-class>
   	uk.ac.ebi.age.admin.server.service.UploadSvc</servlet-class>
   </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>LoginSvc</display-name>
+  	<servlet-name>LoginSvc</servlet-name>
+  	<servlet-class>
+  	uk.ac.ebi.age.admin.server.service.LoginSvc</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>QueryService</servlet-name>
     <url-pattern>/esd/ageQueryGWT</url-pattern>
@@ -35,6 +43,10 @@
   <servlet-mapping>
   	<servlet-name>UploadSvc</servlet-name>
   	<url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>LoginSvc</servlet-name>
+  	<url-pattern>/Login</url-pattern>
   </servlet-mapping>
   <listener>
     <listener-class>uk.ac.ebi.esd.server.service.Init</listener-class>

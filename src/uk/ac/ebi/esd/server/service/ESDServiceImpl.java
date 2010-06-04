@@ -157,7 +157,7 @@ public class ESDServiceImpl extends ESDService
   
   StringBuilder sb = new StringBuilder();
   
-  sb.append("( ");
+//  sb.append("( ");
   
   if( searchAttrNm )
   {
@@ -178,7 +178,7 @@ public class ESDServiceImpl extends ESDService
   }
   
   sb.setLength(sb.length()-4);
-  sb.append(" )");
+//  sb.append(" )");
   
   String lucQuery = sb.toString();
   int qLen = lucQuery.length();
