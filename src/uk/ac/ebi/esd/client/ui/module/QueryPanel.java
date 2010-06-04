@@ -238,6 +238,8 @@ public class QueryPanel extends VLayout implements LinkClickListener
   {
   }
   
+  final int pageNum = pNum;
+  
   QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
     searchAttribNames, searchAttribValues, (pNum-1)*ResultPane.MAX_GROUPS_PER_PAGE, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
     {
@@ -252,7 +254,7 @@ public class QueryPanel extends VLayout implements LinkClickListener
      @Override
      public void onSuccess(Report resLst)
      {
-      resultCallback.showResult(resLst, (String) queryField.getValue(), searchSample, searchGroup, searchAttribNames, searchAttribValues,1);
+      resultCallback.showResult(resLst, (String) queryField.getValue(), searchSample, searchGroup, searchAttribNames, searchAttribValues,pageNum);
      }
     }); }
 

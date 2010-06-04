@@ -22,8 +22,8 @@ import com.smartgwt.client.widgets.layout.VLayout;
 
 public class ResultPane extends VLayout implements ResultRenderer
 {
- public final static int MAX_GROUPS_PER_PAGE=30;
- public final static int MAX_SAMPLES_PER_PAGE=30;
+ public final static int MAX_GROUPS_PER_PAGE=20;
+ public final static int MAX_SAMPLES_PER_PAGE=20;
  
  private String query;
  private boolean searchSamples;
