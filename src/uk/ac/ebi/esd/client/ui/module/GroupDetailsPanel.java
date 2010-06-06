@@ -67,6 +67,10 @@ public class GroupDetailsPanel extends VLayout
    
    if("AE Link".equals(s))
     rec.setAttribute(s, "<a target='_blank' border=0 href='"+r.getAttributeAsString(s)+"'><img border=0 src='images/ae.png'></a>");
+   else if("Pride Link".equals(s))
+    rec.setAttribute(s, "<a target='_blank' border=0 href='"+r.getAttributeAsString(s)+"'><img border=0 src='images/pride.jpg'></a>");
+   else if("PubMedID".equals(s))
+    rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+r.getAttributeAsString(s)+"'>"+r.getAttributeAsString(s)+"</a>");
    else
     rec.setAttribute(s, r.getAttributeAsString(s));
 

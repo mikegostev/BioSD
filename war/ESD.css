@@ -89,7 +89,7 @@ h1 {
 }
 .reportGrid .listTable td
 {
-	font-size: 12pt;
+	font-size: 12pt !important;
 	font-weight: bold
 }
 
