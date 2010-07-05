@@ -49,6 +49,13 @@
       <owl:Class rdf:about="#sample_attributes"/>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:ID="StrainOrLineDatabase">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#sample_attributes"/>
+    </rdfs:subClassOf>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
   <owl:Class rdf:ID="Test">
     <rdfs:subClassOf>
       <owl:Class rdf:about="#sample_attributes"/>
@@ -56,12 +63,14 @@
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
-  <owl:Class rdf:ID="StrainOrLineDatabase">
+  <owl:Class rdf:ID="Contact_Email">
     <rdfs:subClassOf>
-      <owl:Class rdf:about="#sample_attributes"/>
+      <owl:Class rdf:ID="common"/>
     </rdfs:subClassOf>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Contact Email</rdfs:label>
   </owl:Class>
   <owl:Class rdf:ID="Humidity">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -74,10 +83,10 @@
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf>
-      <owl:Class rdf:about="#sample_attributes"/>
+      <owl:Class rdf:about="#common"/>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
-      <owl:Class rdf:ID="common"/>
+      <owl:Class rdf:about="#sample_attributes"/>
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="EnvironmentalStress">
@@ -160,12 +169,21 @@
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
   </owl:Class>
   <owl:Class rdf:ID="classes"/>
-  <owl:Class rdf:ID="CellLine">
+  <owl:Class rdf:ID="Database_Description">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Database Description</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#links"/>
+    </rdfs:subClassOf>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >TEXT</age:datatype>
+  </owl:Class>
+  <owl:Class rdf:ID="IndividualChromosomalAbnormality">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
   </owl:Class>
-  <owl:Class rdf:ID="IndividualChromosomalAbnormality">
+  <owl:Class rdf:ID="CellLine">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
@@ -203,6 +221,24 @@
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Contact_Person">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#common"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Contact Person</rdfs:label>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
+  <owl:Class rdf:ID="Contact_Organization">
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Contact Organization</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#common"/>
+    </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="BioSource">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -266,6 +302,8 @@
   </owl:Class>
   <owl:Class rdf:ID="TSR">
     <rdfs:subClassOf rdf:resource="#qualifiers"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Term Source Reference</rdfs:comment>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
@@ -284,6 +322,18 @@
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
+  <owl:Class rdf:ID="TSA">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Term Source Accession</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#qualifiers"/>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
+  <owl:Class rdf:ID="EnvironmentalHistory">
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+  </owl:Class>
   <owl:Class rdf:ID="Tissue_Ontology_Term">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Tissue Ontology Term (BRENDA)</rdfs:label>
@@ -292,11 +342,6 @@
     </rdfs:subClassOf>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
-  </owl:Class>
-  <owl:Class rdf:ID="EnvironmentalHistory">
-    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >STRING</age:datatype>
-    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
   </owl:Class>
   <owl:Class rdf:ID="CellLineDatabase">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -340,13 +385,22 @@
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
   </owl:Class>
+  <owl:Class rdf:ID="StrainOrLine">
+    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+  </owl:Class>
   <owl:Class rdf:ID="OrganismPartDatabase">
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
-  <owl:Class rdf:ID="StrainOrLine">
-    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+  <owl:Class rdf:ID="Contact_Organization_Address">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Contact Organization Address</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#common"/>
+    </rdfs:subClassOf>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
@@ -357,18 +411,12 @@
       <owl:Class rdf:about="#common"/>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:ID="Lineage">
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+  </owl:Class>
   <owl:Class rdf:ID="Group">
-    <rdfs:subClassOf rdf:resource="#classes"/>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:someValuesFrom>
-          <owl:Class rdf:ID="Sample"/>
-        </owl:someValuesFrom>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="contains"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty>
@@ -384,6 +432,17 @@
         </owl:someValuesFrom>
       </owl:Restriction>
     </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Sample"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="contains"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#classes"/>
     <owl:disjointWith>
       <owl:Class rdf:about="#Sample"/>
     </owl:disjointWith>
@@ -465,6 +524,15 @@
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >BRENDA ID (Tissue)</rdfs:label>
   </owl:Class>
+  <owl:Class rdf:ID="Person_Affiliation">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Person Affiliation</rdfs:label>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#common"/>
+    </rdfs:subClassOf>
+  </owl:Class>
   <owl:Class rdf:ID="pride_experiment">
     <rdfs:subClassOf rdf:resource="#attributes"/>
   </owl:Class>
@@ -495,10 +563,24 @@
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
+  <owl:Class rdf:ID="Database_Name">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Database Name</rdfs:label>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+    <rdfs:subClassOf rdf:resource="#links"/>
+  </owl:Class>
   <owl:Class rdf:ID="MaterialType">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Database_URI">
+    <rdfs:subClassOf rdf:resource="#links"/>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >URI</age:datatype>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Database URI</rdfs:label>
   </owl:Class>
   <owl:Class rdf:ID="ClinicalHistory">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -522,6 +604,15 @@
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Project Name</rdfs:label>
   </owl:Class>
+  <owl:Class rdf:ID="Contact_Organization_URI">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#common"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Contact Organization URI</rdfs:label>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >URI</age:datatype>
+  </owl:Class>
   <owl:Class rdf:ID="BioSourceProvider">
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -532,12 +623,12 @@
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
   </owl:Class>
-  <owl:Class rdf:ID="Ecotype">
+  <owl:Class rdf:ID="GeographicLocation">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
   </owl:Class>
-  <owl:Class rdf:ID="GeographicLocation">
+  <owl:Class rdf:ID="Ecotype">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
@@ -546,25 +637,6 @@
     <rdfs:subClassOf rdf:resource="#attributes"/>
   </owl:Class>
   <owl:Class rdf:about="#Sample">
-    <rdfs:subClassOf rdf:resource="#classes"/>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="belongsTo"/>
-        </owl:onProperty>
-        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >1</owl:cardinality>
-        <owl:valuesFrom rdf:resource="#Group"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Group"/>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#belongsTo"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="#has_attr"/>
@@ -578,14 +650,31 @@
         </owl:someValuesFrom>
       </owl:Restriction>
     </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Group"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="belongsTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#belongsTo"/>
+        </owl:onProperty>
+        <owl:valuesFrom rdf:resource="#Group"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#classes"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Sample</rdfs:label>
     <owl:disjointWith rdf:resource="#Group"/>
   </owl:Class>
-  <owl:Class rdf:ID="Serotype">
-    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
-    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >STRING</age:datatype>
+  <owl:Class rdf:about="#common">
+    <rdfs:subClassOf rdf:resource="#attributes"/>
   </owl:Class>
   <owl:Class rdf:ID="Reference_Line">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -594,8 +683,10 @@
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Reference Line</rdfs:label>
   </owl:Class>
-  <owl:Class rdf:about="#common">
-    <rdfs:subClassOf rdf:resource="#attributes"/>
+  <owl:Class rdf:ID="Serotype">
+    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
   </owl:Class>
   <owl:Class rdf:ID="UnitTSR">
     <rdfs:subClassOf rdf:resource="#qualifiers"/>
@@ -603,6 +694,11 @@
     >STRING</age:datatype>
   </owl:Class>
   <owl:Class rdf:ID="TargetedCellType">
+    <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >STRING</age:datatype>
+    <rdfs:subClassOf rdf:resource="#sample_attributes"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Karyotype">
     <age:datatype rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >STRING</age:datatype>
     <rdfs:subClassOf rdf:resource="#sample_attributes"/>
@@ -630,10 +726,10 @@
     <rdfs:range rdf:resource="#Group"/>
   </owl:ObjectProperty>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/datatype"/>
+  <owl:AllDifferent/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/classesRoot"/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/attributesRoot"/>
   <owl:AnnotationProperty rdf:about="http://www.ebi.ac.uk/age/attributeProperty"/>
-  <owl:AllDifferent/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.4.4, Build 579)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4.2, Build 562)  http://protege.stanford.edu -->
