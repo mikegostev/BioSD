@@ -46,6 +46,7 @@ public class Init implements ServletContextListener
   
   Configuration conf = Configuration.getDefaultConfiguration();
   
+  conf.setBaseDir( new File(cfg.getBasePath()) );
   conf.setTmpDir( new File(cfg.getTmpPath()) );
 
   adm = new AgeAdmin(conf, storage);
