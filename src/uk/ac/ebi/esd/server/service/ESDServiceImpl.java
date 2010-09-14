@@ -71,7 +71,7 @@ public class ESDServiceImpl extends ESDService
    return;
   }
   
-  groupToSampleRelClass = sampleInGroupRelClass.getInverseClass();
+  groupToSampleRelClass = sampleInGroupRelClass.getInverseRelationClass();
   
 //  OrExpression orExp = new OrExpression();
 //  
