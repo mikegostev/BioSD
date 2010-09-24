@@ -183,6 +183,8 @@ public class ESDServiceImpl extends ESDService
   String lucQuery = sb.toString();
   int qLen = lucQuery.length();
   
+//  System.out.println("Query: "+lucQuery);
+  
   List<AgeObject> sel = storage.queryTextIndex(groupsIndex, lucQuery );
   
   List<ObjectReport> res = new ArrayList<ObjectReport>();

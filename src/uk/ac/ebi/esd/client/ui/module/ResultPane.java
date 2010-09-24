@@ -50,7 +50,7 @@ public class ResultPane extends VLayout implements ResultRenderer
   resultGrid.setFixedRecordHeights(false);
   resultGrid.setCellHeight(20);
   
-  resultGrid.setBodyOverflow(Overflow.VISIBLE);
+//  resultGrid.setBodyOverflow(Overflow.VISIBLE);
   resultGrid.setOverflow(Overflow.VISIBLE);
   
   resultGrid.setStyleName("reportGrid");

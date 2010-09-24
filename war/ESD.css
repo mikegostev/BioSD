@@ -89,8 +89,10 @@ h1 {
 }
 .reportGrid .listTable td
 {
-	font-size: 12pt !important;
-	font-weight: bold
+	font-size: 11pt !important;
+	font-weight: normal;
+	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+	color: black
 }
 
 .groupDetails td
@@ -108,9 +110,15 @@ span.groupPageRuler .el
 {
 	margin-left: 8px;
 	font-size: 11pt;
+	color: #006666
 }
 
 span.groupPageRuler span.pagerSpacer
 {
 	margin-left: 28px;
+}
+
+.tallCellSelectedDark, .tallCellSelected, .tallCellSelectedOverDark, .tallCellSelectedOver
+{
+	background-color: #a1c7c7 !important;
 }

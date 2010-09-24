@@ -24,10 +24,17 @@
        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+ 
 
+<link rel="alternate" title="EBI News RSS" href="http://www.ebi.ac.uk/Information/News/rss/ebinews.xml" type="application/rss+xml" />
+
+ 
+ 
   </head>
-  <body>
-   
+  <body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;};">
+
+
+<div id="rndr"></div>
     <!-- This script tag is what actually loads the GWT module.  The -->
     <!-- 'nocache.js' file (also called a "selection script") is     -->
     <!-- produced by the GWT compiler in the module output directory -->

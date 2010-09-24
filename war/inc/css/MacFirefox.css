@@ -1,0 +1,58 @@
+
+
+.headertextinput{
+	padding-bottom: 4px;
+}
+
+.div_headertextinput{
+	padding-left: 2px;
+}
+
+
+
+.headerbutton, .headerbuttonreset{
+	padding-top: 2px;
+	padding-left: 0;
+}
+
+.div_headertextinput{
+	/*width: 264px;*/
+	width: 239px;
+}
+
+.headertextinput{
+	/*width: 260px;*/
+	width: 235px;
+}
+
+.div_headerbutton{
+	width: 32px;
+}
+.headerbutton{
+	width: 30px;
+}
+
+.div_cancel_button{
+	width: 37px;
+}
+.headerbuttonreset{
+	width: 47px;
+}
+
+
+
+.therightstuff{
+	left: 676px; 
+}
+
+.therighticons{
+	left: 666px; 
+}
+
+
+
+
+
+
+
+
