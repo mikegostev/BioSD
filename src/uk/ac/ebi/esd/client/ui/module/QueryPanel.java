@@ -10,6 +10,7 @@ import uk.ac.ebi.esd.client.ui.ResultRenderer;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -39,7 +40,9 @@ public class QueryPanel extends VLayout implements LinkClickListener
  private boolean searchSample;
  private String query;
 
+ private QueryAction act = new QueryAction();
  
+
  public QueryPanel( ResultRenderer cb )
  {
   resultCallback = cb;
@@ -82,8 +85,6 @@ public class QueryPanel extends VLayout implements LinkClickListener
 
 //  f1.setCellBorder(1);
   
-  QueryAction act = new QueryAction();
-  
   PickerIcon searchPicker = new PickerIcon(PickerIcon.SEARCH, act);
   
   queryField = new TextItem("refreshPicker","Query");
@@ -93,6 +94,11 @@ public class QueryPanel extends VLayout implements LinkClickListener
   queryField.setShowTitle(false);
   queryField.setIcons(searchPicker);
   queryField.addKeyPressHandler(act);
+  
+  String queryStr = Window.Location.getParameter("query");
+  
+  if( queryStr != null && queryStr.length() > 0)
+   queryField.setValue(queryStr);
   
 //  ButtonItem bt = new ButtonItem("Button","Search");
 //  bt.setStartRow(false);
@@ -111,7 +117,13 @@ public class QueryPanel extends VLayout implements LinkClickListener
   vm.put("group", "groups");
   
   where.setValueMap(vm);
-  where.setDefaultToFirstOption(true);
+
+  String withinStr = Window.Location.getParameter("within");
+  
+  if( withinStr!= null && ("both".equals(withinStr) || "sample".equals(withinStr) || "group".equals(withinStr)))
+   where.setValue(withinStr);
+  else
+   where.setDefaultToFirstOption(true);
 
   what = new ComboBoxItem();
   what.setTitle("");
@@ -123,8 +135,13 @@ public class QueryPanel extends VLayout implements LinkClickListener
   st.put("name", "attribute names");
   
   what.setValueMap(st);
-  what.setDefaultToFirstOption(true);
-//  what.setValue("attribute name & values");
+
+  String amongStr = Window.Location.getParameter("among");
+  
+  if( amongStr!= null && ("both".equals(amongStr) || "val".equals(amongStr) || "name".equals(amongStr)))
+   what.setValue(amongStr);
+  else
+   what.setDefaultToFirstOption(true);
 
   SpacerItem sp0 = new SpacerItem();
   sp0.setHeight(30);
@@ -149,8 +166,15 @@ public class QueryPanel extends VLayout implements LinkClickListener
  
  
   LinkManager.getInstance().addLinkClickListener("groupPage", this);
+  
+//  if( queryStr != null && queryStr.length() > 0 )
+//   act.execute();
  }
  
+ public void executeQuery()
+ {
+  act.execute();
+ }
  
  private class QueryAction implements  FormItemClickHandler, KeyPressHandler, Command // ClickHandler,
  {

@@ -268,7 +268,7 @@ public class ESDServiceImpl extends ESDService
   for( AgeAttribute atr : obj.getAttributes() )
    sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
 
-  Collection<? extends AgeRelation> rels =  obj.getRelations(groupToSampleRelClass);
+  Collection<? extends AgeRelation> rels =  obj.getRelationsByClass(groupToSampleRelClass, false);
   
   int sCount=0;
   if( rels != null )
@@ -283,16 +283,16 @@ public class ESDServiceImpl extends ESDService
   return sgRep;
  }
  
- private AgeObject getGroupForSample(AgeObject obj)
- {
-  for(AgeRelation rel : obj.getRelations() )
-  {
-   if( rel.getAgeElClass() == sampleInGroupRelClass && rel.getTargetObject().getAgeElClass() == groupClass )
-    return rel.getTargetObject();
-  }
-  
-  return null;
- }
+// private AgeObject getGroupForSample(AgeObject obj)
+// {
+//  for(AgeRelation rel : obj.getRelations() )
+//  {
+//   if( rel.getAgeElClass() == sampleInGroupRelClass && rel.getTargetObject().getAgeElClass() == groupClass )
+//    return rel.getTargetObject();
+//  }
+//  
+//  return null;
+// }
 
 
  public void shutdown()
@@ -315,9 +315,9 @@ public class ESDServiceImpl extends ESDService
     if( val instanceof String )
      sb.append( val ).append(' ');
     
-    if( attr.getQualifiers() != null )
+    if( attr.getAttributes() != null )
     {
-     for( AgeAttribute qual : attr.getQualifiers() )
+     for( AgeAttribute qual : attr.getAttributes() )
      {
       Object qval = qual.getValue();
       
@@ -353,9 +353,9 @@ public class ESDServiceImpl extends ESDService
       if( val instanceof String )
        sb.append( val ).append(' ');
 
-      if(attr.getQualifiers() != null)
+      if(attr.getAttributes() != null)
       {
-       for(AgeAttribute qual : attr.getQualifiers())
+       for(AgeAttribute qual : attr.getAttributes() )
        {
         Object qval = qual.getValue();
         
@@ -388,9 +388,9 @@ public class ESDServiceImpl extends ESDService
      {
       sb.append(attr.getAgeElClass().getName()).append(' ');
 
-      if(attr.getQualifiers() != null)
+      if(attr.getAttributes() != null)
       {
-       for(AgeAttribute qual : attr.getQualifiers())
+       for(AgeAttribute qual : attr.getAttributes())
        {
         sb.append(qual.getAgeElClass().getName()).append(' ');
        }
@@ -415,9 +415,9 @@ public class ESDServiceImpl extends ESDService
    {
     sb.append( attr.getAgeElClass().getName() ).append(' ');
     
-    if( attr.getQualifiers() != null )
+    if( attr.getAttributes() != null )
     {
-     for( AgeAttribute qual : attr.getQualifiers() )
+     for( AgeAttribute qual : attr.getAttributes() )
      {
       sb.append( qual.getAgeElClass().getName() ).append(' ');
      }
@@ -488,9 +488,9 @@ public class ESDServiceImpl extends ESDService
      
      rp.addAttribute( attrname, attr.getValue().toString(), attr.getAgeElClass().isCustom(),attr.getOrder());
      
-     if( attr.getQualifiers() != null )
+     if( attr.getAttributes() != null )
      {
-      for( AgeAttribute qlf  : attr.getQualifiers() )
+      for( AgeAttribute qlf  : attr.getAttributes() )
        rp.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), attr.getAgeElClass().isCustom(), qlf.getOrder());
      }
     }
@@ -560,9 +560,9 @@ public class ESDServiceImpl extends ESDService
 
     sampRep.addAttribute(attrname, atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
 
-    if( atr.getQualifiers() != null )
+    if( atr.getAttributes() != null )
     {
-     for( AgeAttribute qlf  : atr.getQualifiers() )
+     for( AgeAttribute qlf  : atr.getAttributes() )
       sampRep.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), atr.getAgeElClass().isCustom(), qlf.getOrder());
     }
 

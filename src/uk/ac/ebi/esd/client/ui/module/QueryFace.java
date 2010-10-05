@@ -1,19 +1,14 @@
 package uk.ac.ebi.esd.client.ui.module;
 
-import uk.ac.ebi.esd.client.QueryService;
-import uk.ac.ebi.esd.client.query.Report;
-
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 public class QueryFace extends VLayout
 {
  private ResultPane resultPane;
+ private QueryPanel queryPanel;
  
  public QueryFace()
  {
@@ -22,10 +17,10 @@ public class QueryFace extends VLayout
 
   resultPane = new ResultPane();
 
-  Canvas qp = new QueryPanel(resultPane);
+  queryPanel = new QueryPanel(resultPane);
 
   // qp.setHeight(200);
-  qp.setWidth("100%");
+  queryPanel.setWidth("100%");
 
   resultPane.setWidth100();
   resultPane.setHeight100();
@@ -46,7 +41,7 @@ public class QueryFace extends VLayout
   banPan.setHeight(57);
   
   addMember(banPan);
-  addMember(qp);
+  addMember(queryPanel);
   addMember(resultPane);
 
   Label footPan = new Label("<iframe src=\"/inc/foot.html\" name=\"foot\"\r\n" + 
@@ -63,22 +58,24 @@ public class QueryFace extends VLayout
    @Override
    public void execute()
    {
-    QueryService.Util.getInstance().getAllGroups(0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
-    {
-
-     @Override
-     public void onFailure(Throwable arg0)
-     {
-      arg0.printStackTrace();
-      SC.say("Query error: " + arg0.getMessage());
-     }
-
-     @Override
-     public void onSuccess(Report resLst)
-     {
-      resultPane.showResult(resLst, null, false, false, false, false,1);
-     }
-    });
+    queryPanel.executeQuery();
+    
+//    QueryService.Util.getInstance().getAllGroups(0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
+//    {
+//
+//     @Override
+//     public void onFailure(Throwable arg0)
+//     {
+//      arg0.printStackTrace();
+//      SC.say("Query error: " + arg0.getMessage());
+//     }
+//
+//     @Override
+//     public void onSuccess(Report resLst)
+//     {
+//      resultPane.showResult(resLst, null, false, false, false, false,1);
+//     }
+//    });
    }
   });
 
