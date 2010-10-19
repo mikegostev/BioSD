@@ -7,9 +7,9 @@ import javax.servlet.ServletContextListener;
 
 import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
+import uk.ac.ebi.age.mng.AgeStorageManager;
+import uk.ac.ebi.age.mng.AgeStorageManager.DB_TYPE;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
-import uk.ac.ebi.age.storage.AgeStorageManager;
-import uk.ac.ebi.age.storage.AgeStorageManager.DB_TYPE;
 import uk.ac.ebi.age.storage.exeption.StorageInstantiationException;
 
 /**
