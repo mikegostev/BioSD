@@ -39,4 +39,8 @@ public class ESDConfigManager
   return getBasePath()+"/tmp";
  }
 
+ public String getServicesPath()
+ {
+  return getBasePath()+"/services";
+ }
 }

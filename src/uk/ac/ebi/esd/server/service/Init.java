@@ -9,6 +9,8 @@ import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.mng.AgeStorageManager;
 import uk.ac.ebi.age.mng.AgeStorageManager.DB_TYPE;
+import uk.ac.ebi.age.service.IdGenerator;
+import uk.ac.ebi.age.service.impl.SeqIdGeneratorImpl;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
 import uk.ac.ebi.age.storage.exeption.StorageInstantiationException;
 
@@ -34,6 +36,7 @@ public class Init implements ServletContextListener
   
   try
   {
+   IdGenerator.setInstance( new SeqIdGeneratorImpl(cfg.getServicesPath()+"/SeqIdGen") );
    storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getDBPath() );
    
    ESDService.setDefaultInstance( new ESDServiceImpl( storage ) );
@@ -73,6 +76,7 @@ public class Init implements ServletContextListener
   if( adm != null )
    adm.shutdown();
 
+  IdGenerator.getInstance().shutdown();
  }
 
 
