@@ -1,9 +1,14 @@
 package uk.ac.ebi.esd.client.shared;
 
-public class Pair<T1,T2>
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Pair<T1,T2> implements IsSerializable
 {
  private T1 first;
  private T2 second;
+ 
+ Pair()
+ {}
  
  public Pair(T1 f, T2 s)
  {

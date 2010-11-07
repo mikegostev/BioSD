@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import uk.ac.ebi.esd.client.shared.AttributeReport;
+import uk.ac.ebi.esd.client.shared.Pair;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -18,6 +19,7 @@ public class ObjectReport implements IsSerializable
  private Collection<String> matchedSamples = new ArrayList<String>(50);
  private Collection<String> allSamples = new ArrayList<String>(50);
  private List<AttributeReport> attr = new ArrayList<AttributeReport>();
+ private List<Pair<String,String>> othr ;
  private int refCount;
  
  
@@ -97,6 +99,19 @@ public class ObjectReport implements IsSerializable
  public void setMatchedCount(int matchedCount)
  {
   this.matchedCount = matchedCount;
+ }
+
+ public void addOtherInfo(String name, String val)
+ {
+  if( othr == null )
+   othr = new ArrayList<Pair<String,String>>(5);
+  
+  othr.add( new Pair<String, String>(name, val) );
+ }
+ 
+ public List< Pair<String, String> > getOtherInfo()
+ {
+  return othr;
  }
 
 }

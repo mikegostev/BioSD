@@ -158,7 +158,10 @@ public class ResultPane extends VLayout implements ResultRenderer
     det.setAttribute( ar.getName(), ar.getValue() );
    }
   
-   det.setAttribute("Total/matched samples", String.valueOf(sgr.getRefCount())+"/"+sgr.getMatchedCount());
+   if( sgr.getOtherInfo() != null )
+    det.setAttribute("__other", sgr.getOtherInfo());
+   
+   det.setAttribute("__summary", String.valueOf(sgr.getRefCount())+"/"+sgr.getMatchedCount());
 //   det.setAttribute("Selected samples", sgr.getMatchedCount());
   
    rec.setAttribute("details", new Record[]{det});

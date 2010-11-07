@@ -37,6 +37,7 @@ public class ESDServiceImpl extends ESDService
  private AgeRelationClass groupToSampleRelClass;
  
  private AgeAttributeClass desciptionAttributeClass;
+ private AgeAttributeClass commentAttributeClass;
  
  public ESDServiceImpl( AgeStorage stor )
  {
@@ -46,6 +47,7 @@ public class ESDServiceImpl extends ESDService
   groupClass = storage.getSemanticModel().getDefinedAgeClass( ESDConfigManager.SAMPLEGROUP_CLASS_NAME );
   sampleInGroupRelClass = storage.getSemanticModel().getDefinedAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
   desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
+  commentAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.COMMENT_ATTR_CLASS_NAME );
   
   if( sampleClass == null )
   {
@@ -266,8 +268,17 @@ public class ESDServiceImpl extends ESDService
   
  
   for( AgeAttribute atr : obj.getAttributes() )
-   sgRep.addAttribute(atr.getAgeElClass().getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
-
+  {
+   AgeAttributeClass atCls = atr.getAgeElClass();
+   
+   if( atCls.isClassOrSubclass( commentAttributeClass ) )
+   {
+    sgRep.addOtherInfo( atCls.getName(), atr.getValue().toString() );
+   }
+   else
+    sgRep.addAttribute(atCls.getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+  }
+  
   Collection<? extends AgeRelation> rels =  obj.getRelationsByClass(groupToSampleRelClass, false);
   
   int sCount=0;

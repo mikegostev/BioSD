@@ -15,7 +15,8 @@ public class ESDConfigManager
  public static final String SAMPLEINGROUP_REL_CLASS_NAME = "belongsTo";
  
  public static final String DESCRIPTION_ATTR_CLASS_NAME = "Description";
- 
+ public static final String COMMENT_ATTR_CLASS_NAME = "Comment";
+
  private static ESDConfigManager instance = new ESDConfigManager();
  
  public static ESDConfigManager instance()

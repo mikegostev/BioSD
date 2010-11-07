@@ -2,6 +2,7 @@ package uk.ac.ebi.esd.client.ui.module;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.ObjectReport;
 import uk.ac.ebi.esd.client.query.Report;
 import uk.ac.ebi.esd.client.shared.AttributeReport;
+import uk.ac.ebi.esd.client.shared.Pair;
 import uk.ac.ebi.esd.client.ui.AttributeFieldInfo;
 import uk.ac.ebi.esd.client.ui.SampleListGrid;
 
@@ -37,6 +39,8 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 public class GroupDetailsPanel extends VLayout
 {
+ private static final int BRIEF_LEN=30;
+ 
  private boolean allSamples;
  private String groupID;
  
@@ -44,8 +48,11 @@ public class GroupDetailsPanel extends VLayout
  private boolean searchAtNames;
  private boolean searchAtValues;
  
+ private List< Pair<String, String> > otherInfoList;
+ 
  private PagingRuler pager;
  
+ @SuppressWarnings("unchecked")
  public GroupDetailsPanel(final Record r, final String query, final boolean searchAtNames, final boolean searchAtValues)
  {
   this.query=query;
@@ -60,27 +67,75 @@ public class GroupDetailsPanel extends VLayout
 
   for( String s : r.getAttributes() )
   {
-   if( s.equals("__ref") )
+   if( s.startsWith("__")  )
     continue;
    
    ds.addField(new DataSourceTextField(s, s));
    
-   if("AE Link".equals(s))
-    rec.setAttribute(s, "<a target='_blank' border=0 href='"+r.getAttributeAsString(s)+"'><img border=0 src='images/ae.png'></a>");
-   else if("Pride Link".equals(s))
-    rec.setAttribute(s, "<a target='_blank' border=0 href='"+r.getAttributeAsString(s)+"'><img border=0 src='images/pride.jpg'></a>");
+   String val = r.getAttributeAsString(s);
+   
+   if("Link".equals(s) )
+   {
+    String dsAttr = r.getAttributeAsString("Data Source");
+    
+    if( dsAttr != null )
+    {
+     if("Array Express".equals(dsAttr))
+      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='images/ae.png'></a>");
+     else if("Pride".equals(dsAttr))
+      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='images/pride.jpg'></a>");
+     else
+      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
+    }
+    else
+     rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
+    
+   }
    else if("PubMedID".equals(s))
-    rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+r.getAttributeAsString(s)+"'>"+r.getAttributeAsString(s)+"</a>");
+    rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+val+"'>"+val+"</a>");
    else
-    rec.setAttribute(s, r.getAttributeAsString(s));
+    rec.setAttribute(s, val);
 
    //   System.out.println("At: "+s+" "+r.getAttributeAsString(s));
   }
-   
+
   groupID = r.getAttributeAsString("ID");
   
-  ds.addData(rec);
+  otherInfoList = (List< Pair<String, String> >) r.getAttributeAsObject("__other");
+  
+  if( otherInfoList != null && otherInfoList.size() > 0 )
+  {
+   Pair<String, String> fstEl = otherInfoList.get(0);
+   String repstr = fstEl.getFirst();
+   
+   if( repstr.length() > BRIEF_LEN )
+    repstr.substring(0,BRIEF_LEN);
+   else
+    repstr += ": "+fstEl.getSecond();
  
+   if( repstr.length() > BRIEF_LEN )
+    repstr.substring(0,BRIEF_LEN);
+   
+   repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;other&quot;)'>more</a>";
+   
+   ds.addField(new DataSourceTextField("Other", "Other") );
+   
+   rec.setAttribute("Other", repstr);
+  }
+   
+  
+ 
+  String summ = r.getAttributeAsString("__summary");
+  if( summ != null )
+  {
+   ds.addField(new DataSourceTextField("__smm", "Total/matched samples"));
+
+   rec.setAttribute("__smm", summ);
+  }
+  
+  ds.addData(rec);
+  
+  
   DetailViewer dv = new DetailViewer();
   dv.setWidth("90%");
   dv.setDataSource(ds);
@@ -164,6 +219,12 @@ public class GroupDetailsPanel extends VLayout
    @Override
    public void linkClicked(String param)
    {
+    if( "other".equals(param) )
+    {
+     new NameValuePanel( otherInfoList ).show();
+     return;
+    }
+    
     int pNum = 1;
     
     try
