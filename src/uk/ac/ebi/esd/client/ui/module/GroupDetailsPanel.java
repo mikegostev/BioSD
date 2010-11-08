@@ -11,7 +11,8 @@ import java.util.TreeSet;
 import uk.ac.ebi.esd.client.LinkClickListener;
 import uk.ac.ebi.esd.client.LinkManager;
 import uk.ac.ebi.esd.client.QueryService;
-import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.query.AttributedImprint;
+import uk.ac.ebi.esd.client.query.GroupImprint;
 import uk.ac.ebi.esd.client.query.Report;
 import uk.ac.ebi.esd.client.shared.AttributeReport;
 import uk.ac.ebi.esd.client.shared.Pair;
@@ -39,7 +40,7 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 public class GroupDetailsPanel extends VLayout
 {
- private static final int BRIEF_LEN=30;
+ private static final int BRIEF_LEN=80;
  
  private boolean allSamples;
  private String groupID;
@@ -49,6 +50,7 @@ public class GroupDetailsPanel extends VLayout
  private boolean searchAtValues;
  
  private List< Pair<String, String> > otherInfoList;
+ private List< AttributedImprint > publList;
  
  private PagingRuler pager;
  
@@ -101,12 +103,38 @@ public class GroupDetailsPanel extends VLayout
 
   groupID = r.getAttributeAsString("ID");
   
+  publList = (List< AttributedImprint >) r.getAttributeAsObject("__publ");
+  
+  if( publList != null && publList.size() > 0 )
+  {
+   AttributedImprint fstEl = publList.get(0);
+   String repstr = "";
+   
+   for( AttributeReport attr : fstEl.getAttributes() )
+   {
+    if( repstr.length() > BRIEF_LEN )
+     break;
+    
+    repstr += attr.getName()+": "+attr.getValue()+"; "; 
+   }
+
+   if( repstr.length() > BRIEF_LEN )
+    repstr=repstr.substring(0,BRIEF_LEN);
+  
+   repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;publ&quot;)'>more</a>";
+   
+   ds.addField(new DataSourceTextField("publ", "Publications") );
+   
+   rec.setAttribute("publ", repstr);
+  }
+
+  
   otherInfoList = (List< Pair<String, String> >) r.getAttributeAsObject("__other");
   
   if( otherInfoList != null && otherInfoList.size() > 0 )
   {
    Pair<String, String> fstEl = otherInfoList.get(0);
-   String repstr = fstEl.getFirst();
+   String repstr = "<b>"+fstEl.getFirst()+"</b>";
    
    if( repstr.length() > BRIEF_LEN )
     repstr.substring(0,BRIEF_LEN);
@@ -114,7 +142,7 @@ public class GroupDetailsPanel extends VLayout
     repstr += ": "+fstEl.getSecond();
  
    if( repstr.length() > BRIEF_LEN )
-    repstr.substring(0,BRIEF_LEN);
+    repstr=repstr.substring(0,BRIEF_LEN);
    
    repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;other&quot;)'>more</a>";
    
@@ -224,6 +252,12 @@ public class GroupDetailsPanel extends VLayout
      new NameValuePanel( otherInfoList ).show();
      return;
     }
+    else if( "publ".equals(param) )
+    {
+     new PublicationsPanel( publList ).show();
+     return;
+    }
+
     
     int pNum = 1;
     
@@ -315,7 +349,7 @@ public class GroupDetailsPanel extends VLayout
 
   Set<String> localHdr = new TreeSet<String>();
 
-  for(ObjectReport o : smpls.getObjects())
+  for(GroupImprint o : smpls.getObjects())
   {
    localHdr.clear();
 

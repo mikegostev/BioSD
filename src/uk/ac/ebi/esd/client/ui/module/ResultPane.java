@@ -1,7 +1,7 @@
 package uk.ac.ebi.esd.client.ui.module;
 
 import uk.ac.ebi.esd.client.LinkManager;
-import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.query.GroupImprint;
 import uk.ac.ebi.esd.client.query.Report;
 import uk.ac.ebi.esd.client.shared.AttributeReport;
 import uk.ac.ebi.esd.client.ui.ResultRenderer;
@@ -142,7 +142,7 @@ public class ResultPane extends VLayout implements ResultRenderer
   else
    pagingRuler.setVisible(false);
   
-  for( ObjectReport sgr : res.getObjects() )
+  for( GroupImprint sgr : res.getObjects() )
   {
    ListGridRecord rec = new ListGridRecord();
    
@@ -160,6 +160,9 @@ public class ResultPane extends VLayout implements ResultRenderer
   
    if( sgr.getOtherInfo() != null )
     det.setAttribute("__other", sgr.getOtherInfo());
+
+   if( sgr.getPublications() != null )
+    det.setAttribute("__publ", sgr.getPublications() );
    
    det.setAttribute("__summary", String.valueOf(sgr.getRefCount())+"/"+sgr.getMatchedCount());
 //   det.setAttribute("Selected samples", sgr.getMatchedCount());

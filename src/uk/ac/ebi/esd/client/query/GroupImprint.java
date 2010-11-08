@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import uk.ac.ebi.esd.client.shared.AttributeReport;
 import uk.ac.ebi.esd.client.shared.Pair;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ObjectReport implements IsSerializable
+public class GroupImprint extends AttributedImprint implements IsSerializable
 {
  private String id;
  private String descr;
@@ -18,9 +17,9 @@ public class ObjectReport implements IsSerializable
  
  private Collection<String> matchedSamples = new ArrayList<String>(50);
  private Collection<String> allSamples = new ArrayList<String>(50);
- private List<AttributeReport> attr = new ArrayList<AttributeReport>();
  private List<Pair<String,String>> othr ;
  private int refCount;
+ private List<AttributedImprint> publications;
  
  
 
@@ -64,22 +63,7 @@ public class ObjectReport implements IsSerializable
   return allSamples;
  }
 
- public void addAttribute(String nm, String val, boolean cust, int ord)
- {
-  AttributeReport atr = new AttributeReport();
-  
-  atr.setName(nm);
-  atr.setValue(val);
-  atr.setOrder(ord);
-  atr.setCustom(cust);
-  
-  attr.add(atr);
- }
- 
- public List<AttributeReport> getAttributes()
- {
-  return attr;
- }
+
 
  public void setRefCount(int sCount)
  {
@@ -114,4 +98,16 @@ public class ObjectReport implements IsSerializable
   return othr;
  }
 
+ public void addPublication(AttributedImprint pub)
+ {
+  if( publications == null )
+   publications = new ArrayList<AttributedImprint>(4);
+  
+  publications.add(pub);
+ }
+
+ public List<AttributedImprint> getPublications()
+ {
+  return publications;
+ }
 }

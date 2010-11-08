@@ -18,7 +18,8 @@ import uk.ac.ebi.age.storage.DataChangeListener;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
-import uk.ac.ebi.esd.client.query.ObjectReport;
+import uk.ac.ebi.esd.client.query.AttributedImprint;
+import uk.ac.ebi.esd.client.query.GroupImprint;
 import uk.ac.ebi.esd.client.query.Report;
 
 public class ESDServiceImpl extends ESDService
@@ -36,6 +37,9 @@ public class ESDServiceImpl extends ESDService
  private AgeRelationClass sampleInGroupRelClass;
  private AgeRelationClass groupToSampleRelClass;
  
+ private AgeRelationClass groupToPublicationRelClass;
+ private AgeRelationClass groupToContactRelClass;
+ 
  private AgeAttributeClass desciptionAttributeClass;
  private AgeAttributeClass commentAttributeClass;
  
@@ -48,6 +52,9 @@ public class ESDServiceImpl extends ESDService
   sampleInGroupRelClass = storage.getSemanticModel().getDefinedAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
   desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
   commentAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.COMMENT_ATTR_CLASS_NAME );
+  
+  groupToPublicationRelClass = storage.getSemanticModel().getDefinedAgeRelationClass(ESDConfigManager.HAS_PUBLICATION_REL_CLASS_NAME);
+  groupToContactRelClass = storage.getSemanticModel().getDefinedAgeRelationClass(ESDConfigManager.CONTACT_OF_REL_CLASS_NAME).getInverseRelationClass();
   
   if( sampleClass == null )
   {
@@ -189,7 +196,7 @@ public class ESDServiceImpl extends ESDService
   
   List<AgeObject> sel = storage.queryTextIndex(groupsIndex, lucQuery );
   
-  List<ObjectReport> res = new ArrayList<ObjectReport>();
+  List<GroupImprint> res = new ArrayList<GroupImprint>();
   
   int lim = offset+count;
   
@@ -198,7 +205,7 @@ public class ESDServiceImpl extends ESDService
   
   for( int i=offset; i< lim; i++ )
   {
-   ObjectReport gr = createGroupObject(sel.get(i));
+   GroupImprint gr = createGroupObject(sel.get(i));
    
    if( searchSmp )
    {
@@ -254,9 +261,9 @@ public class ESDServiceImpl extends ESDService
   return rep;
  }
  
- private ObjectReport createGroupObject( AgeObject obj )
+ private GroupImprint createGroupObject( AgeObject obj )
  {
-  ObjectReport sgRep = new ObjectReport();
+  GroupImprint sgRep = new GroupImprint();
 
   sgRep.setId( obj.getId() );
 
@@ -279,6 +286,14 @@ public class ESDServiceImpl extends ESDService
     sgRep.addAttribute(atCls.getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
   }
   
+  Collection<? extends AgeRelation> pubRels =  obj.getRelationsByClass(groupToPublicationRelClass, false);
+
+  if( pubRels != null )
+  {
+   for( AgeRelation pRel : pubRels )
+    sgRep.addPublication( createAttributedObject(pRel.getTargetObject()) );
+  }
+  
   Collection<? extends AgeRelation> rels =  obj.getRelationsByClass(groupToSampleRelClass, false);
   
   int sCount=0;
@@ -293,6 +308,21 @@ public class ESDServiceImpl extends ESDService
   
   return sgRep;
  }
+
+ private AttributedImprint createAttributedObject(AgeObject ageObj)
+ {
+  AttributedImprint obj = new AttributedImprint();
+  
+  if( ageObj.getAttributes() != null )
+  {
+   for( AgeAttribute attr : ageObj.getAttributes() )
+   {
+    obj.addAttribute(attr.getAgeElClass().getName(), attr.getValue().toString(), attr.getAgeElClass().isCustom(), attr.getOrder());
+   }
+  }
+  
+  return obj;
+ }
  
 // private AgeObject getGroupForSample(AgeObject obj)
 // {
@@ -304,6 +334,7 @@ public class ESDServiceImpl extends ESDService
 //  
 //  return null;
 // }
+
 
 
  public void shutdown()
@@ -464,7 +495,7 @@ public class ESDServiceImpl extends ESDService
   if( grpObj == null )
    return null;
   
-  List<ObjectReport> res = new ArrayList<ObjectReport>(30);
+  List<GroupImprint> res = new ArrayList<GroupImprint>(30);
   
   int total=0;
   
@@ -487,7 +518,7 @@ public class ESDServiceImpl extends ESDService
     
     AgeObject sample = rel.getTargetObject();
     
-    ObjectReport rp = new ObjectReport();
+    GroupImprint rp = new GroupImprint();
     
     rp.setId(sample.getId());
     
@@ -539,7 +570,7 @@ public class ESDServiceImpl extends ESDService
   
   List<AgeObject> sel = storage.queryTextIndex(samplesIndex, sb.toString() );
   
-  List<ObjectReport> res = new ArrayList<ObjectReport>();
+  List<GroupImprint> res = new ArrayList<GroupImprint>();
  
   int total = res.size();
   
@@ -556,7 +587,7 @@ public class ESDServiceImpl extends ESDService
   
    count--;
 
-   ObjectReport sampRep = new ObjectReport();
+   GroupImprint sampRep = new GroupImprint();
 
    sampRep.setId( obj.getId() );
 
@@ -630,7 +661,7 @@ public class ESDServiceImpl extends ESDService
   if( lim > groupList.size() )
    lim=groupList.size();
   
-  List<ObjectReport> res = new ArrayList<ObjectReport>(count);
+  List<GroupImprint> res = new ArrayList<GroupImprint>(count);
   
   for( ; offset < lim; offset++)
    res.add( createGroupObject(groupList.get(offset)) );

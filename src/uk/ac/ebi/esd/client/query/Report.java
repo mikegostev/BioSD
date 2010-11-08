@@ -6,15 +6,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Report implements IsSerializable
 {
- private List<ObjectReport> objects;
+ private List<GroupImprint> objects;
  private int totalRecords;
  
- public List<ObjectReport> getObjects()
+ public List<GroupImprint> getObjects()
  {
   return objects;
  }
  
- public void setObjects(List<ObjectReport> objects)
+ public void setObjects(List<GroupImprint> objects)
  {
   this.objects = objects;
  }
