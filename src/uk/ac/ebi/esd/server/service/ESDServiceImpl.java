@@ -694,7 +694,7 @@ public class ESDServiceImpl extends ESDService
 
   if( searchAttrVl )
   {
-   if( sb.length() > 0 )
+   if( searchAttrNm )
     sb.append(" OR ");
    
    sb.append(ESDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(')');

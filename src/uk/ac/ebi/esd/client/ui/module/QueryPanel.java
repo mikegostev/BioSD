@@ -122,8 +122,33 @@ public class QueryPanel extends VLayout implements LinkClickListener
   
   if( withinStr!= null && ("both".equals(withinStr) || "sample".equals(withinStr) || "group".equals(withinStr)))
    where.setValue(withinStr);
-  else
-   where.setDefaultToFirstOption(true);
+  else 
+  {
+   boolean samples = false;
+   boolean groups = false;
+
+   if( "1".equals(Window.Location.getParameter("samples")) )
+    samples = true;
+
+   if( "1".equals(Window.Location.getParameter("groups")) )
+    groups = true;
+  
+   if( samples )
+   {
+    if( groups )
+     where.setValue("both");
+    else
+     where.setValue("sample");
+   }
+   else
+   {
+    if( groups )
+     where.setValue("group");
+    else
+     where.setDefaultToFirstOption(true);
+   }
+  
+  }
 
   what = new ComboBoxItem();
   what.setTitle("");
@@ -140,8 +165,33 @@ public class QueryPanel extends VLayout implements LinkClickListener
   
   if( amongStr!= null && ("both".equals(amongStr) || "val".equals(amongStr) || "name".equals(amongStr)))
    what.setValue(amongStr);
-  else
-   what.setDefaultToFirstOption(true);
+  else 
+  {
+   boolean names = false;
+   boolean values = false;
+
+   if( "1".equals(Window.Location.getParameter("names")) )
+    names = true;
+
+   if( "1".equals(Window.Location.getParameter("values")) )
+    values = true;
+  
+   if( names )
+   {
+    if( values )
+     what.setValue("both");
+    else
+     what.setValue("name");
+   }
+   else
+   {
+    if( values )
+     what.setValue("val");
+    else
+     what.setDefaultToFirstOption(true);
+   }
+  
+  }
 
   SpacerItem sp0 = new SpacerItem();
   sp0.setHeight(30);

@@ -53,22 +53,24 @@
 				<div class="biosd_query_container_fixed">
 				
 					<form id="biosd_query_form" method="get" action="biosamples.html">
+				    
+				    <input type="hidden" name="gwt.codesvr" value="127.0.0.1:9997">
 				
 					<div>
 						<label for="biosd_query_field"><strong>Search:</strong></label><br>
-						<input id="biosd_query_field" name="keywords" size="60" maxlength="500"><br>
+						<input id="biosd_query_field" name="query" size="60" maxlength="500"><br>
 						<input id="biosd_query_submit" type="submit" value="Query"><br>
 					</div>
 				    <br>
 					<div class="search_within_left">
 						<label for="biosd_query_filter">Search within</label><br>
-						<input type="checkbox" name=option2 value="samples" checked>samples<br>
-						<input type="checkbox" name=option3 value="groups" checked>groups<br>
+						<input type="checkbox" name="samples" value="1" checked>samples<br>
+						<input type="checkbox" name="groups" value="1" checked>groups<br>
 					</div>
 					<div class="query_among_right">
 						<label for="biosd_query_among_filter"> Among </label><br>
-						<input type="checkbox" name=option2 value="attribute name" checked>attribute name<br>
-						<input type="checkbox" name=option3 value="attribute values" checked>attribute values<br>
+						<input type="checkbox" name="names" value="1" checked>attribute name<br>
+						<input type="checkbox" name="values" value="1" checked>attribute values<br>
 					</div>
 					</form>
 					<div class="biosd_separator_fixed"><hr/>
