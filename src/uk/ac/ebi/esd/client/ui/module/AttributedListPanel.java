@@ -13,12 +13,12 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 
-public class PublicationsPanel  extends Window
+public class AttributedListPanel  extends Window
 {
- public PublicationsPanel(List<AttributedImprint> pubs )
+ public AttributedListPanel(String title, List<AttributedImprint> pubs )
  {
   setAutoSize(true);  
-  setTitle("Publications");  
+  setTitle(title);  
   setWidth(700);  
   setHeight(200);  
 //  setLeft(offsetLeft);  

@@ -14,13 +14,15 @@ import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.AttributedImprint;
 import uk.ac.ebi.esd.client.query.GroupImprint;
 import uk.ac.ebi.esd.client.query.Report;
+import uk.ac.ebi.esd.client.query.SampleList;
+import uk.ac.ebi.esd.client.shared.AttributeClassReport;
 import uk.ac.ebi.esd.client.shared.AttributeReport;
 import uk.ac.ebi.esd.client.shared.Pair;
 import uk.ac.ebi.esd.client.ui.AttributeFieldInfo;
 import uk.ac.ebi.esd.client.ui.SampleListGrid;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
@@ -51,6 +53,7 @@ public class GroupDetailsPanel extends VLayout
  
  private List< Pair<String, String> > otherInfoList;
  private List< AttributedImprint > publList;
+ private List< AttributedImprint > contList;
  
  private PagingRuler pager;
  
@@ -107,25 +110,22 @@ public class GroupDetailsPanel extends VLayout
   
   if( publList != null && publList.size() > 0 )
   {
-   AttributedImprint fstEl = publList.get(0);
-   String repstr = "";
-   
-   for( AttributeReport attr : fstEl.getAttributes() )
-   {
-    if( repstr.length() > BRIEF_LEN )
-     break;
-    
-    repstr += attr.getName()+": "+attr.getValue()+"; "; 
-   }
+   String repstr = makeRepresentationString(publList, "publ");
 
-   if( repstr.length() > BRIEF_LEN )
-    repstr=repstr.substring(0,BRIEF_LEN);
-  
-   repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;publ&quot;)'>more</a>";
-   
    ds.addField(new DataSourceTextField("publ", "Publications") );
    
    rec.setAttribute("publ", repstr);
+  }
+  
+  contList = (List< AttributedImprint >) r.getAttributeAsObject("__contact");
+  
+  if( contList != null && contList.size() > 0 )
+  {
+   String repstr = makeRepresentationString(contList, "contact");
+
+   ds.addField(new DataSourceTextField("contact", "Contacts") );
+   
+   rec.setAttribute("contact", repstr);
   }
 
   
@@ -254,7 +254,12 @@ public class GroupDetailsPanel extends VLayout
     }
     else if( "publ".equals(param) )
     {
-     new PublicationsPanel( publList ).show();
+     new AttributedListPanel( "Publications", publList ).show();
+     return;
+    }
+    else if( "contact".equals(param) )
+    {
+     new AttributedListPanel( "Contacts", contList ).show();
      return;
     }
 
@@ -277,6 +282,36 @@ public class GroupDetailsPanel extends VLayout
   });
  }
  
+ private String makeRepresentationString( List< AttributedImprint > list, String theme )
+ {
+  AttributedImprint fstEl = list.get(0);
+  String repstr = "";
+  
+  int lastBold = -1;
+  
+  for( AttributeReport attr : fstEl.getAttributes() )
+  {
+   if( repstr.length() > BRIEF_LEN )
+    break;
+   
+   repstr += "<b>"+attr.getName()+"</b>"; 
+   
+   lastBold=repstr.length();
+   
+   repstr += ": "+attr.getValue()+"; ";
+  }
+
+  if( repstr.length() > BRIEF_LEN )
+   repstr=repstr.substring(0,BRIEF_LEN);
+  
+  if( BRIEF_LEN < lastBold )
+   repstr+="</b>";
+ 
+  repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;"+theme+"&quot;)'>more</a>";
+  
+  return repstr;
+ }
+ 
  private void showAllSamples( final int pNum )
  {
   allSamples=true;
@@ -284,7 +319,7 @@ public class GroupDetailsPanel extends VLayout
   WaitWindow.showWait();
   
   QueryService.Util.getInstance().getSamplesByGroup(groupID,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
-   new AsyncCallback<Report>(){
+   new AsyncCallback<SampleList>(){
 
    @Override
    public void onFailure(Throwable arg0)
@@ -294,17 +329,27 @@ public class GroupDetailsPanel extends VLayout
    }
 
    @Override
-   public void onSuccess(final Report arg0)
+   public void onSuccess(final SampleList arg0)
    {
-    DeferredCommand.addCommand(new Command()
+    Scheduler.get().scheduleDeferred(new ScheduledCommand()
     {
      @Override
      public void execute()
      {
-      renderSampleList(GroupDetailsPanel.this,arg0,pNum);
+      renderSampleList2(GroupDetailsPanel.this,arg0,pNum);
       WaitWindow.hideWait();
      }
     });
+    
+//    DeferredCommand.addCommand(new Command()
+//    {
+//     @Override
+//     public void execute()
+//     {
+//      renderSampleList(GroupDetailsPanel.this,arg0,pNum);
+//      WaitWindow.hideWait();
+//     }
+//    });
    }
   });
  }
@@ -316,7 +361,7 @@ public class GroupDetailsPanel extends VLayout
   WaitWindow.showWait();
   QueryService.Util.getInstance().getSamplesByGroupAndQuery(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    
-  new AsyncCallback<Report>(){
+  new AsyncCallback<SampleList>(){
 
    @Override
    public void onFailure(Throwable arg0)
@@ -326,9 +371,9 @@ public class GroupDetailsPanel extends VLayout
    }
 
    @Override
-   public void onSuccess( final Report rep )
+   public void onSuccess( final SampleList rep )
    {
-    renderSampleList(GroupDetailsPanel.this,rep, pNum);
+    renderSampleList2(GroupDetailsPanel.this,rep, pNum);
     WaitWindow.hideWait();
    }
   });
@@ -451,6 +496,113 @@ public class GroupDetailsPanel extends VLayout
   
   lay.addMember(attrList);
 
+ }
+
+ 
+ private void renderSampleList2(final VLayout lay, SampleList smpls, int pg)
+ {
+  
+//  DataSource ds = new DataSource();
+//  ds.setClientOnly(true);
+
+  ListGrid attrList = new SampleListGrid();
+  
+  attrList.setShowAllRecords(true);
+  attrList.setShowRowNumbers(true); 
+  
+  attrList.setWidth("99%");
+  attrList.setHeight(1);
+  attrList.setBodyOverflow(Overflow.VISIBLE);
+  attrList.setOverflow(Overflow.VISIBLE);
+  attrList.setLeaveScrollbarGap(false);
+  attrList.addStyleName("sampleGrid");
+  attrList.setMargin(10);
+  attrList.setHoverWidth(200);
+  attrList.setShowEdges(true);
+  
+//  DataSource ds = new DataSource();
+//  ds.setClientOnly(true);
+//
+//  attrList.setDataSource(ds);
+//  attrList.setShowHover(true);
+  
+//  attrList.setAutoFetchData(true);
+
+//  for( AttributeClassReport cls : smpls.getHeader() )
+//  {
+//   DataSourceTextField dsf = new DataSourceTextField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>"));
+//   
+//   if( cls.getId().equals("__id") )
+//    dsf.setPrimaryKey(true);
+//   
+//   ds.addField(dsf );
+//  }
+
+  final ListGridField[] lfl = new ListGridField[smpls.getHeader().size()];
+
+  int i=0;
+  for( AttributeClassReport cls : smpls.getHeader() )
+  {
+   lfl[i] = new ListGridField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") );
+   lfl[i].setShowHover(true);
+   
+   i++;
+  }
+
+  
+//  attrList.setDataSource(ds);
+  ListGridRecord[] records = new ListGridRecord[smpls.getSamples().size()];
+
+  i=0;
+  for( Map<String,String> sample : smpls.getSamples() )
+  {
+   ListGridRecord rec = new ListGridRecord();
+
+   for( Map.Entry<String,String> me : sample.entrySet() )
+    rec.setAttribute(me.getKey(), me.getValue());
+   
+   records[i++]=rec;
+  }
+
+//  ListGridRecord rec = new ListGridRecord();
+//  rec.setAttribute("__id", "XYN");
+//  ds.addData(rec);
+
+  if( smpls.getTotalRecords() > ResultPane.MAX_SAMPLES_PER_PAGE )
+  {
+   pager.setPagination(pg, smpls.getTotalRecords(),  ResultPane.MAX_SAMPLES_PER_PAGE );
+   pager.setVisible(true);
+  }
+  else
+   pager.setVisible(false);
+
+  
+  attrList.setFields(lfl);
+  attrList.setData(records);
+  
+  attrList.setHoverCustomizer(new HoverCustomizer()
+  {
+   @Override
+   public String hoverHTML(Object value, ListGridRecord record, int rowNum, int colNum)
+   {
+    if( colNum == 0)
+     return null;
+  
+//    return value.toString();
+    return record.getAttributeAsString(lfl[colNum-1].getName());
+   }
+  });
+  
+
+  Canvas[] membs = lay.getMembers();
+  
+  if( membs[membs.length-1] instanceof ListGrid )
+   lay.removeMember(membs[membs.length-1]);
+
+  
+  lay.addMember(attrList);
+//  attrList.fetchData();
+  
  }
 
 }

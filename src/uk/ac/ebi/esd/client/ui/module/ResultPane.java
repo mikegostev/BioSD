@@ -163,6 +163,9 @@ public class ResultPane extends VLayout implements ResultRenderer
 
    if( sgr.getPublications() != null )
     det.setAttribute("__publ", sgr.getPublications() );
+
+   if( sgr.getContacts() != null )
+    det.setAttribute("__contact", sgr.getContacts() );
    
    det.setAttribute("__summary", String.valueOf(sgr.getRefCount())+"/"+sgr.getMatchedCount());
 //   det.setAttribute("Selected samples", sgr.getMatchedCount());

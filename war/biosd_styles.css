@@ -1,0 +1,231 @@
+/* general page layout */
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+/* overrides for stooped EBI templates */
+table.contentspane {
+	margin: 0 0 23px 0;
+	width: 100%;
+}
+
+table td.contentsarea {
+	border: 0 none;
+    padding: 0 5px;
+    margin: 0;
+    text-align: center;
+    background-color: transparent;
+}
+
+/* hack for position:fixed for stooped EBI footer */
+body {
+	background: #ffffff url(../images/empty.gif) fixed top;
+    overflow: auto;
+}
+
+body.dev_preview {
+	background: #ffffff url(../images/ae_dev_bg.gif) repeat fixed top;
+    overflow: auto;
+}
+
+#ebi_footer {
+    background-color: #dedede;
+    border-top: 1px solid #bfbfbf;
+    z-index: 2;
+    position: fixed;
+    bottom: 0;
+    padding: 0 0 0 15px;
+    height: 22px;
+    width: 100%;
+    _position: absolute;
+    _top: expression(document.body.scrollTop+document.body.clientHeight-this.clientHeight-1);
+}
+
+/* specific property setters */
+.assign_font {
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.align_center {
+    text-align: center;
+}
+
+.align_right {
+    text-align: right;
+}
+
+.nodisplay {
+    display: none;
+}
+
+
+/* layout element styles */
+
+.biosd_separator_fixed {
+	height:  10px;
+	width:auto;
+}
+
+.biosd_centered_container_fixed {
+    position: relative;
+    width: 875px;
+    height: 100%;
+    top: 0;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2em;
+}
+
+.biosd_intro_container_fixed {
+    position: relative;
+    width: 800px;
+    height: auto;
+    top: 10px;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2em;
+    border:thin;
+    border-style: solid;
+    border-color: #B1CCCC;
+    background: url(images/intro_background.png) repeat;
+}
+
+.biosd_intro {
+    position: relative;
+    height: auto;
+    top: 10;
+    margin: 0 0 5px 5px;
+    text-align: left;
+    font-size: 12px;
+
+}
+
+.biosd_intro_text {
+    position: relative;
+    height: auto;
+    top: 10;
+    margin: 0 0 5px 5px;
+    padding: 100 100 100 100;
+    text-align: left;
+    font-size: 12px;
+
+}
+
+.mid_container-fixed{
+    position: relative;
+    width: 800px;
+    height: 200px;
+    top: 10px;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2em;
+    background: url(images/intro_background.png) repeat;
+    border:  thin;
+    border-style: solid;
+    border-color: #B1CCCC;
+}
+
+
+.biosd_query_container_fixed {
+    position: absolute;
+    width: 600px;
+    height: 180px;
+    left: 100px;
+    top: 10px;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2em;
+    background-color: #EAF3F3;
+    border:  thin;
+    border-style: solid;
+    border-color: #528D8D;
+    padding: 5px;   
+}
+
+.search_within_left{
+	position: absolute;
+	left: 5;
+	width:  200px;
+}
+
+.query_among_right{
+	position: relative;
+	left: 200px;
+	width: 200px;
+}
+
+.biosd_facts{
+	position: absolute;
+	right: 0;
+	top: 5px;
+	width: 200px;
+}
+	
+.biosd_extras_container_fixed {
+    position: relative;
+    width: 800px;
+    height: 200px;
+    top: 10px;
+    margin: 0 auto;
+}
+
+.biosd_extras_container_left {
+    position: absolute;
+    width: 390px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2em;
+    border:thin;
+    border-style: solid;
+    border-color: #B1CCCC;
+    background: url(images/intro_background.png) repeat;
+}
+
+
+.biosd_extras_container_right {
+    position: absolute;
+    width: 390px;
+    height: 100%;
+    right: 0;
+    top: 0;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 11px;
+    line-height: 1.2em;
+    border:thin;
+    border-style: solid;
+    border-color: #B1CCCC;
+    background: url(images/intro_background.png) repeat;
+}
+
+.biosd_news {
+    position: relative;
+    height: auto;
+    top: 10;
+    margin: 0 0 5px 5px;
+    padding: 100 100 100 100;
+    text-align: left;
+    font-size: 12px;
+
+}
+
+.biosd_faqs {
+    position: relative;
+    height: auto;
+    top: 10;
+    margin: 0 0 5px 5px;
+    padding: 100 100 100 100;
+    text-align: left;
+    font-size: 12px;
+
+}

@@ -2,6 +2,7 @@ package uk.ac.ebi.esd.server.service;
 
 import uk.ac.ebi.esd.client.QueryService;
 import uk.ac.ebi.esd.client.query.Report;
+import uk.ac.ebi.esd.client.query.SampleList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -16,13 +17,13 @@ public class GWTServlet extends RemoteServiceServlet implements QueryService
  }
 
  @Override
- public Report getSamplesByGroup(String grpID, int offs, int cnt)
+ public SampleList getSamplesByGroup(String grpID, int offs, int cnt)
  {
   return ESDService.getInstance().getSamplesByGroup(grpID, offs, cnt);
  }
 
  @Override
- public Report getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int cnt)
+ public SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int cnt)
  {
   return ESDService.getInstance().getSamplesByGroupAndQuery(grpId, query, searchAtNames, searchAtValues, offs, cnt);
  }

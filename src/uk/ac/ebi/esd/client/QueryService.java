@@ -1,6 +1,7 @@
 package uk.ac.ebi.esd.client;
 
 import uk.ac.ebi.esd.client.query.Report;
+import uk.ac.ebi.esd.client.query.SampleList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -31,10 +32,10 @@ public interface QueryService extends RemoteService
  Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offs, int cnt);
 
 
- Report getSamplesByGroup(String grpID, int offs, int count);
+ SampleList getSamplesByGroup(String grpID, int offs, int count);
 
 
- Report getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count);
+ SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count);
 
 
  Report getAllGroups(int offs, int count);
