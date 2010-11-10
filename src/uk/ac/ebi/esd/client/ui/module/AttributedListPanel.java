@@ -17,10 +17,10 @@ public class AttributedListPanel  extends Window
 {
  public AttributedListPanel(String title, List<AttributedImprint> pubs )
  {
-  setAutoSize(true);  
+//  setAutoSize(true);  
   setTitle(title);  
   setWidth(700);  
-  setHeight(200);  
+  setHeight(550); 
 //  setLeft(offsetLeft);  
   setCanDragReposition(true);  
   setCanDragResize(true);  

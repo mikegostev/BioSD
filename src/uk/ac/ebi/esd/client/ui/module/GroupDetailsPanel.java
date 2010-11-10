@@ -96,7 +96,7 @@ public class GroupDetailsPanel extends VLayout
      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
     
    }
-   else if("PubMedID".equals(s))
+   else if("PubMed ID".equals(s))
     rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+val+"'>"+val+"</a>");
    else
     rec.setAttribute(s, val);
@@ -455,7 +455,7 @@ public class GroupDetailsPanel extends VLayout
   attrList.setBodyOverflow(Overflow.VISIBLE);
   attrList.setOverflow(Overflow.VISIBLE);
   attrList.setLeaveScrollbarGap(false);
-  attrList.addStyleName("sampleGrid");
+  attrList.setStyleName("sampleGrid");
   attrList.setMargin(10);
   attrList.setHoverWidth(200);
   attrList.setShowEdges(true);
@@ -515,7 +515,7 @@ public class GroupDetailsPanel extends VLayout
   attrList.setBodyOverflow(Overflow.VISIBLE);
   attrList.setOverflow(Overflow.VISIBLE);
   attrList.setLeaveScrollbarGap(false);
-  attrList.addStyleName("sampleGrid");
+  attrList.setStyleName("sampleGrid");
   attrList.setMargin(10);
   attrList.setHoverWidth(200);
   attrList.setShowEdges(true);
