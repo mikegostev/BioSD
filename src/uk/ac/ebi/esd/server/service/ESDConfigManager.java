@@ -28,7 +28,7 @@ public class ESDConfigManager
 
  public String getBasePath()
  {
-  return "var/esd";
+  return "var/biosd";
  }
 
  

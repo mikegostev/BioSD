@@ -52,6 +52,8 @@ public class AttributedListPanel  extends Window
    
     if("PubMed ID".equals(attr.getName()))
      rec.setAttribute(atNm, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+attr.getValue()+"'>"+attr.getValue()+"</a>");
+    else if("DOI".equals(attr.getName()))
+     rec.setAttribute(atNm, "<a target='_blank' border=0 href='http://dx.doi.org/"+attr.getValue()+"'>"+attr.getValue()+"</a>");
     else
      rec.setAttribute(atNm, attr.getValue());
    }
