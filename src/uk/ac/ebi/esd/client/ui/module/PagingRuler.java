@@ -26,10 +26,12 @@ public class PagingRuler extends HTMLFlow
 
   addPageLink(1, sb);
   
-  int start=2;
+  int pos = 2;
   
-  if( cpage > 2)
-   start = cpage-1;
+  int start=cpage-1;
+  
+//  if( cpage > 2)
+//   start = cpage-1;
  
   int mid = start/2+1;
 
@@ -44,29 +46,39 @@ public class PagingRuler extends HTMLFlow
     sb.append("<span class='el'>..&nbsp;</span>");
   }
   
-  int i;
+  int i = start < pos? pos:start;
   
-  for( i=start; i <= start+2 && i <= pages; i++ )
+  for( ; i <= start+2 && i < pages; i++ )
    addPageLink(i,sb);
   
-  mid = (pages+i)/2+1;
+  pos = i;
+  
+  mid = (pages+pos)/2+1;
   
   
-  if( mid > i && mid <= pages )
+  if( mid > pos && mid < pages )
   {
    if( mid > i+1 )
     sb.append("<span class='el'>..&nbsp;</span>");
 
    addPageLink(mid,sb);
+   
+   pos=mid+1;
   }
   
-  if( mid > i && mid < pages )
-  {
-   if( mid < pages-1 )
-    sb.append("<span class='el'>..&nbsp;</span>");
-   
-   addPageLink(pages,sb);
-  }
+  if( pos < pages )
+   sb.append("<span class='el'>..&nbsp;</span>");
+  
+  addPageLink(pages,sb);
+
+  
+//  if( mid > i && mid < pages )
+//  {
+//   if( mid < pages-1 )
+//    sb.append("<span class='el'>..&nbsp;</span>");
+//   
+//   addPageLink(pages,sb);
+//  }
   
   sb.append("</span>");
   setContents(sb.toString());

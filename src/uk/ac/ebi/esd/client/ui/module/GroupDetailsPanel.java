@@ -43,7 +43,7 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 public class GroupDetailsPanel extends VLayout
 {
- private static final int BRIEF_LEN=80;
+ private static final int BRIEF_LEN=100;
  
  private boolean allSamples;
  private String groupID;
@@ -104,8 +104,10 @@ public class GroupDetailsPanel extends VLayout
      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
     
    }
-   else if("PubMedID".equals(s))
+   else if("PubMed ID".equals(s))
     rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+val+"'>"+val+"</a>");
+   else if("DOI".equals(s))
+    rec.setAttribute(s, "<a target='_blank' border=0 href='http://dx.doi.org/"+val+"'>"+val+"</a>");
    else
     rec.setAttribute(s, val);
 
@@ -141,16 +143,37 @@ public class GroupDetailsPanel extends VLayout
   
   if( otherInfoList != null && otherInfoList.size() > 0 )
   {
-   Pair<String, String> fstEl = otherInfoList.get(0);
-   String repstr = "<b>"+fstEl.getFirst()+"</b>";
+   String repstr = "";
+   int lastBold = -1;
    
-   if( repstr.length() > BRIEF_LEN )
-    repstr.substring(0,BRIEF_LEN);
-   else
-    repstr += ": "+fstEl.getSecond();
- 
+   for( Pair<String, String> fstEl : otherInfoList )
+   {
+    if( repstr.length() > BRIEF_LEN )
+     break;
+    
+    repstr += "<b>"+fstEl.getFirst()+"</b>"; 
+    
+    lastBold=repstr.length();
+    
+    repstr += ": "+fstEl.getSecond()+"; ";
+   }
+
    if( repstr.length() > BRIEF_LEN )
     repstr=repstr.substring(0,BRIEF_LEN);
+   
+   if( BRIEF_LEN < lastBold )
+    repstr+="</b>";
+   
+//   Pair<String, String> fstEl = otherInfoList.get(0);
+//   String repstr = "<b>"+fstEl.getFirst()+"</b>";
+//   
+//   if( repstr.length() > BRIEF_LEN )
+//    repstr.substring(0,BRIEF_LEN);
+//   else
+//    repstr += ": "+fstEl.getSecond();
+// 
+//   if( repstr.length() > BRIEF_LEN )
+//    repstr=repstr.substring(0,BRIEF_LEN);
    
    repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;other&quot;)'>more</a>";
    
@@ -463,7 +486,7 @@ public class GroupDetailsPanel extends VLayout
   attrList.setBodyOverflow(Overflow.VISIBLE);
   attrList.setOverflow(Overflow.VISIBLE);
   attrList.setLeaveScrollbarGap(false);
-  attrList.addStyleName("sampleGrid");
+  attrList.setStyleName("sampleGrid");
   attrList.setMargin(10);
   attrList.setHoverWidth(200);
   attrList.setShowEdges(true);
@@ -523,7 +546,7 @@ public class GroupDetailsPanel extends VLayout
   attrList.setBodyOverflow(Overflow.VISIBLE);
   attrList.setOverflow(Overflow.VISIBLE);
   attrList.setLeaveScrollbarGap(false);
-  attrList.addStyleName("sampleGrid");
+  attrList.setStyleName("sampleGrid");
   attrList.setMargin(10);
   attrList.setHoverWidth(200);
   attrList.setShowEdges(true);
@@ -548,11 +571,16 @@ public class GroupDetailsPanel extends VLayout
 
   final ListGridField[] lfl = new ListGridField[smpls.getHeader().size()];
 
+  String prideKey = null;
+  
   int i=0;
   for( AttributeClassReport cls : smpls.getHeader() )
   {
    lfl[i] = new ListGridField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") );
    lfl[i].setShowHover(true);
+   
+   if( cls.getName().equals("Pride ID") )
+    prideKey = cls.getId();
    
    i++;
   }
@@ -567,8 +595,12 @@ public class GroupDetailsPanel extends VLayout
    ListGridRecord rec = new ListGridRecord();
 
    for( Map.Entry<String,String> me : sample.entrySet() )
-    rec.setAttribute(me.getKey(), me.getValue());
-   
+   {
+    if( me.getKey().equals(prideKey) )
+     rec.setAttribute(me.getKey(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+me.getValue()+"'>"+me.getValue()+"</a>");
+    else
+     rec.setAttribute(me.getKey(), me.getValue());
+   }
    records[i++]=rec;
   }
 

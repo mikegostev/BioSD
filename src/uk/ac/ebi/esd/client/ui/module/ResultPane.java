@@ -70,7 +70,7 @@ public class ResultPane extends VLayout implements ResultRenderer
   
   resultGrid.setCanExpandRecords(true); 
   
-  ListGridField idField = new ListGridField("id","ID", 280);  
+  ListGridField idField = new ListGridField("id","ID", 200);  
   ListGridField sCntField = new ListGridField("sampCnt","Samples",60);
   ListGridField descField = new ListGridField("desc","Description");
 //  ListGridField propField = new ListGridField("prop","AdditionalProp");
