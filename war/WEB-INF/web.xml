@@ -32,6 +32,14 @@
   	<servlet-class>
   	uk.ac.ebi.age.admin.server.service.LoginSvc</servlet-class>
   </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>DBStat</display-name>
+  	<servlet-name>DBStat</servlet-name>
+  	<servlet-class>
+  	uk.ac.ebi.esd.server.service.DBStat</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>QueryService</servlet-name>
     <url-pattern>/esd/ageQueryGWT</url-pattern>
@@ -47,6 +55,10 @@
   <servlet-mapping>
   	<servlet-name>LoginSvc</servlet-name>
   	<url-pattern>/Login</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>DBStat</servlet-name>
+  	<url-pattern>/DBStat</url-pattern>
   </servlet-mapping>
   <listener>
     <listener-class>uk.ac.ebi.esd.server.service.Init</listener-class>

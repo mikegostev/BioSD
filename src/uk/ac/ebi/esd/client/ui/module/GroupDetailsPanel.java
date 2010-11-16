@@ -20,6 +20,7 @@ import uk.ac.ebi.esd.client.shared.AttributeReport;
 import uk.ac.ebi.esd.client.shared.Pair;
 import uk.ac.ebi.esd.client.ui.AttributeFieldInfo;
 import uk.ac.ebi.esd.client.ui.SampleListGrid;
+import uk.ac.ebi.esd.client.ui.SourceIconBundle;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -85,12 +86,19 @@ public class GroupDetailsPanel extends VLayout
     
     if( dsAttr != null )
     {
-     if("Array Express".equals(dsAttr))
-      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='images/ae.png'></a>");
-     else if("Pride".equals(dsAttr))
-      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='images/pride.jpg'></a>");
+     String icon = SourceIconBundle.getIcon(dsAttr);
+     
+     if( icon != null )
+      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='"+icon+"'></a>");
      else
       rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
+//     
+//     if("Array Express".equals(dsAttr))
+//      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='images/ae.png'></a>");
+//     else if("Pride".equals(dsAttr))
+//      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'><img border=0 src='images/pride.jpg'></a>");
+//     else
+//      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
     }
     else
      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");

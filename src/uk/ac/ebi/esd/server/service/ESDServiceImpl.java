@@ -27,6 +27,7 @@ import uk.ac.ebi.esd.client.query.GroupImprint;
 import uk.ac.ebi.esd.client.query.Report;
 import uk.ac.ebi.esd.client.query.SampleList;
 import uk.ac.ebi.esd.client.shared.AttributeClassReport;
+import uk.ac.ebi.esd.server.stat.BioSDStat;
 
 public class ESDServiceImpl extends ESDService
 {
@@ -48,6 +49,9 @@ public class ESDServiceImpl extends ESDService
  
  private AgeAttributeClass desciptionAttributeClass;
  private AgeAttributeClass commentAttributeClass;
+ private AgeAttributeClass dataSourceAttributeClass;
+ 
+ private BioSDStat statistics;
  
  public ESDServiceImpl( AgeStorage stor )
  {
@@ -58,6 +62,7 @@ public class ESDServiceImpl extends ESDService
   sampleInGroupRelClass = storage.getSemanticModel().getDefinedAgeRelationClass( ESDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME );
   desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
   commentAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.COMMENT_ATTR_CLASS_NAME );
+  dataSourceAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( ESDConfigManager.DATASOURCE_ATTR_CLASS_NAME );
   
   groupToPublicationRelClass = storage.getSemanticModel().getDefinedAgeRelationClass(ESDConfigManager.HAS_PUBLICATION_REL_CLASS_NAME);
   groupToContactRelClass = storage.getSemanticModel().getDefinedAgeRelationClass(ESDConfigManager.CONTACT_OF_REL_CLASS_NAME).getInverseRelationClass();
@@ -131,6 +136,7 @@ public class ESDServiceImpl extends ESDService
      groupList.addAll(grps);
     }
 
+    collectStats();
    }
   } );
   
@@ -141,6 +147,8 @@ public class ESDServiceImpl extends ESDService
    groupList = new ArrayList<AgeObject>( grps.size() );
    groupList.addAll(grps);
   }
+  
+  collectStats();
  
   clsExp = new ClassNameExpression();
   clsExp.setClassName( ESDConfigManager.SAMPLE_CLASS_NAME );
@@ -155,8 +163,42 @@ public class ESDServiceImpl extends ESDService
   extr.add( new TextFieldExtractor(ESDConfigManager.SAMPLE_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
   
   samplesIndex = storage.createTextIndex(q, extr);
-}
+ }
 
+ private void collectStats()
+ {
+  statistics = new BioSDStat();
+  
+  statistics.setGroups( groupList.size() );
+  
+  for( AgeObject grp : groupList )
+  {
+   int samples = 0;
+   for( AgeRelation rel : grp.getRelations() )
+   {
+    if( rel.getAgeElClass() == groupToSampleRelClass )
+     samples++;
+   }
+   
+//   Collection<? extends AgeRelation> smpRels = grp.getRelationsByClass(groupToSampleRelClass, true);
+//   
+//   
+//   if( smpRels != null )
+//    samples = smpRels.size();
+   
+   statistics.addSamples( samples );
+   
+   String ds = grp.getAttributeValue(dataSourceAttributeClass).toString();
+   
+   if( ds != null )
+   {
+    BioSDStat dsStat = statistics.getDataSourceStat( ds );
+    dsStat.addGroups(1);
+    dsStat.addSamples(samples);
+   }
+  }
+ }
+ 
  @Override
  public Report selectSampleGroups(String query, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
  {
@@ -838,6 +880,12 @@ public class ESDServiceImpl extends ESDService
   rep.setTotalRecords(groupList.size());
   
   return rep;
+ }
+
+ @Override
+ public BioSDStat getStatistics()
+ {
+  return statistics;
  }
 
 

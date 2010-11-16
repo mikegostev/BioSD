@@ -18,6 +18,7 @@ public class ESDConfigManager
  public static final String COMMENT_ATTR_CLASS_NAME = "Comment";
  public static final String HAS_PUBLICATION_REL_CLASS_NAME = "hasPublication";
  public static final String CONTACT_OF_REL_CLASS_NAME = "contactOf";
+ public static final String DATASOURCE_ATTR_CLASS_NAME = "Data Source";
 
  private static ESDConfigManager instance = new ESDConfigManager();
  
