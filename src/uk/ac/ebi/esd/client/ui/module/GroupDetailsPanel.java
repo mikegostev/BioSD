@@ -38,6 +38,8 @@ import com.smartgwt.client.widgets.grid.HoverCustomizer;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.CellClickEvent;
+import com.smartgwt.client.widgets.grid.events.CellClickHandler;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.viewer.DetailViewer;
 
@@ -573,8 +575,10 @@ public class GroupDetailsPanel extends VLayout
 
   String prideKey = null;
   
+  final List<AttributeClassReport> header = smpls.getHeader();
+  
   int i=0;
-  for( AttributeClassReport cls : smpls.getHeader() )
+  for( AttributeClassReport cls : header )
   {
    lfl[i] = new ListGridField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") );
    lfl[i].setShowHover(true);
@@ -633,6 +637,17 @@ public class GroupDetailsPanel extends VLayout
    }
   });
   
+  attrList.addCellClickHandler( new CellClickHandler()
+  {
+   @Override
+   public void onCellClick(CellClickEvent event)
+   {
+    if( event.getColNum() != lfl.length  )
+     return;
+    
+    new SampleViewer(header, event.getRecord()).show();
+   }
+  });
 
   Canvas[] membs = lay.getMembers();
   
