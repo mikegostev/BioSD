@@ -104,11 +104,27 @@ body.dev_preview {
 
 }
 
+.title {
+	font-size: 14px;
+	font-weight: bold;
+}
+
 .biosd_intro_text {
     position: relative;
     height: auto;
     top: 10;
-    margin: 0 0 5px 5px;
+    margin: 5px 5px 5px 5px;
+    padding: 100 100 100 100;
+    text-align: left;
+    font-size: 12px;
+
+}
+
+.biosd_main_text {
+    position: relative;
+    height: auto;
+    top: 10;
+    margin: 5px 5px 5px 5px;
     padding: 100 100 100 100;
     text-align: left;
     font-size: 12px;
@@ -163,7 +179,7 @@ body.dev_preview {
 .biosd_facts{
 	position: absolute;
 	right: 0;
-	top: 5px;
+	top: 10px;
 	width: 200px;
 }
 	
@@ -212,7 +228,7 @@ body.dev_preview {
     position: relative;
     height: auto;
     top: 10;
-    margin: 0 0 5px 5px;
+    margin: 5px 5px 5px 5px;
     padding: 100 100 100 100;
     text-align: left;
     font-size: 12px;
@@ -223,9 +239,30 @@ body.dev_preview {
     position: relative;
     height: auto;
     top: 10;
-    margin: 0 0 5px 5px;
+    margin: 5px 5px 5px 5px;
     padding: 100 100 100 100;
     text-align: left;
     font-size: 12px;
 
+}
+
+label {
+	font-weight:bold;
+	line-height: 150%;
+}
+
+* {
+	margin: 0;
+}
+html, body {
+	height: 100%;
+}
+.wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -2em;
+}
+.footer, .push {
+	height: 2em;
 }
