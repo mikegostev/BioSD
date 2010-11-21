@@ -6,7 +6,7 @@
     <javaee:description></javaee:description>
     <javaee:display-name>QueryService</javaee:display-name>
     <servlet-name>QueryService</servlet-name>
-    <servlet-class>uk.ac.ebi.esd.server.service.GWTServlet</servlet-class>
+    <servlet-class>uk.ac.ebi.biosd.server.service.GWTServlet</servlet-class>
   </servlet>
   <servlet>
   	<description>
@@ -38,11 +38,11 @@
   	<display-name>DBStat</display-name>
   	<servlet-name>DBStat</servlet-name>
   	<servlet-class>
-  	uk.ac.ebi.esd.server.service.DBStat</servlet-class>
+  	uk.ac.ebi.biosd.server.service.DBStat</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>QueryService</servlet-name>
-    <url-pattern>/esd/ageQueryGWT</url-pattern>
+    <url-pattern>/biosd/ageQueryGWT</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>AgeAdminServiceImpl</servlet-name>
@@ -61,6 +61,6 @@
   	<url-pattern>/DBStat</url-pattern>
   </servlet-mapping>
   <listener>
-    <listener-class>uk.ac.ebi.esd.server.service.Init</listener-class>
+    <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
   </listener>
 </web-app>
