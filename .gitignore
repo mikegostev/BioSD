@@ -4,4 +4,8 @@
 test
 lib
 var
-scrap
+scrap/buildlib
+/build
+/dist
+/buildlib
+/scrap
