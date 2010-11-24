@@ -31,7 +31,10 @@ public class Init implements ServletContextListener
   */
  public void contextInitialized(ServletContextEvent arg0)
  {
-  ESDConfigManager cfg = ESDConfigManager.instance();
+  ESDConfigManager cfg = new ESDConfigManager( arg0.getServletContext() );
+  
+  ESDConfigManager.setInstance(cfg);
+  
   AgeStorageAdm storage;
   
   try

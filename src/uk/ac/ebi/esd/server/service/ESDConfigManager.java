@@ -1,5 +1,11 @@
 package uk.ac.ebi.esd.server.service;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+
 
 public class ESDConfigManager
 {
@@ -20,7 +26,37 @@ public class ESDConfigManager
  public static final String CONTACT_OF_REL_CLASS_NAME = "contactOf";
  public static final String DATASOURCE_ATTR_CLASS_NAME = "Data Source";
 
- private static ESDConfigManager instance = new ESDConfigManager();
+ public static final String BASE_PATH_PARAM="basePath";
+ public static final String DB_PATH_PARAM="dbPath";
+ public static final String TMP_PATH_PARAM="tmpPath";
+ public static final String SERVICES_PATH_PARAM="servicesPath";
+ 
+ @SuppressWarnings("serial")
+ private Map<String,String> configMap = new HashMap<String,String>(){{
+  put(BASE_PATH_PARAM,      "var/biosd/");
+  put(DB_PATH_PARAM,        "agedb");
+  put(TMP_PATH_PARAM,       "tmp");
+  put(SERVICES_PATH_PARAM,  "services");
+ }};
+ 
+ private static ESDConfigManager instance = null;
+ 
+ public ESDConfigManager(ServletContext servletContext)
+ {
+  Enumeration<?> pNames = servletContext.getInitParameterNames();
+  
+  while( pNames.hasMoreElements() )
+  {
+   String key = pNames.nextElement().toString();
+   configMap.put(key, servletContext.getInitParameter(key) );
+  }
+ }
+ 
+ public static void setInstance( ESDConfigManager inst )
+ {
+  instance=inst;
+ }
+
  
  public static ESDConfigManager instance()
  {
@@ -29,22 +65,50 @@ public class ESDConfigManager
 
  public String getBasePath()
  {
-  return "var/biosd";
+  return getConfigParameter(BASE_PATH_PARAM);
  }
 
  
  public String getDBPath()
  {
-  return getBasePath()+"/agedb";
+  return getPathParam(DB_PATH_PARAM);
  }
 
  public String getTmpPath()
  {
-  return getBasePath()+"/tmp";
+  return getPathParam(TMP_PATH_PARAM);
  }
 
  public String getServicesPath()
  {
-  return getBasePath()+"/services";
+  return getPathParam(SERVICES_PATH_PARAM);
  }
+
+ public String getPathParam( String key )
+ {
+  String basePath = getBasePath();
+  String path = getConfigParameter(key);
+  
+  if( path == null )
+   path=key;
+  
+  if( basePath.endsWith("/") || path.startsWith("/") )
+   return basePath+path;
+
+  return basePath+"/"+path;
+ }
+
+ 
+ public String getConfigParameter( String key )
+ {
+  return configMap.get(key);
+ }
+
+ public String setConfigParameter( String key, String value )
+ {
+  String old = configMap.get(key);
+  configMap.put(key, value);
+  return old;
+ }
+
 }
