@@ -31,7 +31,10 @@ public class Init implements ServletContextListener
   */
  public void contextInitialized(ServletContextEvent arg0)
  {
-  BioSDConfigManager cfg = BioSDConfigManager.instance();
+  BioSDConfigManager cfg = new BioSDConfigManager( arg0.getServletContext() );
+
+  BioSDConfigManager.setInstance(cfg);
+  
   AgeStorageAdm storage;
   
   try

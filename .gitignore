@@ -1,11 +1,5 @@
-.classpath
 .project
+.classpath
 .settings
-test
-lib
-var
-scrap/buildlib
-/build
-/dist
-/buildlib
-/scrap
+/var
+/lib
