@@ -2,6 +2,9 @@
 <project name="BioSD" default="dist" basedir=".">
     <description>BioSample Database</description>
   <!-- set global properties for this build -->
+
+  <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+
   <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist"  location="dist"/>
@@ -53,20 +56,20 @@
      <fileset dir="${AGEAdmin}/war/WEB-INF/lib/"/>
    </copy>
 
-   <javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}">
+   <javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
     <compilerarg value="-Xlint:deprecation"/>
    </javac>
 
-   <javac srcdir="${AGE}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}">
+   <javac srcdir="${AGE}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
     <compilerarg value="-Xlint:deprecation"/>
    </javac>
 
-   <javac srcdir="${AGEAdmin}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}">
+   <javac srcdir="${AGEAdmin}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
     <compilerarg value="-Xlint:deprecation"/>
     <compilerarg value="-Xlint:unchecked"/>
    </javac>
 
-   <javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}">
+   <javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" target="1.6" debug="on" nowarn="on">
     <compilerarg value="-Xlint:deprecation"/>
    </javac>
 
