@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:javaee="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
@@ -9,35 +10,35 @@
     <servlet-class>uk.ac.ebi.biosd.server.service.GWTServlet</servlet-class>
   </servlet>
   <servlet>
-  	<description>
-  	</description>
-  	<display-name>AgeAdminServiceImpl</display-name>
-  	<servlet-name>AgeAdminServiceImpl</servlet-name>
-  	<servlet-class>
+    <javaee:description>
+  	</javaee:description>
+    <javaee:display-name>AgeAdminServiceImpl</javaee:display-name>
+    <servlet-name>AgeAdminServiceImpl</servlet-name>
+    <servlet-class>
   	uk.ac.ebi.age.admin.server.service.AgeAdminServiceImpl</servlet-class>
   </servlet>
   <servlet>
-  	<description>
-  	</description>
-  	<display-name>UploadSvc</display-name>
-  	<servlet-name>UploadSvc</servlet-name>
-  	<servlet-class>
+    <javaee:description>
+  	</javaee:description>
+    <javaee:display-name>UploadSvc</javaee:display-name>
+    <servlet-name>UploadSvc</servlet-name>
+    <servlet-class>
   	uk.ac.ebi.age.admin.server.service.UploadSvc</servlet-class>
   </servlet>
   <servlet>
-  	<description>
-  	</description>
-  	<display-name>LoginSvc</display-name>
-  	<servlet-name>LoginSvc</servlet-name>
-  	<servlet-class>
+    <javaee:description>
+  	</javaee:description>
+    <javaee:display-name>LoginSvc</javaee:display-name>
+    <servlet-name>LoginSvc</servlet-name>
+    <servlet-class>
   	uk.ac.ebi.age.admin.server.service.LoginSvc</servlet-class>
   </servlet>
   <servlet>
-  	<description>
-  	</description>
-  	<display-name>DBStat</display-name>
-  	<servlet-name>DBStat</servlet-name>
-  	<servlet-class>
+    <javaee:description>
+  	</javaee:description>
+    <javaee:display-name>DBStat</javaee:display-name>
+    <servlet-name>DBStat</servlet-name>
+    <servlet-class>
   	uk.ac.ebi.biosd.server.service.DBStat</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -45,22 +46,22 @@
     <url-pattern>/biosd/ageQueryGWT</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>AgeAdminServiceImpl</servlet-name>
-  	<url-pattern>/admin/ageAdminGWT</url-pattern>
+    <servlet-name>AgeAdminServiceImpl</servlet-name>
+    <url-pattern>/admin/ageAdminGWT</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>UploadSvc</servlet-name>
-  	<url-pattern>/upload</url-pattern>
+    <servlet-name>UploadSvc</servlet-name>
+    <url-pattern>/upload</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>LoginSvc</servlet-name>
-  	<url-pattern>/Login</url-pattern>
+    <servlet-name>LoginSvc</servlet-name>
+    <url-pattern>/Login</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>DBStat</servlet-name>
-  	<url-pattern>/DBStat</url-pattern>
+    <servlet-name>DBStat</servlet-name>
+    <url-pattern>/DBStat</url-pattern>
   </servlet-mapping>
   <listener>
-    <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
+    <javaee:listener-class>uk.ac.ebi.biosd.server.service.Init</javaee:listener-class>
   </listener>
 </web-app>
