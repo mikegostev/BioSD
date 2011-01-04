@@ -60,7 +60,6 @@ body.dev_preview {
     display: none;
 }
 
-
 /* layout element styles */
 
 .biosd_separator_fixed {
@@ -134,7 +133,7 @@ body.dev_preview {
 .mid_container-fixed{
     position: relative;
     width: 800px;
-    height: 200px;
+    height: 215px;
     top: 10px;
     margin: 0 auto;
     text-align: left;
@@ -150,7 +149,7 @@ body.dev_preview {
 .biosd_query_container_fixed {
     position: absolute;
     width: 600px;
-    height: 180px;
+    height: 190px;
     left: 100px;
     top: 10px;
     margin: 0 auto;
@@ -170,6 +169,12 @@ body.dev_preview {
 	width:  200px;
 }
 
+.reference{
+	position:  relative;	
+	left: 5;
+	height: auto;
+}
+
 .query_among_right{
 	position: relative;
 	left: 200px;
@@ -184,7 +189,7 @@ body.dev_preview {
 }
 	
 .biosd_extras_container_fixed {
-    position: relative;
+    position:relative;
     width: 800px;
     height: 200px;
     top: 10px;
@@ -249,20 +254,4 @@ body.dev_preview {
 label {
 	font-weight:bold;
 	line-height: 150%;
-}
-
-* {
-	margin: 0;
-}
-html, body {
-	height: 100%;
-}
-.wrapper {
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
-	margin: 0 auto -2em;
-}
-.footer, .push {
-	height: 2em;
 }
