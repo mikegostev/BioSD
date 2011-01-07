@@ -111,5 +111,10 @@ public class BioSDConfigManager
   return old;
  }
 
-
+ public boolean isMaster()
+ {
+  String mval = configMap.get("isMaster");
+ 
+  return mval != null && ( "true".equalsIgnoreCase(mval) || "yes".equalsIgnoreCase(mval) || "1".equalsIgnoreCase(mval) ); 
+ }
 }

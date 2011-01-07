@@ -12,7 +12,6 @@ import uk.ac.ebi.age.mng.AgeStorageManager.DB_TYPE;
 import uk.ac.ebi.age.service.IdGenerator;
 import uk.ac.ebi.age.service.impl.SeqIdGeneratorImpl;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
-import uk.ac.ebi.age.storage.exeption.StorageInstantiationException;
 
 /**
  * Application Lifecycle Listener implementation class Init
@@ -39,12 +38,16 @@ public class Init implements ServletContextListener
   
   try
   {
-   IdGenerator.setInstance( new SeqIdGeneratorImpl(cfg.getServicesPath()+"/SeqIdGen") );
-   storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getDBPath() );
+   boolean master = cfg.isMaster();
+   
+   if( master )
+    IdGenerator.setInstance( new SeqIdGeneratorImpl(cfg.getServicesPath()+"/SeqIdGen") );
+   
+   storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getDBPath(), master );
    
    BioSDService.setDefaultInstance( new BioSDServiceImpl( storage ) );
   }
-  catch(StorageInstantiationException e)
+  catch(Exception e)
   {
    e.printStackTrace();
    return;
@@ -79,7 +82,8 @@ public class Init implements ServletContextListener
   if( adm != null )
    adm.shutdown();
 
-  IdGenerator.getInstance().shutdown();
+  if( BioSDConfigManager.instance().isMaster() )
+   IdGenerator.getInstance().shutdown();
  }
 
 
