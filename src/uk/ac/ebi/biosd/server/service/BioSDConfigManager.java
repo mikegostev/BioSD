@@ -1,13 +1,11 @@
 package uk.ac.ebi.biosd.server.service;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.ServletContext;
 
+import uk.ac.ebi.age.admin.server.mng.AgeAdminConfigManager;
 
-public class BioSDConfigManager
+
+public class BioSDConfigManager extends AgeAdminConfigManager
 {
  public static final String SAMPLE_CLASS_NAME = "Sample";
  public static final String SAMPLEGROUP_CLASS_NAME = "Group";
@@ -26,30 +24,11 @@ public class BioSDConfigManager
  public static final String CONTACT_OF_REL_CLASS_NAME = "contactOf";
  public static final String DATASOURCE_ATTR_CLASS_NAME = "Data Source";
 
- public static final String BASE_PATH_PARAM="basePath";
- public static final String DB_PATH_PARAM="dbPath";
- public static final String TMP_PATH_PARAM="tmpPath";
- public static final String SERVICES_PATH_PARAM="servicesPath";
- 
- @SuppressWarnings("serial")
- private Map<String,String> configMap = new HashMap<String,String>(){{
-  put(BASE_PATH_PARAM,      "var/biosd/");
-  put(DB_PATH_PARAM,        "agedb");
-  put(TMP_PATH_PARAM,       "tmp");
-  put(SERVICES_PATH_PARAM,  "services");
- }};
- 
  private static BioSDConfigManager instance = null;
  
  public BioSDConfigManager(ServletContext servletContext)
  {
-  Enumeration<?> pNames = servletContext.getInitParameterNames();
-  
-  while( pNames.hasMoreElements() )
-  {
-   String key = pNames.nextElement().toString();
-   configMap.put(key, servletContext.getInitParameter(key) );
-  }
+  super(servletContext);
  }
  
  public static void setInstance( BioSDConfigManager inst )
@@ -63,58 +42,4 @@ public class BioSDConfigManager
   return instance;
  }
 
- public String getBasePath()
- {
-  return getConfigParameter(BASE_PATH_PARAM);
- }
-
- 
- public String getDBPath()
- {
-  return getPathParam(DB_PATH_PARAM);
- }
-
- public String getTmpPath()
- {
-  return getPathParam(TMP_PATH_PARAM);
- }
-
- public String getServicesPath()
- {
-  return getPathParam(SERVICES_PATH_PARAM);
- }
-
- public String getPathParam( String key )
- {
-  String basePath = getBasePath();
-  String path = getConfigParameter(key);
-  
-  if( path == null )
-   path=key;
-  
-  if( basePath.endsWith("/") || path.startsWith("/") )
-   return basePath+path;
-
-  return basePath+"/"+path;
- }
-
- 
- public String getConfigParameter( String key )
- {
-  return configMap.get(key);
- }
-
- public String setConfigParameter( String key, String value )
- {
-  String old = configMap.get(key);
-  configMap.put(key, value);
-  return old;
- }
-
- public boolean isMaster()
- {
-  String mval = configMap.get("isMaster");
- 
-  return mval != null && ( "true".equalsIgnoreCase(mval) || "yes".equalsIgnoreCase(mval) || "1".equalsIgnoreCase(mval) ); 
- }
 }
