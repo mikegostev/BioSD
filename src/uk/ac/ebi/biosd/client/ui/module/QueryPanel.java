@@ -277,7 +277,7 @@ public class QueryPanel extends VLayout implements LinkClickListener
    query = (String) queryField.getValue();
 
    QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
-     searchAttribNames, searchAttribValues, 0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
+     searchAttribNames, searchAttribValues, false, 0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
      {
 
       @Override
@@ -315,7 +315,7 @@ public class QueryPanel extends VLayout implements LinkClickListener
   final int pageNum = pNum;
   
   QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
-    searchAttribNames, searchAttribValues, (pNum-1)*ResultPane.MAX_GROUPS_PER_PAGE, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
+    searchAttribNames, searchAttribValues, false, (pNum-1)*ResultPane.MAX_GROUPS_PER_PAGE, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
     {
 
      @Override

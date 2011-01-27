@@ -50,6 +50,7 @@ public class BioSDServiceImpl extends BioSDService
  private AgeAttributeClass desciptionAttributeClass;
  private AgeAttributeClass commentAttributeClass;
  private AgeAttributeClass dataSourceAttributeClass;
+ private AgeAttributeClass referenceAttributeClass;
  
  private BioSDStat statistics;
  
@@ -63,6 +64,7 @@ public class BioSDServiceImpl extends BioSDService
   desciptionAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.DESCRIPTION_ATTR_CLASS_NAME );
   commentAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.COMMENT_ATTR_CLASS_NAME );
   dataSourceAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.DATASOURCE_ATTR_CLASS_NAME );
+  referenceAttributeClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.REFERENCE_ATTR_CLASS_NAME );
   
   groupToPublicationRelClass = storage.getSemanticModel().getDefinedAgeRelationClass(BioSDConfigManager.HAS_PUBLICATION_REL_CLASS_NAME);
   groupToContactRelClass = storage.getSemanticModel().getDefinedAgeRelationClass(BioSDConfigManager.CONTACT_OF_REL_CLASS_NAME).getInverseRelationClass();
@@ -91,6 +93,12 @@ public class BioSDServiceImpl extends BioSDService
    return;
   }
   
+  if( referenceAttributeClass == null )
+  {
+   System.out.println("Can't find "+BioSDConfigManager.REFERENCE_ATTR_CLASS_NAME+" attribute class");
+   return;
+  }
+
   groupToSampleRelClass = sampleInGroupRelClass.getInverseRelationClass();
   
 //  OrExpression orExp = new OrExpression();
@@ -116,6 +124,7 @@ public class BioSDServiceImpl extends BioSDService
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new SampleAttrValuesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor() ) );
   
   groupsIndex = storage.createTextIndex(groupSelectQuery, extr);
 
@@ -200,7 +209,8 @@ public class BioSDServiceImpl extends BioSDService
  }
  
  @Override
- public Report selectSampleGroups(String query, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
+ public Report selectSampleGroups(String query, boolean searchSmp, boolean searchGrp, boolean searchAttrNm,
+   boolean searchAttrVl, boolean refOnly, int offset, int count)
  {
 //  List<AgeObject> sel = null;
   
@@ -235,6 +245,10 @@ public class BioSDServiceImpl extends BioSDService
   }
   
   sb.setLength(sb.length()-4);
+  
+  if( refOnly )
+   sb.append(" AND ").append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)");
+
 //  sb.append(" )");
   
   String lucQuery = sb.toString();
@@ -466,6 +480,22 @@ public class BioSDServiceImpl extends BioSDService
     }
    }
    return sb.toString();
+  }
+ }
+ 
+ class RefGroupExtractor implements TextValueExtractor
+ {
+  StringBuilder sb = new StringBuilder();
+
+  public String getValue(AgeObject gobj)
+  {
+   for( AgeAttribute attr : gobj.getAttributes() )
+   {
+    if( attr.getAgeElClass() == referenceAttributeClass && attr.getValueAsBoolean() )
+     return "true";
+   }
+   
+   return "";
   }
  }
  

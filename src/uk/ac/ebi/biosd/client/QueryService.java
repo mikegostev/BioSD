@@ -29,7 +29,7 @@ public interface QueryService extends RemoteService
  }
  
  
- Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offs, int cnt);
+ Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offs, int cnt);
 
 
  SampleList getSamplesByGroup(String grpID, int offs, int count);

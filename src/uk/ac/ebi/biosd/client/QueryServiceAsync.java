@@ -10,7 +10,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface QueryServiceAsync
 {
- void selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, int offs, int cnt, AsyncCallback<Report> acb);
+ void selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offs, int cnt, AsyncCallback<Report> acb);
 
  void getSamplesByGroup(String grpID, int offs, int count, AsyncCallback<SampleList> asyncCallback);
 

@@ -11,9 +11,9 @@ public class GWTServlet extends RemoteServiceServlet implements QueryService
  private static final long serialVersionUID = -7453910333033735880L;
 
  @Override
- public Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm,    boolean searchAttrVl, int offs, int cnt)
+ public Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offs, int cnt)
  {
-  return BioSDService.getInstance().selectSampleGroups(value, searchSmp, searchGrp, searchAttrNm, searchAttrVl, offs,  cnt);
+  return BioSDService.getInstance().selectSampleGroups(value, searchSmp, searchGrp, searchAttrNm, searchAttrVl, refOnly, offs, cnt);
  }
 
  @Override
