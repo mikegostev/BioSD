@@ -43,7 +43,7 @@ public class Init implements ServletContextListener
    if( master )
     IdGenerator.setInstance( new SeqIdGeneratorImpl(cfg.getServicesPath()+"/SeqIdGen") );
    
-   storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getAgeDBPath(), master );
+   storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getDBPath(), master );
    
    BioSDService.setDefaultInstance( new BioSDServiceImpl( storage ) );
   }
