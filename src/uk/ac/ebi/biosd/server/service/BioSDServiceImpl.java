@@ -285,7 +285,7 @@ public class BioSDServiceImpl extends BioSDService
     sb.setLength(qLen);
    
     sb.append(" AND "+BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(gr.getId());
-    gr.setMatchedCount( storage.queryTextIndex(samplesIndex, sb.toString() ).size() );
+    gr.setMatchedCount( storage.queryTextIndexCount(samplesIndex, sb.toString() ) );
    }
    
    res.add(gr);
