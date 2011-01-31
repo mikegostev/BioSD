@@ -1,24 +1,16 @@
 package uk.ac.ebi.biosd.client.ui.module;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import uk.ac.ebi.biosd.client.LinkClickListener;
 import uk.ac.ebi.biosd.client.LinkManager;
 import uk.ac.ebi.biosd.client.QueryService;
+import uk.ac.ebi.biosd.client.query.Attribute;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
-import uk.ac.ebi.biosd.client.query.GroupImprint;
-import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.client.shared.AttributeReport;
 import uk.ac.ebi.biosd.client.shared.Pair;
-import uk.ac.ebi.biosd.client.ui.AttributeFieldInfo;
 import uk.ac.ebi.biosd.client.ui.SampleListGrid;
 import uk.ac.ebi.biosd.client.ui.SourceIconBundle;
 
@@ -412,7 +404,7 @@ public class GroupDetailsPanel extends VLayout
   });
  }
 
- 
+ /*
  private void renderSampleList(final VLayout lay, Report smpls, int pg)
  {
   
@@ -470,9 +462,9 @@ public class GroupDetailsPanel extends VLayout
   hlist.addAll(hdr.values());
   Collections.sort(hlist);
 
-  if( smpls.getTotalRecords() > ResultPane.MAX_SAMPLES_PER_PAGE )
+  if( smpls.getTotalGroups() > ResultPane.MAX_SAMPLES_PER_PAGE )
   {
-   pager.setPagination(pg, smpls.getTotalRecords(),  ResultPane.MAX_SAMPLES_PER_PAGE );
+   pager.setContents(pg, smpls.getTotalGroups(),  ResultPane.MAX_SAMPLES_PER_PAGE, null, null );
    pager.setVisible(true);
   }
   else
@@ -531,6 +523,7 @@ public class GroupDetailsPanel extends VLayout
 
  }
 
+ */
  
  private void renderSampleList2(final VLayout lay, SampleList smpls, int pg)
  {
@@ -594,16 +587,22 @@ public class GroupDetailsPanel extends VLayout
   ListGridRecord[] records = new ListGridRecord[smpls.getSamples().size()];
 
   i=0;
-  for( Map<String,String> sample : smpls.getSamples() )
+  for( List<Attribute> sample : smpls.getSamples() )
   {
    ListGridRecord rec = new ListGridRecord();
 
-   for( Map.Entry<String,String> me : sample.entrySet() )
+   rec.setAttribute("__obj", sample);
+   
+   for( Attribute at : sample )
    {
-    if( me.getKey().equals(prideKey) )
-     rec.setAttribute(me.getKey(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+me.getValue()+"'>"+me.getValue()+"</a>");
+    if( at.getName().equals(prideKey) )
+     rec.setAttribute(at.getName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getValue()+"'>"+at.getValue()+"</a>");
+    else if("__id".equals(at.getName()))
+     rec.setAttribute(at.getName(), "<span class='idCell'>"+at.getValue()+"</span>");
+    else if( at.getQualifiers() != null )
+     rec.setAttribute(at.getName(), "<span class='qualifiedCell'>"+at.getValue()+"</span>");
     else
-     rec.setAttribute(me.getKey(), me.getValue());
+     rec.setAttribute(at.getName(), at.getValue());
    }
    records[i++]=rec;
   }
@@ -614,7 +613,7 @@ public class GroupDetailsPanel extends VLayout
 
   if( smpls.getTotalRecords() > ResultPane.MAX_SAMPLES_PER_PAGE )
   {
-   pager.setPagination(pg, smpls.getTotalRecords(),  ResultPane.MAX_SAMPLES_PER_PAGE );
+   pager.setContents(pg, smpls.getTotalRecords(),  ResultPane.MAX_SAMPLES_PER_PAGE, null, null );
    pager.setVisible(true);
   }
   else
@@ -642,6 +641,19 @@ public class GroupDetailsPanel extends VLayout
    @Override
    public void onCellClick(CellClickEvent event)
    {
+//    String attrId = header.get(event.getColNum()-1).getId();
+//    
+//    List<Attribute> sample = (List<Attribute>) event.getRecord().getAttributeAsObject("__obj");
+//    
+//    String val = "???";
+//    for( Attribute at : sample )
+//    {
+//     if( attrId.equals(at.getName()) )
+//      val = at.getValue();
+//    }
+//    
+//    System.out.println("Clicked: "+attrId+" -> "+val);
+    
     if( event.getColNum() != lfl.length  )
      return;
     

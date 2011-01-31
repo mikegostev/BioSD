@@ -2,7 +2,6 @@ package uk.ac.ebi.biosd.client.query;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 
@@ -10,12 +9,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SampleList implements IsSerializable
 {
- private List< Map<String, String> > samples = new ArrayList<Map<String,String>>(25);
+ private List< List<Attribute> > samples = new ArrayList<List<Attribute>>(25);
  private List<AttributeClassReport> header;
  private int totalRecords;
 
  
- public List<Map<String, String>> getSamples()
+ public List< List<Attribute> > getSamples()
  {
   return samples;
  }
@@ -25,9 +24,9 @@ public class SampleList implements IsSerializable
   return header;
  }
 
- public void addSample(Map<String, String> attrMap)
+ public void addSample(List<Attribute> smp)
  {
-  samples.add(attrMap);
+  samples.add(smp);
  }
 
  public void setHeader(List<AttributeClassReport> clsLst)

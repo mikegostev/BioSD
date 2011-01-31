@@ -22,6 +22,7 @@ import uk.ac.ebi.age.storage.DataChangeListener;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
+import uk.ac.ebi.biosd.client.query.Attribute;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
 import uk.ac.ebi.biosd.client.query.GroupImprint;
 import uk.ac.ebi.biosd.client.query.Report;
@@ -258,6 +259,16 @@ public class BioSDServiceImpl extends BioSDService
   
   List<AgeObject> sel = storage.queryTextIndex(groupsIndex, lucQuery );
   
+  int nSmp = 0;
+  
+  for( AgeObject go : sel )
+  {
+   Collection<?> smps =  go.getRelationsByClass(groupToSampleRelClass, false);
+   
+   if( smps != null )
+    nSmp+=smps.size();
+  }
+  
   List<GroupImprint> res = new ArrayList<GroupImprint>();
   
   int lim = offset+count;
@@ -318,7 +329,8 @@ public class BioSDServiceImpl extends BioSDService
 //  }
   Report rep = new Report();
   rep.setObjects(res);
-  rep.setTotalRecords(sel.size());
+  rep.setTotalGroups(sel.size());
+  rep.setTotalSamples(nSmp);
   
   return rep;
  }
@@ -584,9 +596,13 @@ public class BioSDServiceImpl extends BioSDService
   
   for( AgeObject smpl : samples )
   {
-   Map<String,String> attrMap = new HashMap<String, String>(); 
+   List<Attribute> clSmpl = new ArrayList<Attribute>();
    
-   attrMap.put("__id",smpl.getId());
+//   Map<String,String> attrMap = new HashMap<String, String>(); 
+   
+   clSmpl.add( new Attribute("__id",smpl.getId()) );
+   
+//   attrMap.put("__id",smpl.getId());
    
    for( AgeAttribute attr : smpl.getAttributes() )
    {
@@ -608,10 +624,10 @@ public class BioSDServiceImpl extends BioSDService
     
     atCls.addValue(attrval);
     
-    attrMap.put(atCls.getId(), attrval);
+    clSmpl.add( new Attribute(atCls.getId(), attrval));
    }
    
-   sl.addSample( attrMap );
+   sl.addSample( clSmpl );
   }
   
   List<AttributeClassReport> clsLst = new ArrayList<AttributeClassReport>( valMap.size()+1 );
@@ -749,7 +765,7 @@ public class BioSDServiceImpl extends BioSDService
   
   Report rep = new Report();
   rep.setObjects(res);
-  rep.setTotalRecords(total);
+  rep.setTotalGroups(total);
   
   return rep;
  }
@@ -887,7 +903,7 @@ public class BioSDServiceImpl extends BioSDService
 //  }
   Report rep = new Report();
   rep.setObjects(res);
-  rep.setTotalRecords(total);
+  rep.setTotalGroups(total);
   
   return rep;
  }
@@ -907,7 +923,8 @@ public class BioSDServiceImpl extends BioSDService
   
   Report rep = new Report();
   rep.setObjects(res);
-  rep.setTotalRecords(groupList.size());
+  rep.setTotalGroups(statistics.getGroups());
+  rep.setTotalSamples(statistics.getSamples());
   
   return rep;
  }

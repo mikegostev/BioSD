@@ -13,6 +13,7 @@ import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.types.ExpansionMode;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.HTMLFlow;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -22,7 +23,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
 
 public class ResultPane extends VLayout implements ResultRenderer
 {
- public final static int MAX_GROUPS_PER_PAGE=20;
+ public final static int MAX_GROUPS_PER_PAGE=25;
  public final static int MAX_SAMPLES_PER_PAGE=20;
  
  private String query;
@@ -33,6 +34,7 @@ public class ResultPane extends VLayout implements ResultRenderer
  
  private ListGrid resultGrid = new GroupsList();
  private PagingRuler pagingRuler = new PagingRuler("groupPage");
+ private HTMLFlow statusBar = new HTMLFlow();
  
  public ResultPane()
  {
@@ -82,10 +84,14 @@ public class ResultPane extends VLayout implements ResultRenderer
   resultGrid.setFields(idField,sCntField, descField );
   resultGrid.setExpansionMode(ExpansionMode.DETAIL_FIELD);
   
-  pagingRuler.setVisible(false);
+  pagingRuler.setVisible(true);
+  
+  statusBar.setWidth100();
+  statusBar.setHeight(22);
   
   addMember(pagingRuler);
   addMember(resultGrid);
+//  addMember(statusBar);
   
   resultGrid.addRecordCollapseHandler( new RecordCollapseHandler()
   {
@@ -134,13 +140,24 @@ public class ResultPane extends VLayout implements ResultRenderer
   resultGrid.selectAllRecords();
   resultGrid.removeSelectedData();
   
-  if( res.getTotalRecords() > MAX_GROUPS_PER_PAGE )
-  {
-   pagingRuler.setPagination(cpage, res.getTotalRecords(), MAX_GROUPS_PER_PAGE);
-   pagingRuler.setVisible(true);
-  }
-  else
-   pagingRuler.setVisible(false);
+  int firstGrp = (cpage-1)*MAX_GROUPS_PER_PAGE+1;
+  int lastGrp = firstGrp+MAX_GROUPS_PER_PAGE-1;
+  
+  if( lastGrp > res.getTotalGroups() )
+   lastGrp = res.getTotalGroups();
+  
+  pagingRuler.setContents( cpage, res.getTotalGroups(), MAX_GROUPS_PER_PAGE,
+    "Groups: "+res.getTotalGroups()+"&nbsp;&nbsp;Samples: "+res.getTotalSamples()
+    +".&nbsp;&nbsp;Displaying groups "+firstGrp+" to "+lastGrp+".", null);
+  
+//  "Groups: "+res.getTotalGroups()+" Samples: "+res.getTotalSamples()
+//  if( res.getTotalGroups() > MAX_GROUPS_PER_PAGE )
+//  {
+//   pagingRuler.setPagination(cpage, res.getTotalGroups(), MAX_GROUPS_PER_PAGE);
+//   pagingRuler.setVisible(true);
+//  }
+//  else
+//   pagingRuler.setVisible(false);
   
   for( GroupImprint sgr : res.getObjects() )
   {
@@ -174,6 +191,8 @@ public class ResultPane extends VLayout implements ResultRenderer
    
    resultGrid.addData(rec);
   }
+  
+  statusBar.setContents( "Groups: "+res.getTotalGroups()+" Samples: "+res.getTotalSamples() );
  }
 
 
