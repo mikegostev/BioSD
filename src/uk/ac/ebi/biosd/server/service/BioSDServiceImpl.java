@@ -624,7 +624,12 @@ public class BioSDServiceImpl extends BioSDService
     
     atCls.addValue(attrval);
     
-    clSmpl.add( new Attribute(atCls.getId(), attrval));
+    Attribute a = new Attribute(atCls.getId(), attrval);
+    
+    if( attr.getAttributes() != null )
+     collectQualifiers(attr,a);
+    
+    clSmpl.add( a );
    }
    
    sl.addSample( clSmpl );
@@ -668,6 +673,23 @@ public class BioSDServiceImpl extends BioSDService
   return sl;
  }
 
+ private void collectQualifiers(AgeAttribute ageAttr, Attribute biosdAttr)
+ {
+  List<Attribute> bioQl = new ArrayList<Attribute>( 3 );
+  
+  for( AgeAttribute q : ageAttr.getAttributes() )
+  {
+   Attribute bq = new Attribute( q.getAgeElClass().getName(), q.getValue().toString() );
+   
+   if( q.getAttributes() != null )
+    collectQualifiers(q,bq);
+   
+   bioQl.add(bq);
+  }
+  
+  biosdAttr.setQualifiers(bioQl);
+ }
+ 
  
  @Override
  public SampleList getSamplesByGroup(String grpID, int offset, int count)
