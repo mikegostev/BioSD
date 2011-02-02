@@ -5,8 +5,8 @@ import java.util.List;
 import uk.ac.ebi.biosd.client.LinkClickListener;
 import uk.ac.ebi.biosd.client.LinkManager;
 import uk.ac.ebi.biosd.client.QueryService;
-import uk.ac.ebi.biosd.client.query.Attribute;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
+import uk.ac.ebi.biosd.client.query.AttributedObject;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.client.shared.AttributeReport;
@@ -587,22 +587,22 @@ public class GroupDetailsPanel extends VLayout
   ListGridRecord[] records = new ListGridRecord[smpls.getSamples().size()];
 
   i=0;
-  for( List<Attribute> sample : smpls.getSamples() )
+  for( AttributedObject sample : smpls.getSamples() )
   {
    ListGridRecord rec = new ListGridRecord();
 
-   rec.setAttribute("__obj", sample);
+   rec.setAttribute("__obj", sample.getName());
    
-   for( Attribute at : sample )
+   for( AttributedObject at : sample.getAttributes() )
    {
     if( at.getName().equals(prideKey) )
-     rec.setAttribute(at.getName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getValue()+"'>"+at.getValue()+"</a>");
+     rec.setAttribute(at.getName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getStringValue()+"'>"+at.getStringValue()+"</a>");
     else if("__id".equals(at.getName()))
-     rec.setAttribute(at.getName(), "<span class='idCell'>"+at.getValue()+"</span>");
-    else if( at.getQualifiers() != null )
-     rec.setAttribute(at.getName(), "<span class='qualifiedCell'>"+at.getValue()+"</span>");
+     rec.setAttribute(at.getName(), "<span class='idCell'>"+at.getStringValue()+"</span>");
+    else if( at.getAttributes() != null )
+     rec.setAttribute(at.getName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
     else
-     rec.setAttribute(at.getName(), at.getValue());
+     rec.setAttribute(at.getName(), at.getStringValue());
    }
    records[i++]=rec;
   }

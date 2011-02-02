@@ -14,6 +14,7 @@ import uk.ac.ebi.age.model.AgeClass;
 import uk.ac.ebi.age.model.AgeObject;
 import uk.ac.ebi.age.model.AgeRelation;
 import uk.ac.ebi.age.model.AgeRelationClass;
+import uk.ac.ebi.age.model.Attributed;
 import uk.ac.ebi.age.query.AgeQuery;
 import uk.ac.ebi.age.query.ClassNameExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
@@ -22,8 +23,8 @@ import uk.ac.ebi.age.storage.DataChangeListener;
 import uk.ac.ebi.age.storage.index.AgeIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
-import uk.ac.ebi.biosd.client.query.Attribute;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
+import uk.ac.ebi.biosd.client.query.AttributedObject;
 import uk.ac.ebi.biosd.client.query.GroupImprint;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
@@ -596,11 +597,14 @@ public class BioSDServiceImpl extends BioSDService
   
   for( AgeObject smpl : samples )
   {
-   List<Attribute> clSmpl = new ArrayList<Attribute>();
+   sl.addSample( convertAttributed(smpl) );
+
+   
+//   List<AttributedObject> clSmpl = new ArrayList<AttributedObject>();
    
 //   Map<String,String> attrMap = new HashMap<String, String>(); 
    
-   clSmpl.add( new Attribute("__id",smpl.getId()) );
+//   clSmpl.add( new AttributedObject("__id",smpl.getId()) );
    
 //   attrMap.put("__id",smpl.getId());
    
@@ -617,22 +621,23 @@ public class BioSDServiceImpl extends BioSDService
      
      atCls.setCustom( ageAtCls.isCustom() );
      atCls.setName( ageAtCls.getName() );
-     atCls.setId("AttrClass"+(id++));
+//     atCls.setId("AttrClass"+(id++));
+     atCls.setId(ageAtCls.isCustom()?"CC:":"DC:"+ageAtCls.getName());
      
      valMap.put(attr.getAgeElClass(), atCls);
     }
     
     atCls.addValue(attrval);
     
-    Attribute a = new Attribute(atCls.getId(), attrval);
-    
-    if( attr.getAttributes() != null )
-     collectQualifiers(attr,a);
-    
-    clSmpl.add( a );
+//    AttributedObject a = convertAttributed(obj);
+//    
+//    if( attr.getAttributes() != null )
+//     collectQualifiers(attr,a);
+//    
+//    clSmpl.add( a );
    }
    
-   sl.addSample( clSmpl );
+//   sl.addSample( clSmpl );
   }
   
   List<AttributeClassReport> clsLst = new ArrayList<AttributeClassReport>( valMap.size()+1 );
@@ -673,22 +678,68 @@ public class BioSDServiceImpl extends BioSDService
   return sl;
  }
 
- private void collectQualifiers(AgeAttribute ageAttr, Attribute biosdAttr)
+ private AttributedObject convertAttributed( Attributed obj )
  {
-  List<Attribute> bioQl = new ArrayList<Attribute>( 3 );
-  
-  for( AgeAttribute q : ageAttr.getAttributes() )
+  AttributedObject objAttr = new AttributedObject();
+
+  if( obj instanceof AgeObject )
   {
-   Attribute bq = new Attribute( q.getAgeElClass().getName(), q.getValue().toString() );
+   objAttr.setName( ((AgeObject) obj).getId() );
    
-   if( q.getAttributes() != null )
-    collectQualifiers(q,bq);
+   if( obj.getAttributes() != null )
+   {
+    List<AttributedObject> attrs = new ArrayList<AttributedObject>();
+    
+    for( Attributed oa : obj.getAttributes() )
+     attrs.add(convertAttributed(oa));
+    
+    objAttr.setAttributes(attrs);
+   }
+  }
+  else if( obj instanceof AgeAttribute )
+  {
+   AgeAttribute ageAt = (AgeAttribute)obj;
    
-   bioQl.add(bq);
+   objAttr.setName(ageAt.getAgeElClass().isCustom()?"CC:":"DC:"+ageAt.getAgeElClass().getName());
+   
+   Object val = ageAt.getValue();
+   
+   if( val instanceof Attributed )
+    objAttr.setObjectValue( convertAttributed( (Attributed)val ) );
+   else
+    objAttr.setStringValue(val.toString());
+   
+   if( ageAt.getAttributes() != null )
+   {
+    List<AttributedObject> attrs = new ArrayList<AttributedObject>();
+    
+    for( Attributed oa : ageAt.getAttributes() )
+     attrs.add(convertAttributed(oa));
+    
+    objAttr.setAttributes(attrs);
+   }
+
   }
   
-  biosdAttr.setQualifiers(bioQl);
+  return objAttr;
  }
+ 
+// private void collectQualifiers(AgeAttribute ageAttr, AttributedObject biosdAttr)
+// {
+//  List<AttributedObject> bioQl = new ArrayList<AttributedObject>( 3 );
+//  
+//  for( AgeAttribute q : ageAttr.getAttributes() )
+//  {
+//   AttributedObject bq = new AttributedObject( q.getAgeElClass().getName(), q.getValue().toString() );
+//   
+//   if( q.getAttributes() != null )
+//    collectQualifiers(q,bq);
+//   
+//   bioQl.add(bq);
+//  }
+//  
+//  biosdAttr.setQualifiers(bioQl);
+// }
  
  
  @Override

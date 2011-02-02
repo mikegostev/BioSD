@@ -9,12 +9,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SampleList implements IsSerializable
 {
- private List< List<Attribute> > samples = new ArrayList<List<Attribute>>(25);
+ private List< AttributedObject > samples = new ArrayList<AttributedObject>(25);
  private List<AttributeClassReport> header;
  private int totalRecords;
 
+ public SampleList()
+ {}
  
- public List< List<Attribute> > getSamples()
+ public List< AttributedObject > getSamples()
  {
   return samples;
  }
@@ -24,7 +26,7 @@ public class SampleList implements IsSerializable
   return header;
  }
 
- public void addSample(List<Attribute> smp)
+ public void addSample(AttributedObject smp)
  {
   samples.add(smp);
  }
