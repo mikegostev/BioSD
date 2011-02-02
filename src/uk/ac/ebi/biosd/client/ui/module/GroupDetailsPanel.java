@@ -591,14 +591,13 @@ public class GroupDetailsPanel extends VLayout
   {
    ListGridRecord rec = new ListGridRecord();
 
-   rec.setAttribute("__obj", sample.getName());
+   rec.setAttribute("__obj", sample);
+   rec.setAttribute("__id", "<span class='idCell'>"+sample.getName()+"</span>");
    
    for( AttributedObject at : sample.getAttributes() )
    {
     if( at.getName().equals(prideKey) )
      rec.setAttribute(at.getName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getStringValue()+"'>"+at.getStringValue()+"</a>");
-    else if("__id".equals(at.getName()))
-     rec.setAttribute(at.getName(), "<span class='idCell'>"+at.getStringValue()+"</span>");
     else if( at.getAttributes() != null )
      rec.setAttribute(at.getName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
     else

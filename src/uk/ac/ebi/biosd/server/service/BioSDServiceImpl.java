@@ -622,7 +622,7 @@ public class BioSDServiceImpl extends BioSDService
      atCls.setCustom( ageAtCls.isCustom() );
      atCls.setName( ageAtCls.getName() );
 //     atCls.setId("AttrClass"+(id++));
-     atCls.setId(ageAtCls.isCustom()?"CC:":"DC:"+ageAtCls.getName());
+     atCls.setId((ageAtCls.isCustom()?"CC:":"DC:")+ageAtCls.getName());
      
      valMap.put(attr.getAgeElClass(), atCls);
     }
@@ -700,7 +700,7 @@ public class BioSDServiceImpl extends BioSDService
   {
    AgeAttribute ageAt = (AgeAttribute)obj;
    
-   objAttr.setName(ageAt.getAgeElClass().isCustom()?"CC:":"DC:"+ageAt.getAgeElClass().getName());
+   objAttr.setName((ageAt.getAgeElClass().isCustom()?"CC:":"DC:")+ageAt.getAgeElClass().getName());
    
    Object val = ageAt.getValue();
    
