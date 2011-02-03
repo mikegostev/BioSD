@@ -15,6 +15,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.PickerIcon;
 import com.smartgwt.client.widgets.form.fields.SpacerItem;
@@ -31,6 +32,7 @@ public class QueryPanel extends VLayout implements LinkClickListener
  private TextItem queryField;
  private ComboBoxItem where;
  private ComboBoxItem what;
+ private CheckboxItem onlyRef;
  
  private ResultRenderer resultCallback;
  
@@ -105,6 +107,11 @@ public class QueryPanel extends VLayout implements LinkClickListener
 //  bt.setEndRow(true);
 //  bt.addClickHandler( new QueryAction() );
 
+  String refStr = Window.Location.getParameter("reference"); 
+  onlyRef = new CheckboxItem();
+  onlyRef.setTitle("Only reference samples");
+  onlyRef.setValue(refStr != null && "1".equals(refStr));
+  
  
   where = new ComboBoxItem();
   where.setTitle("");
@@ -194,7 +201,7 @@ public class QueryPanel extends VLayout implements LinkClickListener
   }
 
   SpacerItem sp0 = new SpacerItem();
-  sp0.setHeight(30);
+  sp0.setHeight(25);
   sp0.setEndRow(true);
 
   SpacerItem sp1 = new SpacerItem();
@@ -202,9 +209,12 @@ public class QueryPanel extends VLayout implements LinkClickListener
   SpacerItem sp2 = new SpacerItem();
   sp2.setEndRow(true);
 
+  onlyRef.setEndRow(true);
+  onlyRef.setColSpan(4);
+  
   SpacerItem sp3 = new SpacerItem();
   
-  f1.setFields(sp0, sp1,queryField, sp2, sp3, where, what);
+  f1.setFields(sp0, sp1,queryField, onlyRef, sp3, where, what);
 //  f1.setBorder("1px solid blue");
   
   hstrip.addMember(left);
@@ -277,7 +287,7 @@ public class QueryPanel extends VLayout implements LinkClickListener
    query = (String) queryField.getValue();
 
    QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
-     searchAttribNames, searchAttribValues, false, 0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
+     searchAttribNames, searchAttribValues, onlyRef.getValueAsBoolean(), 0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
      {
 
       @Override

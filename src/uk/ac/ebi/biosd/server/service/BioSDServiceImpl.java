@@ -226,7 +226,7 @@ public class BioSDServiceImpl extends BioSDService
   
   StringBuilder sb = new StringBuilder();
   
-//  sb.append("( ");
+  sb.append("( ");
   
   if( searchAttrNm )
   {
@@ -247,6 +247,9 @@ public class BioSDServiceImpl extends BioSDService
   }
   
   sb.setLength(sb.length()-4);
+  
+  sb.append(" )");
+
   
   if( refOnly )
    sb.append(" AND ").append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)");
