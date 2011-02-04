@@ -56,6 +56,45 @@ public class BioSDServiceImpl extends BioSDService
  
  private BioSDStat statistics;
  
+ private Comparator<AgeObject> groupComparator = new Comparator<AgeObject>()
+ {
+  @Override
+  public int compare(AgeObject o1, AgeObject o2)
+  {
+   Collection<? extends AgeAttribute> ref1 = o1.getAttributesByClass(referenceAttributeClass, false);
+   Collection<? extends AgeAttribute> ref2 = o1.getAttributesByClass(referenceAttributeClass, false);
+
+   boolean isRef1, isRef2;
+   
+   if( ref1 == null || ref1.size() == 0 )
+    isRef1=false;
+   else
+   {
+    AgeAttribute at = ref1.iterator().next();
+    isRef1 = at.getValueAsBoolean();
+   }
+
+   if( ref2 == null || ref2.size() == 0 )
+    isRef2=false;
+   else
+   {
+    AgeAttribute at = ref2.iterator().next();
+    isRef2 = at.getValueAsBoolean();
+   }
+
+   if( isRef1 )
+   {
+    if(isRef2)
+     return o1.getId().compareTo(o2.getId());
+    else
+     return 1;
+   }
+   else
+    return -1;
+  }
+ };
+ 
+ 
  public BioSDServiceImpl( AgeStorage stor )
  {
   storage=stor;
@@ -147,6 +186,8 @@ public class BioSDServiceImpl extends BioSDService
      groupList.addAll(grps);
     }
 
+    Collections.sort( groupList, groupComparator );
+
     collectStats();
    }
   } );
@@ -158,6 +199,8 @@ public class BioSDServiceImpl extends BioSDService
    groupList = new ArrayList<AgeObject>( grps.size() );
    groupList.addAll(grps);
   }
+  
+  Collections.sort( groupList, groupComparator );
   
   collectStats();
  
@@ -182,8 +225,15 @@ public class BioSDServiceImpl extends BioSDService
   
   statistics.setGroups( groupList.size() );
   
+  int refGrp = 0;
+  
   for( AgeObject grp : groupList )
   {
+   Collection<? extends AgeAttribute> ref = grp.getAttributesByClass(referenceAttributeClass, false);
+
+   if( ref != null && ref.size() > 0 && ref.iterator().next().getValueAsBoolean() )
+    refGrp++;
+   
    int samples = 0;
    for( AgeRelation rel : grp.getRelations() )
    {
@@ -208,6 +258,8 @@ public class BioSDServiceImpl extends BioSDService
     dsStat.addSamples(samples);
    }
   }
+  
+  statistics.setRefGroups(refGrp);
  }
  
  @Override
@@ -217,12 +269,12 @@ public class BioSDServiceImpl extends BioSDService
 //  List<AgeObject> sel = null;
   
   if( query == null )
-   return getAllGroups(offset, count);
+   return getAllGroups(offset, count, refOnly);
   
   query=query.trim();
   
   if( query.length() == 0 )
-   return getAllGroups(offset, count);
+   return getAllGroups(offset, count, refOnly);
   
   StringBuilder sb = new StringBuilder();
   
@@ -846,6 +898,7 @@ public class BioSDServiceImpl extends BioSDService
   return rep;
  }
 
+ 
  @Override
  public SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
  {
@@ -985,12 +1038,14 @@ public class BioSDServiceImpl extends BioSDService
  }
 
  @Override
- public Report getAllGroups(int offset, int count)
+ public Report getAllGroups(int offset, int count, boolean refOnly )
  {
   int lim = offset+count;
   
-  if( lim > groupList.size() )
-   lim=groupList.size();
+  int last = refOnly?statistics.getRefGroups():groupList.size();
+  
+  if( lim > last )
+   lim=last;
   
   List<GroupImprint> res = new ArrayList<GroupImprint>(count);
   

@@ -29,9 +29,9 @@ public class GWTServlet extends RemoteServiceServlet implements QueryService
  }
 
  @Override
- public Report getAllGroups(int offs, int count)
+ public Report getAllGroups(int offs, int count, boolean refOnly)
  {
-  return BioSDService.getInstance().getAllGroups(offs, count);
+  return BioSDService.getInstance().getAllGroups(offs, count, refOnly);
  }
 
 }
