@@ -19,7 +19,7 @@ public abstract class BioSDService
  }
 
  public abstract Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offset, int count);
- public abstract Report getAllGroups(int offset, int count);
+ public abstract Report getAllGroups(int offset, int count, boolean refOnly);
 
  public abstract void shutdown();
 
@@ -28,4 +28,5 @@ public abstract class BioSDService
  public abstract SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count);
 
  public abstract BioSDStat getStatistics();
+
 }
