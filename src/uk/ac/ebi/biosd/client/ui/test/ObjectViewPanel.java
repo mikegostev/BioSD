@@ -8,9 +8,9 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-public class ObjectView extends ListGrid
+public class ObjectViewPanel extends ListGrid
 {
- public ObjectView( AttributedObject obj )
+ public ObjectViewPanel( AttributedObject obj )
  {
   DataSource ds = new DataSource();
   ds.setClientOnly(true);
