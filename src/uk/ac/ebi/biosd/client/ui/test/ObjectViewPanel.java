@@ -21,7 +21,6 @@ public class ObjectViewPanel extends ListGrid
   setWidth("100%");
   setHeight("100%");
   setCanSelectText(true);
-  setDataSource(ds);
   setStyleName("objectView");
   setAutoFetchData(true);
   
@@ -44,11 +43,14 @@ public class ObjectViewPanel extends ListGrid
    
    rec.setAttribute( "Name", at.getName() );
    rec.setAttribute( "Value", at.getStringValue() );
-   rec.setAttribute( "__attr", at );
-   
-   rec.setAttribute( "hasDetails", at.getAttributes() != null || ! ( at.getStringValue() instanceof String ) );
+//   rec.setAttribute( "__attr", at );
+//   
+//   rec.setAttribute( "hasDetails", at.getAttributes() != null || ! ( at.getStringValue() instanceof String ) );
 
-   ds.addData(rec);
+   addData(rec);
   }
+  
+ // setDataSource(ds);
+
  }
 }
