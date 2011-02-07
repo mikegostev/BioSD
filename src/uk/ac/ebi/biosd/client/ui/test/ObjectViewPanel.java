@@ -15,6 +15,9 @@ public class ObjectViewPanel extends ListGrid
   DataSource ds = new DataSource();
   ds.setClientOnly(true);
 
+  ds.addField(new DataSourceTextField("Name", "Name"));
+  ds.addField(new DataSourceTextField("Value", "Value"));
+
   setWidth("100%");
   setHeight("100%");
   setCanSelectText(true);
@@ -31,8 +34,6 @@ public class ObjectViewPanel extends ListGrid
   setFields(nameField,valField);
 //  setExpansionMode(ExpansionMode.DETAIL_RELATED);
 
-  ds.addField(new DataSourceTextField("Name", "Name"));
-  ds.addField(new DataSourceTextField("Value", "Value"));
 //  ds.addField(new DataSourceBooleanField("hasDetails", "hasDetails"));
 //  ds.addField(new DataSource("hasDetails", "hasDetails"));
 
@@ -42,12 +43,12 @@ public class ObjectViewPanel extends ListGrid
    ListGridRecord rec = new ListGridRecord();
    
    rec.setAttribute( "Name", at.getName() );
-   rec.setAttribute( "Value", at.getStringValue().toString() );
+   rec.setAttribute( "Value", at.getStringValue() );
    rec.setAttribute( "__attr", at );
    
    rec.setAttribute( "hasDetails", at.getAttributes() != null || ! ( at.getStringValue() instanceof String ) );
 
-   addData(rec);
+   ds.addData(rec);
   }
  }
 }

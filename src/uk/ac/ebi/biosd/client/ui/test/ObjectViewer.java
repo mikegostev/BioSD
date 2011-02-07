@@ -19,6 +19,6 @@ public class ObjectViewer extends Window
   setShowModalMask(true);
   centerInPage();
 
-  addItem( new ObjectViewer(obj) );
+  addItem( new ObjectViewPanel(obj) );
  }
 }

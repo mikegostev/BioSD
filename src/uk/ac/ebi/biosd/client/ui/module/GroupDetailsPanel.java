@@ -13,6 +13,7 @@ import uk.ac.ebi.biosd.client.shared.AttributeReport;
 import uk.ac.ebi.biosd.client.shared.Pair;
 import uk.ac.ebi.biosd.client.ui.SampleListGrid;
 import uk.ac.ebi.biosd.client.ui.SourceIconBundle;
+import uk.ac.ebi.biosd.client.ui.test.ObjectViewer;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -640,21 +641,31 @@ public class GroupDetailsPanel extends VLayout
    @Override
    public void onCellClick(CellClickEvent event)
    {
-//    String attrId = header.get(event.getColNum()-1).getId();
-//    
-//    List<Attribute> sample = (List<Attribute>) event.getRecord().getAttributeAsObject("__obj");
-//    
-//    String val = "???";
-//    for( Attribute at : sample )
-//    {
-//     if( attrId.equals(at.getName()) )
-//      val = at.getValue();
-//    }
-//    
-//    System.out.println("Clicked: "+attrId+" -> "+val);
+    String attrId = header.get(event.getColNum()-1).getId();
+    
+    AttributedObject sample = (AttributedObject) event.getRecord().getAttributeAsObject("__obj");
+    
+    AttributedObject clickedObj = null;
+    
+    for( AttributedObject at : sample.getAttributes() )
+    {
+     if(attrId.equals(at.getName()))
+     {
+      clickedObj = at;
+      break;
+     }
+    }
+    
+//    System.out.println("Clicked: "+attrId+" -> "+clickedObj.getStringValue());
     
     if( event.getColNum() != lfl.length  )
+    {
+     if( clickedObj.getAttributes() == null || clickedObj.getAttributes().size() == 0 )
+      return;
+
+     new ObjectViewer(clickedObj).show();
      return;
+    }
     
     new SampleViewer(header, event.getRecord()).show();
    }
