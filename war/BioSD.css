@@ -142,3 +142,12 @@ span.qualifiedCell
 {
 	text-decoration: underline;
 }
+
+.objectView .nameColumn
+{
+//	background-color: gray;
+	font-weight: bold;
+	border-bottom: 1px solid #A0A0A0;
+    border-right: 1px solid #A0A0A0;
+//	padding-right: 5px
+}

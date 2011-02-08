@@ -593,16 +593,16 @@ public class GroupDetailsPanel extends VLayout
    ListGridRecord rec = new ListGridRecord();
 
    rec.setAttribute("__obj", sample);
-   rec.setAttribute("__id", "<span class='idCell'>"+sample.getName()+"</span>");
+   rec.setAttribute("__id", "<span class='idCell'>"+sample.getFullName()+"</span>");
    
    for( AttributedObject at : sample.getAttributes() )
    {
-    if( at.getName().equals(prideKey) )
-     rec.setAttribute(at.getName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getStringValue()+"'>"+at.getStringValue()+"</a>");
+    if( at.getFullName().equals(prideKey) )
+     rec.setAttribute(at.getFullName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getStringValue()+"'>"+at.getStringValue()+"</a>");
     else if( at.getAttributes() != null )
-     rec.setAttribute(at.getName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
+     rec.setAttribute(at.getFullName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
     else
-     rec.setAttribute(at.getName(), at.getStringValue());
+     rec.setAttribute(at.getFullName(), at.getStringValue());
    }
    records[i++]=rec;
   }
@@ -649,7 +649,7 @@ public class GroupDetailsPanel extends VLayout
     
     for( AttributedObject at : sample.getAttributes() )
     {
-     if(attrId.equals(at.getName()))
+     if(attrId.equals(at.getFullName()))
      {
       clickedObj = at;
       break;
@@ -660,7 +660,7 @@ public class GroupDetailsPanel extends VLayout
     
     if( event.getColNum() != lfl.length  )
     {
-     if( clickedObj.getAttributes() == null || clickedObj.getAttributes().size() == 0 )
+     if( clickedObj == null || clickedObj.getAttributes() == null || clickedObj.getAttributes().size() == 0 )
       return;
 
      new ObjectViewer(clickedObj).show();

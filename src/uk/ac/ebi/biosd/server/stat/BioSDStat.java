@@ -8,6 +8,7 @@ public class BioSDStat
  private int samples=0;
  private int groups=0;
  private int refGroups=0;
+ private int refSamples=0;
  private Map<String, BioSDStat> topicStats;
 
  public void setGroups(int size)
@@ -71,6 +72,21 @@ public class BioSDStat
  public void setRefGroups(int refGroups)
  {
   this.refGroups = refGroups;
+ }
+
+ public int getRefSamples()
+ {
+  return refSamples;
+ }
+
+ public void setRefSamples(int refSamples)
+ {
+  this.refSamples = refSamples;
+ }
+ 
+ public void addRefSamples(int sz)
+ {
+  refSamples+=sz;
  }
 
 

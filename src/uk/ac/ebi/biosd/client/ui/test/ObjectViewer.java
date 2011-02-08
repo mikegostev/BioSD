@@ -8,9 +8,9 @@ public class ObjectViewer extends Window
 {
  public ObjectViewer( AttributedObject obj )
  {
-//  setTitle("Sample "+rec.getAttributeAsString("__id") );  
+  setTitle( "Value properties" );  
   setWidth(750);  
-  setHeight(600); 
+  setHeight(150); 
 //  setLeft(offsetLeft);  
   setCanDragReposition(true);  
   setCanDragResize(true);  
@@ -19,6 +19,7 @@ public class ObjectViewer extends Window
   setShowModalMask(true);
   centerInPage();
 
-  addItem( new ObjectViewPanel(obj) );
- }
+//  addItem( new ObjectViewPanel(obj) );
+  addItem( new ObjectViewPanelHTML(obj) );
+ }  
 }

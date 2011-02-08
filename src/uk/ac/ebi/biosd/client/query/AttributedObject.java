@@ -9,11 +9,7 @@ public class AttributedObject implements IsSerializable
  private String                    name;
  private String                    value;
  private AttributedObject          objectValue;
- /**
-  * @gwt.typeArgs <uk.ac.ebi.biosd.client.query.AttributedObject>
-  */
-
- private List<AttributedObject> qualifiers;
+ private List<AttributedObject> attributes;
 
  public AttributedObject()
  {
@@ -25,9 +21,17 @@ public class AttributedObject implements IsSerializable
 //  value=v;
 // }
 
- public String getName()
+ public String getFullName()
  {
   return name;
+ }
+
+ public String getName()
+ {
+  if( name.length() > 3 && name.charAt(2) == ':' )
+   return name.substring(3);
+  else
+   return name;
  }
 
  public void setName(String name)
@@ -37,7 +41,7 @@ public class AttributedObject implements IsSerializable
 
  public String getStringValue()
  {
-  return value!= null?value:objectValue.toString();
+  return value!= null?value:objectValue.getName();
  }
 
  public void setStringValue(String value)
@@ -58,16 +62,26 @@ public class AttributedObject implements IsSerializable
 
  public List<AttributedObject> getAttributes()
  {
-  return qualifiers;
+  return attributes;
  }
 
  public void setAttributes(List<AttributedObject> qualifiers)
  {
-  this.qualifiers = qualifiers;
+  this.attributes = qualifiers;
  }
 
  public String toString()
  {
-  return name;
+  if( attributes == null || attributes.size() == 0 )
+   return name;
+  
+  StringBuilder sb = new StringBuilder(255);
+  
+  for( AttributedObject atOb : attributes )
+   sb.append(atOb.getName()).append(": ").append(atOb.getStringValue()).append(", ");
+  
+  sb.setLength(sb.length()-2);
+  
+  return sb.toString();
  }
 }

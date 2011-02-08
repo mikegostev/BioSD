@@ -31,6 +31,8 @@ import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.server.stat.BioSDStat;
 
+import com.pri.util.StringUtils;
+
 public class BioSDServiceImpl extends BioSDService
 {
  private AgeStorage storage;
@@ -62,7 +64,7 @@ public class BioSDServiceImpl extends BioSDService
   public int compare(AgeObject o1, AgeObject o2)
   {
    Collection<? extends AgeAttribute> ref1 = o1.getAttributesByClass(referenceAttributeClass, false);
-   Collection<? extends AgeAttribute> ref2 = o1.getAttributesByClass(referenceAttributeClass, false);
+   Collection<? extends AgeAttribute> ref2 = o2.getAttributesByClass(referenceAttributeClass, false);
 
    boolean isRef1, isRef2;
    
@@ -81,16 +83,12 @@ public class BioSDServiceImpl extends BioSDService
     AgeAttribute at = ref2.iterator().next();
     isRef2 = at.getValueAsBoolean();
    }
+   
+   if( isRef1 == isRef2 )
+    return StringUtils.naturalCompare(o1.getId(), o2.getId());
 
-   if( isRef1 )
-   {
-    if(isRef2)
-     return o1.getId().compareTo(o2.getId());
-    else
-     return 1;
-   }
-   else
-    return -1;
+   return isRef1?-1:1;
+   
   }
  };
  
@@ -231,7 +229,9 @@ public class BioSDServiceImpl extends BioSDService
   {
    Collection<? extends AgeAttribute> ref = grp.getAttributesByClass(referenceAttributeClass, false);
 
-   if( ref != null && ref.size() > 0 && ref.iterator().next().getValueAsBoolean() )
+   boolean isRef = ref != null && ref.size() > 0 && ref.iterator().next().getValueAsBoolean();
+   
+   if( isRef )
     refGrp++;
    
    int samples = 0;
@@ -249,6 +249,10 @@ public class BioSDServiceImpl extends BioSDService
    
    statistics.addSamples( samples );
    
+   if( isRef )
+    statistics.addRefSamples( samples );
+
+   
    String ds = grp.getAttributeValue(dataSourceAttributeClass).toString();
    
    if( ds != null )
@@ -256,6 +260,9 @@ public class BioSDServiceImpl extends BioSDService
     BioSDStat dsStat = statistics.getDataSourceStat( ds );
     dsStat.addGroups(1);
     dsStat.addSamples(samples);
+    
+    if( isRef )
+     dsStat.addRefSamples( samples );
    }
   }
   
@@ -1054,8 +1061,8 @@ public class BioSDServiceImpl extends BioSDService
   
   Report rep = new Report();
   rep.setObjects(res);
-  rep.setTotalGroups(statistics.getGroups());
-  rep.setTotalSamples(statistics.getSamples());
+  rep.setTotalGroups(refOnly?statistics.getRefGroups():statistics.getGroups());
+  rep.setTotalSamples(refOnly?statistics.getRefSamples():statistics.getSamples());
   
   return rep;
  }
