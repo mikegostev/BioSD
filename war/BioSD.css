@@ -151,3 +151,29 @@ span.qualifiedCell
     border-right: 1px solid #A0A0A0;
 //	padding-right: 5px
 }
+
+.qualifierTable
+{
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.qualifierTable td
+{
+	border: 1px solid black
+}
+
+.qualifierTable td.qualifierName
+{
+	background-color: #a1c7c7;
+	text-align: right;
+	font-weight: bold;
+}
+
+.qualifierTable td.qualifierObjAttrName
+{
+	background-color: #d1f7f7;
+	text-align: right;
+	font-weight: bold;
+}
+

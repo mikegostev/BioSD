@@ -8,32 +8,52 @@ public class ObjectViewPanelHTML extends HTMLFlow
 {
  public ObjectViewPanelHTML( AttributedObject obj )
  {
-  String html="<table border=1 width=100% height=100%>";
+  String html="<table class='qualifierTable'>";
   
   
   for( AttributedObject at : obj.getAttributes() )
   {
    html += "<tr>";
    
+   String rowSpan ="";
    
-   html += "<td>"+at.getName()+":&nbsp</td>";
-   html += "<td>"+at.getStringValue()+"</td>";
+   if(  at.getObjectValue() != null  )
+    rowSpan = " rowspan='"+(at.getObjectValue().getAttributes().size()+1)+"'";
+   
+   html += "<td class='qualifierName'"+rowSpan+">"+at.getName()+":&nbsp</td>";
+   
+   String val = at.getStringValue();
+   
+   if(  at.getObjectValue() != null  )
+    html += "<td class='qualifierObjAttrName'>Name:&nbsp</td><td class='qualifierValue'>"+val.substring(val.indexOf('-')+1)+"</td>";
+   else
+    html += "<td colspan='2' style='qualifierValue'>"+val+"</td>";
    
    html += "</tr>";
-   
+
    if( at.getObjectValue() != null )
    {
-    html += "<tr><td colspan='2'><table>";
+    html += "<tr>";
     
     for( AttributedObject obat : at.getObjectValue().getAttributes() )
     {
-     html += "<td>"+obat.getName()+":&nbsp</td>";
-     html += "<td>"+obat.getStringValue()+"</td>";
+     html += "<td class='qualifierObjAttrName'>"+obat.getName()+":&nbsp</td>";
+     
+     val = obat.getStringValue();
+     
+     if( val.startsWith("http://") )
+      val = "<a target='_blank' href='"+val+"'>"+val+"</a>";
+     
+     html += "<td class='qualifierValue'>"+val+"</td>";
     }
     
-    html += "</table></td></tr>";
+    html += "</tr>";
    }
+   
+
   }
+  
+  html+="</table>";
   
   setContents(html);
  }
