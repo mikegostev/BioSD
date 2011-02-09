@@ -250,7 +250,9 @@ function minimimise(){
 
 headertoback=0;
 function bringtotop(){
+//	alert('top')
 	if(navigator.userAgent.indexOf("MSIE") != -1) {
+		parent.document.getElementById("head").style.height="70.0em"
 		if(top!=self){
 			try{
 				if(parent.document.getElementById('head').allowTransparency==true){
@@ -294,6 +296,8 @@ function bringtotop(){
 }
 
 function bringtobottom(){
+//	alert('bottom')
+parent.document.getElementById("head").style.height="57px"
 	if(top!=self){
 		if(!is_safari){
 			headertoback=window.setTimeout("do_bringtobottom()", 0.1);

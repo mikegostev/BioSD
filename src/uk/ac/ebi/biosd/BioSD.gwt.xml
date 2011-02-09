@@ -14,6 +14,7 @@
 	<inherits name="com.google.gwt.i18n.I18N"/>
     
     <inherits name="com.smartgwt.SmartGwt"/>
+  <!--  <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlue"/> -->
 
   <!-- Other module inherits                                      -->
 

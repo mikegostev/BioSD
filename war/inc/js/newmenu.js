@@ -58,14 +58,14 @@ if (  (navigator.appName == 'Microsoft Internet Explorer') ) {
 	try{
 		//parent.document.getElementById("head").style.height="710px";
 		
-		if(window.parent.isHomePage){
-			
-			parent.document.getElementById("head").style.height=theMenuHeightHome;
-			
-		}
-		else{
-			parent.document.getElementById("head").style.height=theMenuHeight;
-		}
+//		if(window.parent.isHomePage){
+//			
+//			parent.document.getElementById("head").style.height=theMenuHeightHome;
+//			
+//		}
+//		else{
+//			parent.document.getElementById("head").style.height=theMenuHeight;
+//		}
 		
 	}
 	catch(err){
@@ -91,6 +91,8 @@ if (navigator.userAgent.indexOf("MSIE") != -1) {
 	}
 }
 
+
+
 var offtop=53;
 var offleft=9; 
 var currentclassname = "";
@@ -98,6 +100,7 @@ var levelonewidth=120;
 var leveltwowidth=145; 
 
 var menuopen=false;
+
 
 
 function activateMenu(nav) {
@@ -246,7 +249,7 @@ function activateMenu(nav) {
 							} //if(is_ie6){
 						}
 				   	}	
-				}
+				} 
 				lis[i].onmouseout=function() { 
 					if (is_ie) { 
 						this.lastChild.style.display="none";
