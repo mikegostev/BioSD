@@ -96,7 +96,7 @@ h1 {
 {
 	font-size: 10pt !important;
 	font-weight: normal;
-	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif !important;
 	color: black
 }
 

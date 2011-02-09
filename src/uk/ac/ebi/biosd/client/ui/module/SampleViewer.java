@@ -14,15 +14,10 @@ public class SampleViewer  extends Window
 {
  public SampleViewer(List<AttributeClassReport> header, ListGridRecord rec )
  {
-  int height = header.size()*30;
-  
-  if( height > 600 )
-   height = 600;
   
 //  setAutoSize(true);  
   setTitle("Sample "+rec.getAttributeAsString("__id") );  
   setWidth(750);  
-  setHeight(height); 
 //  setLeft(offsetLeft);  
   setCanDragReposition(true);  
   setCanDragResize(true);  
@@ -34,10 +29,29 @@ public class SampleViewer  extends Window
   DataSource ds = new DataSource();
   ds.setClientOnly(true);
 
+  int height=38;
+  
   for( AttributeClassReport cls : header )
   {
    ds.addField(new DataSourceTextField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") ));
+   
+   height+=23;
+   
+   String val = rec.getAttributeAsString(cls.getId());
+   
+   if( val != null )
+   {
+    height+= (val.length()/100)*16;
+   }
   }
+  
+  if( height > 600 )
+   height = 600;
+
+  System.out.println("Height: "+height);
+  
+  setHeight(height); 
+
   
   ds.addData(rec);
   
@@ -49,6 +63,10 @@ public class SampleViewer  extends Window
   dv.setStyleName("groupDetails");
   dv.setAutoFetchData(true);
 
+  dv.setMargin(3);
+  
+  centerInPage();
+  
   addItem(dv);
  }
 

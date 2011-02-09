@@ -404,7 +404,7 @@ public class BioSDServiceImpl extends BioSDService
 
   sgRep.setId( obj.getId() );
 
-  sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
+//  sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
   sgRep.addAttribute("ID", obj.getId(), true, 0);
   
   Object descVal = obj.getAttributeValue(desciptionAttributeClass);
