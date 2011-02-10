@@ -25,6 +25,7 @@ import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
+import com.smartgwt.client.widgets.form.fields.SpacerItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
@@ -204,6 +205,9 @@ public class GroupDetailsPanel extends VLayout
   
   addMember(dv);
   
+  spc = new Canvas();
+  spc.setHeight(5);
+  addMember(spc);
   
   DynamicForm lnkform = new DynamicForm();
   lnkform.setWidth(500);
@@ -259,7 +263,7 @@ public class GroupDetailsPanel extends VLayout
   addMember(lnkform);
   
   spc = new Canvas();
-  spc.setHeight(15);
+  spc.setHeight(5);
   addMember(spc);
 
   pager = new PagingRuler(groupID);
@@ -543,7 +547,7 @@ public class GroupDetailsPanel extends VLayout
   attrList.setOverflow(Overflow.VISIBLE);
   attrList.setLeaveScrollbarGap(false);
   attrList.setStyleName("sampleGrid");
-  attrList.setMargin(10);
+  attrList.setMargin(5);
   attrList.setHoverWidth(200);
   attrList.setShowEdges(true);
   

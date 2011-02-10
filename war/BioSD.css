@@ -160,7 +160,8 @@ span.qualifiedCell
 
 .qualifierTable td
 {
-	border: 1px solid black
+	border: 1px solid black;
+	font-size: 10px;
 }
 
 .qualifierTable td.qualifierName
