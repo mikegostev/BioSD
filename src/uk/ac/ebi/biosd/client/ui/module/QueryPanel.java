@@ -2,8 +2,8 @@ package uk.ac.ebi.biosd.client.ui.module;
 
 import java.util.LinkedHashMap;
 
-import uk.ac.ebi.biosd.client.LinkClickListener;
-import uk.ac.ebi.biosd.client.LinkManager;
+import uk.ac.ebi.age.ui.client.LinkClickListener;
+import uk.ac.ebi.age.ui.client.LinkManager;
 import uk.ac.ebi.biosd.client.QueryService;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.ui.ResultRenderer;

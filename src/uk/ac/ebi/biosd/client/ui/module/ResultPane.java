@@ -1,6 +1,7 @@
 package uk.ac.ebi.biosd.client.ui.module;
 
-import uk.ac.ebi.biosd.client.LinkManager;
+import uk.ac.ebi.age.ui.client.LinkManager;
+import uk.ac.ebi.age.ui.client.module.PagingRuler;
 import uk.ac.ebi.biosd.client.query.GroupImprint;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.shared.AttributeReport;

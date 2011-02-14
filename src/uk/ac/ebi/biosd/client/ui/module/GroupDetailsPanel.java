@@ -2,8 +2,9 @@ package uk.ac.ebi.biosd.client.ui.module;
 
 import java.util.List;
 
-import uk.ac.ebi.biosd.client.LinkClickListener;
-import uk.ac.ebi.biosd.client.LinkManager;
+import uk.ac.ebi.age.ui.client.LinkClickListener;
+import uk.ac.ebi.age.ui.client.LinkManager;
+import uk.ac.ebi.age.ui.client.module.PagingRuler;
 import uk.ac.ebi.biosd.client.QueryService;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
 import uk.ac.ebi.biosd.client.query.AttributedObject;
