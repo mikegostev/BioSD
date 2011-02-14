@@ -17,6 +17,7 @@
   <!--  <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlue"/> -->
 
   <!-- Other module inherits                                      -->
+  <inherits name="uk.ac.ebi.age.ui.AGE_Visual"/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='uk.ac.ebi.biosd.client.BioSDEntryPoint'/>
