@@ -8,8 +8,8 @@ import uk.ac.ebi.biosd.client.QueryService;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.ui.ResultRenderer;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.SC;
@@ -236,18 +236,18 @@ public class QueryPanel extends VLayout implements LinkClickListener
   act.execute();
  }
  
- private class QueryAction implements  FormItemClickHandler, KeyPressHandler, Command // ClickHandler,
+ private class QueryAction implements  FormItemClickHandler, KeyPressHandler, ScheduledCommand // ClickHandler,
  {
 
   public void onKeyPress(KeyPressEvent event)
   {
    if("Enter".equals(event.getKeyName()))
-    DeferredCommand.addCommand(this);
+    Scheduler.get().scheduleDeferred(this);
   }
 
   public void onFormItemClick(FormItemIconClickEvent event)
   {
-   DeferredCommand.addCommand(this);
+   Scheduler.get().scheduleDeferred(this);
   }
 
   public void execute()

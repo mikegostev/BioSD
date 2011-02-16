@@ -1,7 +1,7 @@
 package uk.ac.ebi.biosd.client.ui.module;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.layout.VLayout;
 
@@ -53,7 +53,7 @@ public class QueryFace extends VLayout
 
   addMember( footPan );
   
-  DeferredCommand.addCommand(new Command()
+  Scheduler.get().scheduleDeferred(new ScheduledCommand()
   {
    @Override
    public void execute()

@@ -28,8 +28,8 @@ public class ResultPane extends VLayout implements ResultRenderer
  public final static int MAX_SAMPLES_PER_PAGE=20;
  
  private String query;
- private boolean searchSamples;
- private boolean searchGroups;
+// private boolean searchSamples;
+// private boolean searchGroups;
  private boolean searchAtNames;
  private boolean searchAtValues;
  
@@ -133,8 +133,8 @@ public class ResultPane extends VLayout implements ResultRenderer
  public void showResult( Report res, String qry, boolean sSmp, boolean sGrp, boolean sAtrNm, boolean sAtrVl, int cpage )
  {
   query = qry;
-  searchSamples=sSmp;
-  searchGroups=sGrp;
+//  searchSamples=sSmp;
+//  searchGroups=sGrp;
   searchAtNames=sAtrNm;
   searchAtValues=sAtrVl;
   

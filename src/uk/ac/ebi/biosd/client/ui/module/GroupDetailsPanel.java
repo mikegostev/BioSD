@@ -26,7 +26,6 @@ import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
-import com.smartgwt.client.widgets.form.fields.SpacerItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
