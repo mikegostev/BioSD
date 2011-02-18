@@ -33,21 +33,17 @@ public class ObjectViewPanelHTML extends HTMLFlow
 
    if( at.getObjectValue() != null )
    {
-    html += "<tr>";
-    
     for( AttributedObject obat : at.getObjectValue().getAttributes() )
     {
-     html += "<td class='qualifierObjAttrName'>"+obat.getName()+":&nbsp</td>";
+     html += "<tr><td class='qualifierObjAttrName'>"+obat.getName()+":&nbsp</td>";
      
      val = obat.getStringValue();
      
      if( val.startsWith("http://") )
       val = "<a target='_blank' href='"+val+"'>"+val+"</a>";
      
-     html += "<td class='qualifierValue'>"+val+"</td>";
+     html += "<td class='qualifierValue'>"+val+"</td></tr>";
     }
-    
-    html += "</tr>";
    }
    
 

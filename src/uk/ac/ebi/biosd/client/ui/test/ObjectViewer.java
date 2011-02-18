@@ -11,7 +11,7 @@ public class ObjectViewer extends Window
  {
   setTitle( "Value properties: "+obj.getStringValue() );  
   setWidth(750);  
-  setHeight(100); 
+  setHeight(105); 
 //  setLeft(offsetLeft);  
   setCanDragReposition(true);  
   setCanDragResize(true);  
