@@ -807,7 +807,7 @@ public class BioSDServiceImpl extends BioSDService
  @Override
  public SampleList getSamplesByGroup(String grpID, int offset, int count)
  {
-  AgeObject grpObj = storage.getObjectById(grpID);
+  AgeObject grpObj = storage.getGlobalObject(grpID);
   
   if( grpObj == null )
    return null;
@@ -846,7 +846,7 @@ public class BioSDServiceImpl extends BioSDService
  
  public Report getSamplesByGroupX(String grpID, int offset, int count)
  {
-  AgeObject grpObj = storage.getObjectById(grpID);
+  AgeObject grpObj = storage.getGlobalObject(grpID);
   
   if( grpObj == null )
    return null;
