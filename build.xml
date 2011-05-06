@@ -16,7 +16,7 @@
 
   <path id="build.lib">
     <fileset dir="buildlib/" includes="*.jar"/>
-    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle.2.1.1_2.1.1.v201012170127/gwt-2.1.1" includes="*.jar"/>
+    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r36v201104261928/gwt-2.3.0" includes="*.jar"/>
   </path>
 
   <path id="age.lib">
