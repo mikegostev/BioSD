@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="eng">
+<!-- InstanceBegin template="/Templates/new_template_leftmenu.dwt" codeOutsideHTMLIsLocked="false" -->
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+  <meta http-equiv="Content-Language" content="en-GB" />
+  <meta http-equiv="Window-target" content="_top" />
+  <meta name="no-email-collection" content="http://www.unspam.com/noemailcollection/" />
+  <!-- InstanceBeginEditable name="doctitle" -->
+
+  <title>SampleTab format for Biologists | BioSample Database | EBI</title>
+  <!-- InstanceEndEditable -->
+  <link rel="stylesheet" href="http://www.ebi.ac.uk/inc/css/contents.css" type="text/css" />
+  <link rel="stylesheet" href="http://www.ebi.ac.uk/inc/css/userstyles.css" type="text/css" />
+  <script src="http://www.ebi.ac.uk/inc/js/contents.js" type="text/javascript">
+</script>
+  <link rel="stylesheet" href="http://www.ebi.ac.uk/inc/css/sidebars.css" type="text/css" />
+  <link rel="SHORTCUT ICON" href="http://www.ebi.ac.uk/bookmark.ico" />
+  <style type="text/css">
+/*<![CDATA[*/
+
+  @media print { 
+        body, .contents, .header, .contentsarea, .head { 
+                position: relative;
+        }  
+  } 
+  /*]]>*/
+  </style><!-- InstanceBeginEditable name="head" -->
+  
+  <!--  start meta tags, css , javascript here   -->
+  <link rel="stylesheet" href="st.css" type="text/css" />
+  <!--  end meta tags, css , javascript here  -->
+  
+  <!-- InstanceEndEditable -->
+</head>
+
+<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}">
+<div class="headerdiv" id="headerdiv" style="position:absolute; z-index: 1;">
+    <iframe src="/inc/head.html" name="head" id="head" frameborder="0" marginwidth="0px" marginheight="0px" scrolling="no" width="100%" style=    "position:absolute; z-index: 1; height: 57px;">Your browser does not support inline frames or is currently configured not to display inline frames. Content can be viewed at actual source page: http://www.ebi.ac.uk/inc/head.html</iframe>
+  </div>
+
+  <div class="contents" id="contents">
+    <table class="contentspane" id="contentspane" summary="The main content pane of the page">
+      <tr>
+        <td class="leftmargin"><img src="http://www.ebi.ac.uk/inc/images/spacer.gif" class="spacer"
+        alt="spacer" /></td>
+
+        <td class="leftmenucell" id="leftmenucell">
+          <div class="leftmenu" id="leftmenu" style=
+          "width: 145px; visibility: visible; display: block;">
+          <!-- InstanceBeginEditable name="leftnav" -->
+          <!-- start left menu here  -->
+
+          <ul id="sidemenuid" class="sidemenu">
+          	<li><a href="overview.html">Overview</a></li>
+            <li class="clickmeopen"><a href="st.html">SampleTab format</a>
+              <ul>
+                <li><a href="stbiol.html">for Biologists</a></li>
+                <li><a href="stbioinf.html">for submitting Bioinformaticians</a></li>
+                <li><a href="staccess.html">for accessing Bioinformaticians</a></li>
+              </ul>
+            </li>
+         </ul>
+			 
+         <!-- The following divs add a SLIDING Icon Box to your Menu --> 
+         <script type="text/javascript" src="/inc/js/iconboxslider.js"></script> 
+         <div class="slidecontainer"> 
+            <div class="iconbox2heading" > 
+               <span class="headerToggle" id="news"><img class="headerToggleImage" src="http://www.ebi.ac.uk/inc/images/minus.gif"  alt="Collapse"  /></span> 
+               <a href="#">Contents</a> 
+            </div> 
+            <div class="iconbox2contents" id="news_content" style="display: block"> 
+               <p>
+               <a href="#MSI">MSI section</a>
+               <br />
+               <a href="#SCD">SCD section</a>
+               </p> 
+					 
+            </div> 
+         </div> 
+ 
+          <!-- end left menu here -->
+          <!-- InstanceEndEditable -->
+          <!-- InstanceBeginEditable name="lefticons" -->
+          <!-- InstanceEndEditable --><script type="text/javascript" src=
+          "http://www.ebi.ac.uk/inc/js/sidebars.js">
+</script> <img src="http://www.ebi.ac.uk/inc/images/spacer.gif" class="spacer" alt="spacer" />
+          </div>
+        </td>
+
+        <td class="contentsarea" id="contentsarea">
+          <!-- InstanceBeginEditable name="contents" -->
+          <!-- start contents here -->
+          <div class="breadcrumbs">
+            <a href="http://www.ebi.ac.uk/" class="firstbreadcrumb">EBI</a> 
+            <a href="http://www.ebi.ac.uk/biosamples">BioSamples Database</a>
+            <a href="st.html">SampleTab</a>
+          </div>
+
+          <h1><a name="top">SampleTab format for Biologists</a></h1>
+          <p><i>Note: Specification of this file format is at an early stage. All details are subject to flux, depending on how useful they are in the face of real data.</i></p>
+
+         <p>SampleTab files can be thought of as spreadsheets (e.g. Microsoft Excel) with all cells set to text. A template is available as a pair of text files (<a href="template_msi.sampletab.txt">here</a> and <a href="template_scd.sampletab.txt">here</a>), an <a href="template.xls">Excel spreadsheet</a>, or an <a href="template.ods">OpenDocument spreadsheet</a>. An example is also available as two text files (<a href="example_msi.sampletab.txt">here</a> and <a href="example_scd.sampletab.txt">here</a>), an <a href="example.xls">Excel spreadsheet</a>, or an <a href="example.ods">OpenDocument spreadsheet</a></p>
+
+         <p>SampleTab documents are composed of two major sections - Meta Submission Information and Sample Characteristics and Description. The start of each of these parts are identified by <span class="tag">[MSI]</span> or <span class="tag">[SCD]</span> by themselves on a line. These sections can either be in a single file, or can be in two separate parts (like sheets in a spreadsheet, or multiple files); in such cases, they will be combined together on submission.</p>
+
+         <p>There are some general rules that apply to all SampleTab files. These describe overall properties of the file, rather than particular content.:</p>
+         <ul>
+            <li>The first entry in a row / column (MSI, SCD respectively) of data is known as the "tag".</li>
+               <li>If a data cell is empty and data for that tag is optional, then it is assumed that no data is provided for that cell for that tag.</li>
+            <li>If a data cell is empty and data for that tag must be provided, such as Submission SampleTab Version, then the file is invalid and will not be accepted.</li>
+         </ul>
+			
+         <p>The following are "best practice" guidelines and should be followed:</p>
+         <ul>
+            <li><b>IMPORTANT</b> If using a spreadsheet (e.g. Microsoft Excel) all cells should be set to "text" content at all times. If this is not done, any numbers (sample names, dates, values, identifiers, etc) may be automatically "corrected" wrongly by the spreadsheet. Note that this may cause the spreadhseet software to report numbers as text as errors, ignore them.</li>
+               <li>Within the tab-separated cells leading and trailing spaces should be removed.</li>
+            <li>Dates and times should be in ISO 8601 format YYYY-MM-DD HH:MM:SS.ss (omitting excessive accuracy when appropriate).</li>
+         </ul>
+			
+
+         <p>Note: In several places the term "ontology" is used. Ontologies are shared definitions and classifications of terms, much like dictionaries but arranged in a hierarchy (e.g. sarcomer is a kind of cancer, which is a kind of disease). They can also contain links to evidence for that term, and links to other terms to allow logical reasoning (e.g. a "father" is a "parent" that is also "male"). By using the same ontology for different submissions, they can be compared fairly allowing for better searching and presentation of the data.</p>
+
+
+         <h2>Meta Submission Information (MSI) <a href="#top" name="MSI">^</a></h2>
+			
+         <p class="centeredImage"><a href="example.xls"><img src="st_msi.png" alt="Overview example of MSI" style="float: center;" /></a></p>		
+
+         <p>The Meta Submission Information (MSI) section is row-based. The first cell in each row must be a tag and the rest of the cells on that row are data associated with that tag. Tags cannot be repeated.</p> 
+			
+			
+         <p>Some Tags are grouped e.g. <span class="tag">Person First Name</span> and <span class="tag">Person Last Name</span>. It is recommended that groups of tags are separated by blank lines.</p>
+         <ul>
+            <li><span class="tag">[MSI]</span>
+               <ul>
+                  <li>This specifies the start of the MSI section of the document.</li> 
+                  <li>It must be the only data on a line.</li>
+                  <li>It must appear before any other MSI tags.</li>
+               </ul>
+            </li>		
+         </ul>
+         <p class="centeredImage"><img src="st_submission.png" alt="Example of submission tags" style="float: center;" /></p>		
+         <ul>
+            <li><span class="tag">Submission Title</span>
+               <ul>
+                  <li>Short (approx. 50 chars or less) title of this submission.</li>
+                  <li>Similar to a paper title, but specific to the samples.</li>
+                  <li>Must have exactly one entry.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Submission Abstract</span>
+               <ul>
+                  <li>Short (approx. 1,000 chars or less) description of this submission.</li>
+                  <li>Similar to a paper abstract, but specific to the samples.</li>
+                  <li>Must have exactly one entry.</li>
+                  <li>Please ensure any information about the samples (e.g. species, disease, project, etc) specified here is also specified elsewhere in the file.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Submission SampleTab Version</span>
+               <ul>
+                  <li>Version number of SampleTab format this document should adhere to.</li>
+                  <li>Current version is 0.7.</li>
+                  <li>Must have exactly one data entry.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Submission Release Date</span>
+               <ul>
+                  <li>Date when submission will become public (e.g. in time with a publication).</li>
+                  <li>If left blank, it will immediately become public.</li>
+                  <li>Can be change after submission, for example if a paper publication is delayed.</li>
+                  <li>Cannot be more than two years in the future.</li>
+               </ul>
+            </li>  
+         </ul>
+         <p class="centeredImage"><img src="st_publication.png" alt="Example of publication tags" style="float: center;" /></p>		
+         <ul>
+            <li><span class="tag">Publication DOI</span>
+               <ul>
+                  <li><a href="http://en.wikipedia.org/wiki/Digital_object_identifier">Digital Object Identifier</a></li>
+                  <li>Publication(s) about how the samples were collected / created, not about data generated from the samples or other analysis.</li>
+                  <li>May be omitted.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Publication PubMed ID</span>
+               <ul>
+                  <li>Publication(s) about how the samples were collected / created, not about data generated from the samples or other analysis.</li>
+                  <li>Must be a valid PubMed ID.</li>
+                  <li>Data must consist of only 0-9.</li>
+                  <li>May be omitted.</li>
+                  <li>Both PubMed ID and DOI should only be provided for the same publication if the PubMed record includes the DOI.</li>
+               </ul>
+            </li>
+         </ul>
+         <p class="centeredImage"><img src="st_organization.png" alt="Example of organization tags" style="float: center;" /></p>		
+         <ul>   
+            <li><span class="tag">Organization Name</span>
+               <ul>
+                  <li>Name of the organization responsible for the samples.</li>
+                  <li>Abbreviations should be expanded e.g. European Bioinformatics Institute rather than EBI.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Organization Address</span>
+               <ul>
+                  <li>Address of the organization responsible for the samples.</li>
+                  <li>Must be a valid address, including post code and country.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Organization URI</span>
+               <ul>
+                  <li>Unique Resource Identifier for the organization responsible for the samples.</li>
+                  <li>For example, the organizations website.</li>
+                  <li>May be omitted.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Organization Email</span>
+               <ul>
+                  <li>Must be a valid email address.</li>
+                  <li>May be omitted, but see note below.</li>
+                  <li>Files that use the alternative spelling "Organisation" are transformed to "Organization" on submission.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Organization Role</span>
+               <ul>
+                  <li>Role the organization plays with regard to the samples.</li>
+                  <li>Examples include "biomaterial provider", "investigator", "submitter", etc.</li>
+                  <li>If the organization has multiple roles, use one data entry per role and repeat other organization information.</li>
+                  <li>Must be a valid ontology term, see the <a href="http://www.ebi.ac.uk/efo/EFO_0002012">Experimental Factor Ontology (EFO)</a> for some suitable terms.</li>
+                  <li>Files that use the alternative spelling "Organisation" are transformed to "Organization" on submission.</li>
+               </ul>
+            </li>
+         </ul>
+         <p class="centeredImage"><img src="st_person.png" alt="Example of person tags" style="float: center;" /></p>		
+         <ul>
+            <li><span class="tag">Person Last Name</span>
+               <ul>
+                  <li>Name of person associated with the samples.</li>
+                  <li>Typically, this will be authors of publications associated with the samples.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Person Mid Initials</span>
+               <ul>
+                  <li>May be omitted or blank for some data.</li>
+                  <li>Space separated single letters.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Person First Name</span>
+               <ul>
+                  <li>Free text field.</li>
+                  <li>May be omitted.</li>
+                  <li>May be an initial.</li>
+                  <li>Titles should not be used</li>
+               </ul>
+            </li>
+            <li><span class="tag">Person Email</span>
+               <ul>
+                  <li>Must be a valid email address.</li>
+                  <li>May be omitted, but see note below.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Person Role</span>
+               <ul>
+                  <li>Role the organization plays with regard to the samples.</li>
+                  <li>Examples include biomaterial provider, investigator, submitter, etc.</li>
+                  <li>If the person has multiple roles, use one data entry per role and repeat other person information.</li>
+                  <li>Must be a valid ontology term,  see the <a href="http://www.ebi.ac.uk/efo/EFO_0002012">Experimental Factor Ontology (EFO)</a> for some suitable terms.</li>
+               </ul>
+            </li>
+         </ul>
+			
+         <p>Note: There must be at least one Person or one Organization that has an email address. If there are more than one person/organization with an email address, at least one must have a "Submitter" role. This will be used for future contact, e.g. for clarification. The email address will be made public so that data users can contact the original submitter.
+         </p>
+			
+			
+         <h2>Same Characteristics and Description (SCD) <a href="#top" name="SCD">^</a></h2>
+			
+         <p class="centeredImage"><a href="example.xls"><img src="st_scd.png" alt="Overview example of SCD" style="float: center;" /></a></p>		
+			
+         <p>The SCD section is a column-based arrangement. The cells in the second row (the row after <span class="tag">[SCD]</span>) are the tags of the columns.</p> 
+			
+         <p>Samples are identified by a <span class="tag">Sample Name</span> which must be unique for each sample. After that, any number of "tags" can be specified to describe the samples. If you want to add additional information to a tag (e.g. <span class="tag">Units</span>) use the column immediately following the original tag. </p>
+         <p>Numeric data should use a full stop as a decimal separator and no other separators. For example, 1234.56 rather than 1234,56 or 1,234.56. Units should be specified in the following column under a <span class="tag">Units</span> tag.</p> 
+         <p>Almost anything is usable as a tag in order to accept as wide a range of samples as possible. However, there are some recommended categories that should be included, and some conventions about terms to use e.g. <span class="tag">Organism</span> rather than "species" so that e.g. hybrids can be included. In cases where recommended information is not known, state that it is not known; this will avoid other people contacting you in the future for this information. If in doubt, add more information - there is no such thing as an over-described sample!</p>
+			
+         <ul>
+            <li><span class="tag">Sample Name</span>
+               <ul>
+                  <li>The name given to this sample within this submission.</li>
+                  <li>Must be specified.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Sample Description</span>
+               <ul>
+                  <li>A brief description of this sample.</li>
+                  <li>Ideally approximately 25 words in length</li>
+               </ul>
+            </li>
+         </ul>
+			
+         <p>Here are some suggested terms.</p>
+			
+         <ul>
+            <li><span class="tag">Organism</span>
+               <ul>
+                  <li>Species or other identification of the type of organism this sample is from.</li>
+                  <li>Species identifiers should be from <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/">NCBI taxonomy</a> or  <a href="www.ebi.ac.uk/newt/">NEWT</a> or in either text or numeric identifier.</li>
+                  <li>Can use multiple <span class="tag">Organism</span> columns in case of mixed samples (e.g. combined host and parasite in a single sample)</li>
+               </ul>
+            </li>
+            <li><span class="tag">Organism Part</span>
+               <ul>
+                  <li>Region of the organism sampled, e.g. liver, blood, ventral midline neuron, etc.</li>
+                  <li>Can be used with organisms other than vertebrates, e.g. plants, fungi, etc.</li>
+                  <li>Does not normally apply to single-celled organisms</li>
+                  <li>Use "whole organism" if the sample was derived from the whole organism rather than a specific part</li>
+               </ul>
+            </li>
+            <li><span class="tag">Sex</span>
+               <ul>
+                  <li>Sex of the organism this sample is from at the time the sample was taken.</li>
+                  <li>Only applicable to species that have multiple distinct sexes.</li>
+                  <li>Strictly biological sex, not gender or other social construct.</li>
+                  <li>Should be male/female or in other cases as term from a major ontology, such as <a href="http://www.ebi.ac.uk/efo/EFO_0000695">EFO</a></li>
+               </ul>
+            </li>
+            <li><span class="tag">Cell Type</span>
+               <ul>
+                  <li>Type of cells this sample is composed of, if it is known.</li>
+                  <li>Should be from a major ontology, such as <a href="http://www.ebi.ac.uk/efo/EFO_0000324">EFO</a> or <a href="http://obo.cvs.sourceforge.net/obo/obo/ontology/anatomy/cell_type/cell.obo">CL</a></li>
+                  <li>Multiple <span class="tag">Cell Type</span> tags can be used if samples are of a small number of cell types.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Material</span>
+               <ul>
+                  <li>What type of sample material this is - live organism, cell line, blood sample, DNA, RNA, etc.</li>
+                  <li>Should be from a major ontology, such as <a href="http://www.ebi.ac.uk/efo/overview">EFO</a></li>
+               </ul>
+            </li>
+            <li><span class="tag">Child Of</span>
+               <ul>
+                  <li>Family relationships should only be indicated using this marker - do not use mother/father (these can be determined from sex) and do not indicate siblings.</li>
+                  <li>Data should be <span class="tag">Sample Name</span> of the parent of this sample.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Disease</span>
+               <ul>
+                  <li>Name of any known diseases this sample is infected with.</li>
+                  <li>Includes both infections and other conditions (e.g. cancer).</li>
+               </ul>
+            </li>
+            <li><span class="tag">Phenotype</span>
+               <ul>
+                  <li>Any phenotype exhibited by the organism this sample was collected from.</li>
+                  <li>Can use a <a href="http://www.nlm.nih.gov/mesh/MBrowser.html">MeSH</a> or <a href="http://www.human-phenotype-ontology.org/PhenExplorer/PhenExplorer.html">HPO</a> identifier.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Genotype</span>
+               <ul>
+                  <li>Any known information about the samples genetic background.</li>
+                  <li>E.g. knockout, insertion, or other genetic modification.</li>
+               </ul>
+            </li>
+            <li><span class="tag">Developmental Stage</span>
+               <ul>
+                  <li>General developmental stage of this sample.</li>
+                  <li>If an exact age is known, use <span class="tag">Age</span> as the tag and specify the units used in the next column.</li>
+               </ul>
+            </li>
+         </ul>
+         <p>
+         A "best practice" collection of terms that should be used with different types of sample (human, mouse, plant, bacterial, meta-genomic, etc) is being developed; if you have any queries/suggestions please <a href="mailto:biosamples@ebi.ac.uk?Subject=SampleTab%20query">contact us</a>.
+         </p>
+          
+          <!-- end contents here --> 
+          <!-- InstanceEndEditable -->
+           <img src="http://www.ebi.ac.uk/inc/images/spacer.gif" class="spacer" alt="spacer" />
+        </td>
+
+        <td class="rightmenucell" id="rightmenucell">
+          <div class="rightmenu" id="rightmenu"><img src=
+          "http://www.ebi.ac.uk/inc/images/spacer.gif" class="spacer" alt="spacer" /></div>
+        </td>
+      </tr>
+    </table>
+
+    <table class="footerpane" id="footerpane" summary="The main footer pane of the page">
+      <tr>
+        <td colspan="4" class="footerrow">
+          <div class="footerdiv" id="footerdiv" style="z-index:2;">
+            <iframe src="/inc/foot.html" name="foot" frameborder="0" marginwidth="0px" marginheight="0px" scrolling="no" height="22px" width="100%" style="z-index:2;" id="foot">Your browser does not support inline frames or is currently configured not to display inline frames. Content can be viewed at actual source page: http://www.ebi.ac.uk/inc/foot.html</iframe>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <script src="http://www.ebi.ac.uk/inc/js/footer.js" type="text/javascript">
+    </script>
+  </div><!-- InstanceEnd -->
+</body>
+</html>

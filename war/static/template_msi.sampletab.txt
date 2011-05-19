@@ -1,0 +1,20 @@
+[MSI]
+Submission Title
+Submission Description
+Submission Version	0.7
+Submission Release Date
+
+Publication DOI
+Publication PubMed ID
+
+Organization Name
+Organization Address
+Organization URI
+Organization Email
+Organization Role
+
+Person Last Name
+Person Mid Initials
+Person First Name
+Person Email
+Person Role
