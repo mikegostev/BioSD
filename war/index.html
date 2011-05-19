@@ -28,20 +28,29 @@
 <meta name="description" content="BioSample database at the European Bioinformatics Institute"/>
 
 <script type="text/javascript">
-	(function() {
+	function loadStats() {
 		var ga = document.createElement('script');
 		ga.type = 'text/javascript';
 		ga.src = 'DBStat';
 		var s = document.getElementsByTagName('script')[0];
 		s.parentNode.insertBefore(ga, s);
-		})();
+		};
+		
+	function statsReady( bioSDStat )
+	{
+		 document.getElementById("totalSamples").innerHTML=bioSDStat.samples;
+		 document.getElementById("totalGroups").innerHTML=bioSDStat.groups;
+
+		 var l=0; for(var k in bioSDStat.topics) l++; ;
+		 document.getElementById("totalDataSources").innerHTML=l;
+	}
 </script>
 
 
 <!--  end meta tags, css , javascript here  -->
 
 </head>
-<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}">
+<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}; loadStats();">
 		<div class="headerdiv" id="headerdiv" style="position:absolute; z-index: 1;">
 			<iframe src="/inc/head.html" name="head" id="head" frameborder="0" marginwidth="0px" marginheight="0px" scrolling="no"  width="100%" style="position:absolute; z-index: 1; height: 57px;">Your browser does not support inline frames or is currently configured not to display inline frames. Content can be viewed at actual source page: http://www.ebi.ac.uk/inc/head.html</iframe>
 
@@ -108,10 +117,10 @@
 						</div>
 						<div class="biosd_facts">
 							<div class="title">SUMMARY OF CONTENTS:</div><br>
-							Number of samples: <script> document.write(bioSDStat.samples); </script><br>
-							Number of groups: <script> document.write(bioSDStat.groups); </script><br>
+							Number of samples: <span id="totalSamples"></span><br>
+							Number of groups: <span id="totalGroups"></span><br>
 						<!--	Number of attributes:<br> -->
-							Number of data sources: <script> var l =0; for(var k in bioSDStat.topics) l++; document.write(l);</script><br>
+							Number of data sources: <span id="totalDataSources"></span><br>
 						</div>
 						<div class="search_within_left">
 						<a target="_top" href="http://www.ebi.ac.uk/biosamples/biosamples.html" style="text-decoration:none">
