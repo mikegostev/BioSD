@@ -28,20 +28,29 @@
 <meta name="description" content="BioSample database at the European Bioinformatics Institute"/>
 
 <script type="text/javascript">
-	(function() {
+	function loadStats() {
 		var ga = document.createElement('script');
 		ga.type = 'text/javascript';
 		ga.src = 'DBStat';
 		var s = document.getElementsByTagName('script')[0];
 		s.parentNode.insertBefore(ga, s);
-		})();
+		};
+		
+	function statsReady( bioSDStat )
+	{
+		 document.getElementById("totalSamples").innerHTML=bioSDStat.samples;
+		 document.getElementById("totalGroups").innerHTML=bioSDStat.groups;
+
+		 var l=0; for(var k in bioSDStat.topics) l++; ;
+		 document.getElementById("totalDataSources").innerHTML=l;
+	}
 </script>
 
 
 <!--  end meta tags, css , javascript here  -->
 
 </head>
-<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}">
+<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}; loadStats();">
 		<div class="headerdiv" id="headerdiv" style="position:absolute; z-index: 1;">
 			<iframe src="/inc/head.html" name="head" id="head" frameborder="0" marginwidth="0px" marginheight="0px" scrolling="no"  width="100%" style="position:absolute; z-index: 1; height: 57px;">Your browser does not support inline frames or is currently configured not to display inline frames. Content can be viewed at actual source page: http://www.ebi.ac.uk/inc/head.html</iframe>
 
@@ -58,11 +67,10 @@
 		  			<div class="biosd_intro">
 		  				<img src="images/ebi_logo.gif" alt="EBI logo"/>
 		  				<img src="images/title.png" alt="EBI logo"/>
-		  			
 					</div>
 					<div class="biosd_intro_text">
-						<div>The <strong>BioSample Database</strong> at the EBI is a new database designed to hold information about biological samples that are referenced from other EBI databases. We have started populating the database with information about commonly reused samples or sample sources such as common cell lines. Samples are assigned accession numbers which are referenced by links from other databases e.g ArrayExpress, PRIDE and ENA. BioSD data will be exchanged with <a href="documents/BioSampleDB_EBI_NCBI.pdf">NCBI</a> 
-						</div>
+						<div>The <strong>BioSample Database</strong> at the EBI is designed to hold information about biological samples, particularly samples referenced from other EBI databases.</div>
+						<div><a href="static/overview.html">more...</a></div>
 					</div>
 				</div>
 				<div class="biosd_separator_fixed">
@@ -109,19 +117,14 @@
 						</div>
 						<div class="biosd_facts">
 							<div class="title">SUMMARY OF CONTENTS:</div><br>
-							Number of samples: <script> document.write(bioSDStat.samples); </script><br>
-							Number of groups: <script> document.write(bioSDStat.groups); </script><br>
+							Number of samples: <span id="totalSamples"></span><br>
+							Number of groups: <span id="totalGroups"></span><br>
 						<!--	Number of attributes:<br> -->
-							Number of data sources: <script> var l =0; for(var k in bioSDStat.topics) l++; document.write(l);</script><br>
+							Number of data sources: <span id="totalDataSources"></span><br>
 						</div>
 						<div class="search_within_left">
 						<a target="_top" href="http://www.ebi.ac.uk/biosamples/biosamples.html" style="text-decoration:none">
 						<img src="images/book_open.png" style="border-style: none" alt="browse"/> Browse Samples
-						</a>
-						</div>
-						<div class="query_among_right">
-						<a target="_top" href="BioSDSubmission.html" target="_top" style="text-decoration:none">
-						<img src="images/book_add.png" style="border-style: none" alt="submit"/> Submit data
 						</a>
 						</div>
 					
@@ -129,53 +132,34 @@
 				</div>
 				<div class="biosd_separator_fixed">
 				</div>
-			<!--This is going to be commented out temporarily	-->
+			<!--This is can be commented out temporarily -->
 				<div class="biosd_extras_container_fixed">
 					<div class="biosd_extras_container_left">
 						<div class="biosd_news">
-							<div class="title">Current data sources:
-							</div>
-							<div><ul style="margin-top: 10px; margin-bottom:0px;">
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.ebi.ac.uk/ena" style="text-decoration:none">European Nucleotide Archive</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.ebi.ac.uk/pride" style="text-decoration:none">PRIDE</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.ebi.ac.uk/arrayexpress" style="text-decoration:none"> ArrayExpress</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.genome.gov/26524238" style="text-decoration:none"> ENCODE cell lines</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.coriell.org/" style="text-decoration:none"> CORIELL cell lines</a>
-								</li>
-								</ul>
-							</div>
+    						<div class="title">News:</div>
+    						    <strong>18th May 2011</strong><dd>The BioSample Database website has been updated. An <a href="static/overview.html">overview</a> and information on the <a href="static/st.html">SampleTab</a> format for submissions is now available.</dd>
+    						</dl>
 						</div>
 					</div>
 					<div class="biosd_extras_container_right">
 						<div class="biosd_faqs">
-							<div class="title">FAQs
-							</div>
-							<div><ul style="margin-top: 5px; margin-bottom:0px;">
-								<li style="margin-bottom: 10px;">
-								<strong> How :</strong>
-								<p style="margin-top: 5px;"> 
-								Data can be submitted using Sample-TAB format. For an example of a SAMPLE-TAB file see <a href="documents/encode_cell_lines_sample_tab_example.xls">sample</a></p>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<strong> Feedback</strong>
-								<p style="margin-top: 5px;"> 
-								To send us any feedback or report any bugs with the website please <a href="mailto:biosamples&#64;ebi.ac.uk">Contact Us</a></p>
-								</li>
-								</ul>
-							</div>
+							<div class="title">Submissions</div>
+							<p style="margin-top: 5px;">Data can be submitted using <a href="static/st.html">Sample-TAB format</a> by <a href="mailto:biosamples&#64;ebi.ac.uk">email</a>. </p>
+							<div class="title">Feedback</div>
+							<p style="margin-top: 5px;">To send feedback or report any issues please <a href="mailto:biosamples&#64;ebi.ac.uk">Contact Us</a></p>
+    						<div class="title">Current data sources:</div>
+    						<ul>
+        						<li><a target="_top" href="http://www.ebi.ac.uk/ena">European Nucleotide Archive</a></li>
+        						<li><a target="_top" href="http://www.ebi.ac.uk/pride">PRIDE</a></li>
+        						<li><a target="_top" href="http://www.ebi.ac.uk/arrayexpress"> ArrayExpress</a></li>
+        						<li><a target="_top" href="http://www.genome.gov/26524238"> ENCODE cell lines</a></li>
+        						<li><a target="_top" href="http://www.coriell.org/"> CORIELL cell lines</a></li>
+    						</ul>
 						</div>
 					</div>
 				</div>	
-			</div>			
+			</div>				
+			
 
 <!-- InstanceEndEditable -->
 			
