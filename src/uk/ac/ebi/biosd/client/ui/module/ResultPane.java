@@ -100,6 +100,14 @@ public class ResultPane extends VLayout implements ResultRenderer
    @Override
    public void onRecordCollapse(RecordCollapseEvent event)
    {
+    Canvas pnl = (Canvas)event.getRecord().getAttributeAsObject("_panel");
+
+    if( pnl !=null )
+    {
+     pnl.destroy();
+     event.getRecord().setAttribute("_panel", (Object)null);
+    }
+    
     LinkManager.getInstance().removeLinkClickListener(event.getRecord().getAttribute("id"));
    }
   });
@@ -185,7 +193,9 @@ public class ResultPane extends VLayout implements ResultRenderer
    if( sgr.getContacts() != null )
     det.setAttribute("__contact", sgr.getContacts() );
    
-   det.setAttribute("__summary", String.valueOf(sgr.getRefCount())+"/"+sgr.getMatchedCount());
+   det.setAttribute("__total", sgr.getRefCount());
+   det.setAttribute("__matched", sgr.getMatchedCount());
+//   det.setAttribute("__summary", String.valueOf(sgr.getRefCount())+"/"+sgr.getMatchedCount());
 //   det.setAttribute("Selected samples", sgr.getMatchedCount());
   
    rec.setAttribute("details", new Record[]{det});
@@ -247,7 +257,11 @@ public class ResultPane extends VLayout implements ResultRenderer
  {
   protected Canvas getExpansionComponent(final ListGridRecord record)
   {
-   return new GroupDetailsPanel(record.getAttributeAsRecordArray("details")[0], query, searchAtNames, searchAtValues );
+   Canvas details = new GroupDetailsPanel(record.getAttributeAsRecordArray("details")[0], query, searchAtNames, searchAtValues );
+   
+   record.setAttribute("_panel", details);
+   
+   return details;
   }
  }
  
