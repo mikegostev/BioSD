@@ -26,7 +26,6 @@ import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
-import com.smartgwt.client.widgets.form.fields.SpacerItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
@@ -179,15 +178,12 @@ public class GroupDetailsPanel extends VLayout
    rec.setAttribute("Other", repstr);
   }
    
-  
+  int total = r.getAttributeAsInt("__total");
+  int matched = r.getAttributeAsInt("__matched");
  
-  String summ = r.getAttributeAsString("__summary");
-  if( summ != null )
-  {
-   ds.addField(new DataSourceTextField("__smm", "Total/matched samples"));
+  ds.addField(new DataSourceTextField("__smm", "Total/matched samples"));
 
-   rec.setAttribute("__smm", summ);
-  }
+  rec.setAttribute("__smm", String.valueOf(total+"/"+matched));
   
   ds.addData(rec);
   
@@ -210,58 +206,63 @@ public class GroupDetailsPanel extends VLayout
   spc.setHeight(5);
   addMember(spc);
   
-  DynamicForm lnkform = new DynamicForm();
-  lnkform.setWidth(500);
-  
-  lnkform.setNumCols(6);
-  
-  LinkItem li = new LinkItem("allsamples");
-  li.setTitle("Show");
-  li.setLinkTitle("all samples");
- 
-  li.addClickHandler( new ClickHandler()
+  if( matched > 0 )
   {
-   @Override
-   public void onClick(ClickEvent event)
-   {
-    showAllSamples(1);
-   }
-  });
-  
-  LinkItem li2 = new LinkItem("selsamples");
-  li2.setTitle("Show");
-  li2.setLinkTitle("matched samples");
-  
-  li2.addClickHandler( new ClickHandler()
-  {
-   @Override
-   public void onClick(ClickEvent event)
-   {
-    showMatchedSamples( 1 );
-   }
-  });
 
-  LinkItem li3 = new LinkItem("hidesamples");
-  li3.setTitle("Hide");
-  li3.setLinkTitle("samples");
-  
-  li3.addClickHandler( new ClickHandler()
-  {
-   @Override
-   public void onClick(ClickEvent event)
-   {
-    Canvas[] membs = getMembers();
-    
-    if( membs[membs.length-1] instanceof ListGrid )
-     removeMember(membs[membs.length-1]);
-    
-    pager.setVisible(false);
-   }
-  });
+   DynamicForm lnkform = new DynamicForm();
+   lnkform.setWidth(500);
+   lnkform.setStyleName("sampleListLink");
 
-  lnkform.setFields( li, li2, li3 );
-  
-  addMember(lnkform);
+   lnkform.setNumCols(6);
+
+   LinkItem li = new LinkItem("allsamples");
+   li.setTitle("Show");
+   li.setLinkTitle("all samples");
+
+   li.addClickHandler(new ClickHandler()
+   {
+    @Override
+    public void onClick(ClickEvent event)
+    {
+     showAllSamples(1);
+    }
+   });
+
+   LinkItem li2 = new LinkItem("selsamples");
+   li2.setTitle("Show");
+   li2.setLinkTitle("samples matching the query");
+
+   li2.addClickHandler(new ClickHandler()
+   {
+    @Override
+    public void onClick(ClickEvent event)
+    {
+     showMatchedSamples(1);
+    }
+   });
+
+   LinkItem li3 = new LinkItem("hidesamples");
+   li3.setTitle("Hide");
+   li3.setLinkTitle("samples");
+
+   li3.addClickHandler(new ClickHandler()
+   {
+    @Override
+    public void onClick(ClickEvent event)
+    {
+     Canvas[] membs = getMembers();
+
+     if(membs[membs.length - 1] instanceof ListGrid)
+      removeMember(membs[membs.length - 1]);
+
+     pager.setVisible(false);
+    }
+   });
+
+   lnkform.setFields(li, li2, li3);
+
+   addMember(lnkform);
+  }
   
   spc = new Canvas();
   spc.setHeight(5);
@@ -272,6 +273,7 @@ public class GroupDetailsPanel extends VLayout
   pager.setVisible(false);
   addMember(pager);
   
+  showAllSamples(1);
   
   LinkManager.getInstance().addLinkClickListener(groupID, new LinkClickListener()
   {
@@ -347,7 +349,7 @@ public class GroupDetailsPanel extends VLayout
  {
   allSamples=true;
   
-  WaitWindow.showWait();
+//  WaitWindow.showWait();
   
   QueryService.Util.getInstance().getSamplesByGroup(groupID,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    new AsyncCallback<SampleList>(){
@@ -368,7 +370,7 @@ public class GroupDetailsPanel extends VLayout
      public void execute()
      {
       renderSampleList2(GroupDetailsPanel.this,arg0,pNum);
-      WaitWindow.hideWait();
+//      WaitWindow.hideWait();
      }
     });
     
@@ -533,7 +535,7 @@ public class GroupDetailsPanel extends VLayout
  
  private void renderSampleList2(final VLayout lay, SampleList smpls, int pg)
  {
-  
+  System.out.println("Start rendering");
 //  DataSource ds = new DataSource();
 //  ds.setClientOnly(true);
 

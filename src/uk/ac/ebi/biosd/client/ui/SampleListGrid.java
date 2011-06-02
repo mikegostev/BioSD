@@ -24,6 +24,10 @@ public class SampleListGrid extends ListGrid
   setWidth("98%");
  }
  
+// protected Canvas getCellHoverComponentX(Record record, Integer rowNum, Integer colNum)
+// {
+// } 
+ 
  @Override
  protected Canvas createRecordComponent(final ListGridRecord record, final Integer colNum) 
  {
