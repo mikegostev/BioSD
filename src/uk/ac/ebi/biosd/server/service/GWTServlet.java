@@ -1,12 +1,11 @@
 package uk.ac.ebi.biosd.server.service;
 
+import uk.ac.ebi.age.admin.server.service.SessionRemoteServiceServlet;
 import uk.ac.ebi.biosd.client.QueryService;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-public class GWTServlet extends RemoteServiceServlet implements QueryService
+public class GWTServlet extends SessionRemoteServiceServlet implements QueryService
 {
  private static final long serialVersionUID = -7453910333033735880L;
 

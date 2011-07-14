@@ -16,6 +16,7 @@ public class BioSDConfigManager extends AgeAdminConfigManager
  public static final String GROUP_VALUE_FIELD_NAME = "gvalue";
  public static final String GROUP_REFERENCE_FIELD_NAME = "gref";
  public static final String GROUP_ID_FIELD_NAME = "gid";
+ public static final String TAGS_FIELD_NAME = "tags";
 
  public static final String SAMPLEINGROUP_REL_CLASS_NAME = "belongsTo";
  

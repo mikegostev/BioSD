@@ -7,7 +7,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
+import uk.ac.ebi.age.admin.server.mng.Configuration;
+import uk.ac.ebi.age.authz.BuiltInUsers;
+import uk.ac.ebi.age.authz.PermissionManager;
+import uk.ac.ebi.age.authz.SecurityChangedListener;
+import uk.ac.ebi.age.entity.ID;
+import uk.ac.ebi.age.ext.authz.SystemAction;
+import uk.ac.ebi.age.ext.authz.TagRef;
 import uk.ac.ebi.age.model.AgeAttribute;
 import uk.ac.ebi.age.model.AgeAttributeClass;
 import uk.ac.ebi.age.model.AgeClass;
@@ -33,7 +41,7 @@ import uk.ac.ebi.biosd.server.stat.BioSDStat;
 
 import com.pri.util.StringUtils;
 
-public class BioSDServiceImpl extends BioSDService
+public class BioSDServiceImpl extends BioSDService implements SecurityChangedListener
 {
  private AgeStorage storage;
  
@@ -57,6 +65,8 @@ public class BioSDServiceImpl extends BioSDService
  private AgeAttributeClass referenceAttributeClass;
  
  private BioSDStat statistics;
+ 
+ private WeakHashMap<String, UserCacheObject> userCache  = new WeakHashMap<String, UserCacheObject>();
  
  private Comparator<AgeObject> groupComparator = new Comparator<AgeObject>()
  {
@@ -164,6 +174,7 @@ public class BioSDServiceImpl extends BioSDService
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.TAGS_FIELD_NAME, new TagsExtractor() ) );
   
   groupsIndex = storage.createTextIndex(groupSelectQuery, extr);
 
@@ -213,6 +224,7 @@ public class BioSDServiceImpl extends BioSDService
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_ID_FIELD_NAME, new GroupIDExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.TAGS_FIELD_NAME, new TagsExtractor() ) );
   
   samplesIndex = storage.createTextIndex(q, extr);
  }
@@ -252,8 +264,12 @@ public class BioSDServiceImpl extends BioSDService
    if( isRef )
     statistics.addRefSamples( samples );
 
+   Object dsVal = grp.getAttributeValue(dataSourceAttributeClass);
    
-   String ds = grp.getAttributeValue(dataSourceAttributeClass).toString();
+   String ds = null;
+   
+   if( dsVal != null )
+    ds = dsVal.toString();
    
    if( ds != null )
    {
@@ -274,6 +290,9 @@ public class BioSDServiceImpl extends BioSDService
    boolean searchAttrVl, boolean refOnly, int offset, int count)
  {
 //  List<AgeObject> sel = null;
+ 
+  String user = Configuration.getDefaultConfiguration().getSessionManager().getEffectiveUser();
+
   
   if( query == null )
    return getAllGroups(offset, count, refOnly);
@@ -313,6 +332,15 @@ public class BioSDServiceImpl extends BioSDService
   if( refOnly )
    sb.append(" AND ").append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)");
 
+  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
+  {
+   UserCacheObject uco = getUserCacheobject(user);
+
+   sb.append(" AND ").append(BioSDConfigManager.TAGS_FIELD_NAME).append(":\"").append(uco.getAllowTags()).append('"');
+
+   if(uco.getDenyTags().length() > 0)
+    sb.append(" NOT ").append(BioSDConfigManager.TAGS_FIELD_NAME).append(":\"").append(uco.getDenyTags()).append("\"");
+  }
 //  sb.append(" )");
   
   String lucQuery = sb.toString();
@@ -398,6 +426,56 @@ public class BioSDServiceImpl extends BioSDService
   return rep;
  }
  
+ private UserCacheObject getUserCacheobject(String user)
+ {
+  synchronized(userCache)
+  {
+   UserCacheObject uco = userCache.get(user);
+   
+   if( uco != null )
+    return uco;
+   
+   uco = new UserCacheObject();
+   uco.setUserName(user);
+
+   StringBuilder sb = new StringBuilder(100);
+   
+   Collection<TagRef> tags = Configuration.getDefaultConfiguration().getPermissionManager().getAllowTags(SystemAction.READ, user);
+   
+   if( tags != null )
+   {
+    for( TagRef tr : tags )
+     sb.append(tr.getClassiferName().length()).append(tr.getClassiferName()).append(tr.getTagName()).append(" ");
+   }
+   
+   if( sb.length() > 0 )
+    sb.setLength(sb.length()-1);
+   else
+    sb.append("XXX");
+   
+   uco.setAllowTags(sb.toString());
+   
+   sb.setLength(0);
+   
+   tags = Configuration.getDefaultConfiguration().getPermissionManager().getDenyTags(SystemAction.READ, user);
+
+   if( tags != null )
+   {
+    for( TagRef tr : tags )
+     sb.append(tr.getClassiferName().length()).append(tr.getClassiferName()).append(tr.getTagName()).append(" ");
+   }
+   
+   if( sb.length() > 0 )
+    sb.setLength(sb.length()-1);
+   
+   uco.setDenyTags(sb.toString());
+
+   userCache.put(user, uco);
+   
+   return uco;
+  }
+ }
+
  private GroupImprint createGroupObject( AgeObject obj )
  {
   GroupImprint sgRep = new GroupImprint();
@@ -486,6 +564,30 @@ public class BioSDServiceImpl extends BioSDService
  public void shutdown()
  {
   storage.shutdown();
+ }
+ 
+ class TagsExtractor implements TextValueExtractor
+ {
+  private StringBuilder sb = new StringBuilder();
+  private PermissionManager permMngr = Configuration.getDefaultConfiguration().getPermissionManager();
+
+  @Override
+  public String getValue(AgeObject ao)
+  {
+   ID entId = ao.getEntityID();
+   
+   Collection<TagRef> tags = permMngr.getEffectiveTags( entId );
+   
+   if( tags == null )
+    return "";
+   
+   sb.setLength(0);
+   
+   for( TagRef tr : tags )
+    sb.append(tr.getClassiferName().length()).append(tr.getClassiferName()).append(tr.getTagName()).append(" ");
+    
+   return sb.toString();
+  }
  }
  
  class AttrValuesExtractor implements TextValueExtractor
@@ -1047,9 +1149,10 @@ public class BioSDServiceImpl extends BioSDService
  @Override
  public Report getAllGroups(int offset, int count, boolean refOnly )
  {
+  
   int lim = offset+count;
   
-  int last = refOnly?statistics.getRefGroups():groupList.size();
+  int last = refOnly?getStatistics().getRefGroups():groupList.size();
   
   if( lim > last )
    lim=last;
@@ -1061,8 +1164,8 @@ public class BioSDServiceImpl extends BioSDService
   
   Report rep = new Report();
   rep.setObjects(res);
-  rep.setTotalGroups(refOnly?statistics.getRefGroups():statistics.getGroups());
-  rep.setTotalSamples(refOnly?statistics.getRefSamples():statistics.getSamples());
+  rep.setTotalGroups(refOnly?getStatistics().getRefGroups():getStatistics().getGroups());
+  rep.setTotalSamples(refOnly?getStatistics().getRefSamples():getStatistics().getSamples());
   
   return rep;
  }
@@ -1071,6 +1174,15 @@ public class BioSDServiceImpl extends BioSDService
  public BioSDStat getStatistics()
  {
   return statistics;
+ }
+
+ @Override
+ public void securityChanged()
+ {
+  synchronized(userCache)
+  {
+   userCache.clear();
+  }
  }
 
 
