@@ -51,7 +51,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  private AgeIndex samplesIndex;
  
  private AgeQuery groupSelectQuery;
-// private List<AgeObject> groupList;
+ private List<AgeObject> groupList;
  
  private AgeClass sampleClass;
  private AgeClass groupClass;
