@@ -68,7 +68,11 @@ public class Init implements ServletContextListener
    e.printStackTrace();
   }
   
-  BioSDService.setDefaultInstance( new BioSDServiceImpl( storage ) );
+  BioSDServiceImpl biosd = new BioSDServiceImpl( storage );
+  
+  Configuration.getDefaultConfiguration().getAuthDB().addSecurityChangedListener(biosd);
+  
+  BioSDService.setDefaultInstance( biosd );
 
  }
 

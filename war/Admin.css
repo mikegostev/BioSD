@@ -37,3 +37,8 @@ h1 {
 {
 	background-color: #ffffcc
 }
+
+.gwt-DecoratorPanel .top, .gwt-DecoratorPanel .bottom
+{
+	height: 5px
+}

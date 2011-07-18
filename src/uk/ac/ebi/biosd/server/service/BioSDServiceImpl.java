@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import uk.ac.ebi.age.admin.server.mng.Configuration;
+import uk.ac.ebi.age.annotation.AnnotationManager;
+import uk.ac.ebi.age.annotation.Topic;
 import uk.ac.ebi.age.authz.BuiltInUsers;
 import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.SecurityChangedListener;
@@ -49,7 +51,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  private AgeIndex samplesIndex;
  
  private AgeQuery groupSelectQuery;
- private List<AgeObject> groupList;
+// private List<AgeObject> groupList;
  
  private AgeClass sampleClass;
  private AgeClass groupClass;
@@ -174,7 +176,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.TAGS_FIELD_NAME, new TagsExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
   
   groupsIndex = storage.createTextIndex(groupSelectQuery, extr);
 
@@ -224,7 +227,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_ID_FIELD_NAME, new GroupIDExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.TAGS_FIELD_NAME, new TagsExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
   
   samplesIndex = storage.createTextIndex(q, extr);
  }
@@ -336,17 +340,18 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    UserCacheObject uco = getUserCacheobject(user);
 
-   sb.append(" AND ").append(BioSDConfigManager.TAGS_FIELD_NAME).append(":\"").append(uco.getAllowTags()).append('"');
+   sb.append(" AND (").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
+   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))");
 
    if(uco.getDenyTags().length() > 0)
-    sb.append(" NOT ").append(BioSDConfigManager.TAGS_FIELD_NAME).append(":\"").append(uco.getDenyTags()).append("\"");
+    sb.append(" NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(")");
   }
 //  sb.append(" )");
   
-  String lucQuery = sb.toString();
+  String lucQuery = sb.toString(); 
   int qLen = lucQuery.length();
   
-//  System.out.println("Query: "+lucQuery);
+  System.out.println("Query: "+lucQuery);
   
   List<AgeObject> sel = storage.queryTextIndex(groupsIndex, lucQuery );
   
@@ -590,6 +595,34 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
  
+ class OwnerExtractor implements TextValueExtractor
+ {
+  private AnnotationManager annorMngr = Configuration.getDefaultConfiguration().getAnnotationManager();
+
+  @Override
+  public String getValue(AgeObject ao)
+  {
+   ID entId = ao.getEntityID();
+   
+   String own = null;
+   
+   while( entId != null )
+   {
+    own = (String)annorMngr.getAnnotation(Topic.OWNER, entId);
+    
+    if( own != null )
+     break;
+    
+    entId = entId.getParentObjectID();
+   }
+   
+   if( own == null )
+    own = "";
+   
+   return own;
+  }
+ }
+ 
  class AttrValuesExtractor implements TextValueExtractor
  {
   StringBuilder sb = new StringBuilder();
@@ -682,9 +715,14 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
   public String getValue(AgeObject gobj)
   {
-   sb.setLength(0);
 
-   for(AgeRelation rel : gobj.getRelations())
+   Collection< ? extends AgeRelation> rels = gobj.getRelations();
+
+   if(rels == null)
+    return "";
+
+   sb.setLength(0);
+   for(AgeRelation rel : rels)
    {
     if(rel.getAgeElClass() == groupToSampleRelClass)
     {

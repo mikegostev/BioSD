@@ -72,4 +72,17 @@
   <listener>
     <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
   </listener>
+  
+  <servlet>
+    <description>
+  	</description>
+    <display-name>DataSourceSvc</display-name>
+    <servlet-name>DataSourceSvc</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.DataSourceServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DataSourceSvc</servlet-name>
+    <url-pattern>/dataSourceService</url-pattern>
+  </servlet-mapping>
 </web-app>
