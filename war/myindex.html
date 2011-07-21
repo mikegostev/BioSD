@@ -1,0 +1,222 @@
+<html>
+<head>
+<style type="text/css">
+
+* 
+{
+    -moz-box-sizing: border-box;
+}
+
+.mainFmtTable
+{
+ width: 800px;
+ margin: auto;
+ border-spacing: 15px;
+}
+
+.mainFmtTable TD 
+{
+ border:1px solid #B1CCCC;
+}
+
+.introIF
+{
+ height: 100px;
+ border: 0px;
+ overflow: hidden;
+ width: 100%;
+}
+
+.newsIF
+{
+ height: 200px;
+ border: 0;
+ overflow: hidden
+}
+
+.sourcesIF
+{
+ height: 200px;
+ border: 0;
+ overflow: hidden
+}
+
+.requestBlock
+{
+ background-color: rgb(238,245,245);
+}
+
+.cornerRT
+{
+ width: 2px;
+ height: 2px;
+ background-image: url(images/tlcnr.gif);
+ padding: 0;
+}
+
+.cornerLT
+{
+ width: 2px;
+ height: 2px;
+ background-image: url(images/trcnr.gif);
+ padding: 0;
+ padding: 0;
+}
+
+.cornerRB
+{
+ width: 2px;
+ height: 2px;
+ background-image: url(images/brcnr.gif);
+ padding: 0;
+}
+
+.cornerLB
+{
+ width: 2px;
+ height: 2px;
+ background-image: url(images/blcnr.gif);
+ padding: 0;
+}
+
+
+.sideT
+{
+ border-top: 1px solid rgb(189,213,213);
+ height: 2px;
+ padding: 0;
+}
+
+.sideB
+{
+ border-bottom: 1px solid rgb(189,213,213);
+ height: 2px;
+ padding: 0;
+}
+
+.sideL
+{
+ border-left: 1px solid rgb(189,213,213);
+ width: 2px;
+ padding: 0;
+}
+
+.sideR
+{
+ border-right: 1px solid rgb(189,213,213);
+ width: 2px;
+ padding: 0;
+}
+
+.rcBox
+{
+ border-collapse: collapse;
+}
+
+.myFilled td
+{
+ padding: 0;
+ margin: 0;
+ background-color: rgb(238,245,245);
+}
+
+.form_outer {
+    background-color: #EEF5F5;
+}
+.form_top {
+    background: url("images/fft.gif") repeat-x scroll 0 0 transparent;
+}
+.form_top_left {
+    background: url("images/fftl.gif") no-repeat scroll 0 0 transparent;
+}
+.form_top_right {
+    background: url("images/fftr.gif") no-repeat scroll 100% 0 transparent;
+}
+.form_left {
+    background: url("images/ffl.gif") repeat-y scroll 0 0 transparent;
+}
+.form_right {
+    background: url("images/ffr.gif") repeat-y scroll 100% 0 transparent;
+}
+.form_bottom {
+    background: url("images/ffb.gif") repeat-x scroll 0 100% transparent;
+}
+.form_bottom_left {
+    background: url("images/ffbl.gif") no-repeat scroll 0 100% transparent;
+}
+.form_bottom_right {
+    background: url("images/ffbr.gif") no-repeat scroll 100% 100% transparent;
+}
+.form_inner {
+    padding: 1px;
+}
+
+</style>
+</head>
+<body style="text-align: center; border: 0px solid red">
+
+<table class="mainFmtTable" cellspacing="15">
+<tr class="intro">
+<td colspan=2>
+<iframe class="introIF" src = "intro.html" frameBorder="0">
+</iframe>
+</td>
+</tr>
+<tr>
+<td colspan=2 class=requestBlock>
+hello
+</td>
+</tr>
+<tr>
+<td class="news">
+<iframe class="newsIF" src = "intro.html" frameBorder="0">
+</iframe>
+</td>
+<td class="sources">
+<iframe class="sourcesIF" src = "intro.html" frameBorder="0">
+</iframe>
+</td>
+</tr>
+</table>
+
+<table class="rcBox myFilled">
+<colgroup>
+<col width="2">
+<col width="*">
+<col width="2">
+</colgroup>
+<tr><td class="cornerLT"></td><td class="sideT"></td><td class="cornerRT"></td></tr>
+<tr><td class="sideL"></td><td>
+Hello
+
+</td><td class="sideR"></td></tr>
+<tr><td class="cornerLB"></td><td class="sideB"></td><td class="cornerRB"></td></tr>
+</table>
+
+
+<div id="ae_query_area" class="ae_nodisplay" style="display: block;">
+<div class="ae_left_box">
+<div class="form_outer">
+<div class="form_top">
+<div class="form_bottom">
+<div class="form_left">
+<div class="form_right">
+<div class="form_bottom_left">
+<div class="form_bottom_right">
+<div class="form_top_left">
+<div class="form_top_right">
+<div class="form_inner">
+Hello
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
