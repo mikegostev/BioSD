@@ -30,8 +30,10 @@ import uk.ac.ebi.age.query.ClassNameExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
 import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.DataChangeListener;
-import uk.ac.ebi.age.storage.index.AgeIndex;
+import uk.ac.ebi.age.storage.index.KeyExtractor;
+import uk.ac.ebi.age.storage.index.SortedTextIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
+import uk.ac.ebi.age.storage.index.TextIndex;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
 import uk.ac.ebi.biosd.client.query.AttributedObject;
@@ -41,17 +43,18 @@ import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.server.stat.BioSDStat;
 
+import com.pri.util.ObjectRecycler;
 import com.pri.util.StringUtils;
 
 public class BioSDServiceImpl extends BioSDService implements SecurityChangedListener
 {
  private AgeStorage storage;
  
- private AgeIndex groupsIndex;
- private AgeIndex samplesIndex;
+ private SortedTextIndex<GroupKey> groupsIndex;
+ private TextIndex samplesIndex;
  
  private AgeQuery groupSelectQuery;
- private List<AgeObject> groupList;
+// private List<AgeObject> groupList;
  
  private AgeClass sampleClass;
  private AgeClass groupClass;
@@ -70,39 +73,59 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  private WeakHashMap<String, UserCacheObject> userCache  = new WeakHashMap<String, UserCacheObject>();
  
- private Comparator<AgeObject> groupComparator = new Comparator<AgeObject>()
+ private static class GroupKey
+ {
+  String grpName;
+  boolean refGroup;
+ }
+ 
+ private Comparator<GroupKey> groupComparator = new Comparator<GroupKey>()
  {
   @Override
-  public int compare(AgeObject o1, AgeObject o2)
+  public int compare(GroupKey o1, GroupKey o2)
   {
-   Collection<? extends AgeAttribute> ref1 = o1.getAttributesByClass(referenceAttributeClass, false);
-   Collection<? extends AgeAttribute> ref2 = o2.getAttributesByClass(referenceAttributeClass, false);
+ 
+   if( o1.refGroup == o2.refGroup )
+    return StringUtils.naturalCompare(o1.grpName, o1.grpName);
 
-   boolean isRef1, isRef2;
-   
-   if( ref1 == null || ref1.size() == 0 )
-    isRef1=false;
-   else
-   {
-    AgeAttribute at = ref1.iterator().next();
-    isRef1 = at.getValueAsBoolean();
-   }
-
-   if( ref2 == null || ref2.size() == 0 )
-    isRef2=false;
-   else
-   {
-    AgeAttribute at = ref2.iterator().next();
-    isRef2 = at.getValueAsBoolean();
-   }
-   
-   if( isRef1 == isRef2 )
-    return StringUtils.naturalCompare(o1.getId(), o2.getId());
-
-   return isRef1?-1:1;
+   return o1.refGroup?-1:1;
    
   }
  };
+ 
+// private Comparator<AgeObject> groupComparator = new Comparator<AgeObject>()
+// {
+//  @Override
+//  public int compare(AgeObject o1, AgeObject o2)
+//  {
+//   Collection<? extends AgeAttribute> ref1 = o1.getAttributesByClass(referenceAttributeClass, false);
+//   Collection<? extends AgeAttribute> ref2 = o2.getAttributesByClass(referenceAttributeClass, false);
+//
+//   boolean isRef1, isRef2;
+//   
+//   if( ref1 == null || ref1.size() == 0 )
+//    isRef1=false;
+//   else
+//   {
+//    AgeAttribute at = ref1.iterator().next();
+//    isRef1 = at.getValueAsBoolean();
+//   }
+//
+//   if( ref2 == null || ref2.size() == 0 )
+//    isRef2=false;
+//   else
+//   {
+//    AgeAttribute at = ref2.iterator().next();
+//    isRef2 = at.getValueAsBoolean();
+//   }
+//   
+//   if( isRef1 == isRef2 )
+//    return StringUtils.naturalCompare(o1.getId(), o2.getId());
+//
+//   return isRef1?-1:1;
+//   
+//  }
+// };
  
  
  public BioSDServiceImpl( AgeStorage stor )
@@ -179,7 +202,33 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
   
-  groupsIndex = storage.createTextIndex(groupSelectQuery, extr);
+  groupsIndex = storage.createSortedTextIndex(groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
+
+   ObjectRecycler<GroupKey> fact = new ObjectRecycler<GroupKey>(4);
+   
+   @Override
+   public GroupKey extractKey(AgeObject o1)
+   {
+    GroupKey k = fact.getObject();
+
+    if(k == null)
+     k = new GroupKey();
+
+    AgeAttribute ref1 = o1.getAttribute(referenceAttributeClass);
+
+    k.grpName = o1.getId();
+    k.refGroup = ref1 != null ? ref1.getValueAsBoolean() : false;
+
+    return k;
+   }
+
+   @Override
+   public void recycleKey(GroupKey k)
+   {
+    fact.recycleObject(k);
+   }},
+   
+   groupComparator);
 
   Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
   
@@ -188,31 +237,31 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    @Override
    public void dataChanged()
    {
-    Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
-    
-    if( grps instanceof List<?> )
-     groupList = (List<AgeObject>)grps;
-    else
-    {
-     groupList = new ArrayList<AgeObject>( grps.size() );
-     groupList.addAll(grps);
-    }
-
-    Collections.sort( groupList, groupComparator );
+//    Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
+//    
+//    if( grps instanceof List<?> )
+//     groupList = (List<AgeObject>)grps;
+//    else
+//    {
+//     groupList = new ArrayList<AgeObject>( grps.size() );
+//     groupList.addAll(grps);
+//    }
+//
+//    Collections.sort( groupList, groupComparator );
 
     collectStats();
    }
   } );
   
-  if( grps instanceof List<?> )
-   groupList = (List<AgeObject>)grps;
-  else
-  {
-   groupList = new ArrayList<AgeObject>( grps.size() );
-   groupList.addAll(grps);
-  }
-  
-  Collections.sort( groupList, groupComparator );
+//  if( grps instanceof List<?> )
+//   groupList = (List<AgeObject>)grps;
+//  else
+//  {
+//   groupList = new ArrayList<AgeObject>( grps.size() );
+//   groupList.addAll(grps);
+//  }
+//  
+//  Collections.sort( groupList, groupComparator );
   
   collectStats();
  
@@ -236,6 +285,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  private void collectStats()
  {
   statistics = new BioSDStat();
+  
+  List<? extends AgeObject> groupList = groupsIndex.getObjectList();
   
   statistics.setGroups( groupList.size() );
   
@@ -353,7 +404,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   System.out.println("Query: "+lucQuery);
   
-  List<AgeObject> sel = storage.queryTextIndex(groupsIndex, lucQuery );
+  List<AgeObject> sel = groupsIndex.select( lucQuery );
   
   int nSmp = 0;
   
@@ -381,7 +432,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     sb.setLength(qLen);
    
     sb.append(" AND "+BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(gr.getId());
-    gr.setMatchedCount( storage.queryTextIndexCount(samplesIndex, sb.toString() ) );
+    gr.setMatchedCount( samplesIndex.count( sb.toString() ) );
    }
    
    res.add(gr);
@@ -1066,7 +1117,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   sb.append(" ) AND ").append(BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(grpId);
   
-  List<AgeObject> sel = storage.queryTextIndex(samplesIndex, sb.toString() );
+  List<AgeObject> sel = samplesIndex.select( sb.toString() );
   
  
   if( offset > sel.size())
@@ -1099,7 +1150,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   sb.append(" ) AND ").append(BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(grpId);
   
-  List<AgeObject> sel = storage.queryTextIndex(samplesIndex, sb.toString() );
+  List<AgeObject> sel = samplesIndex.select( sb.toString() );
   
   List<GroupImprint> res = new ArrayList<GroupImprint>();
  
@@ -1189,6 +1240,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  {
   
   int lim = offset+count;
+  
+  List<? extends AgeObject> groupList = groupsIndex.getObjectList();
   
   int last = refOnly?getStatistics().getRefGroups():groupList.size();
   
