@@ -23,23 +23,15 @@ body
 {
  font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
  font-size: 9pt;
- margin: 0
-}
-
-.ae_contents_frame {
-    bottom: 0px;
-    left: 0;
-    overflow: auto;
-    position: absolute;
-    text-align: left;
-    top: 57px;
-    width: 100%;
 }
 
 #ebi_footer {
     background-color: #DEDEDE;
     border-top: 1px solid #BFBFBF;
+    bottom: 0;
     height: 22px;
+    padding: 0 0 0 15px;
+    position: fixed;
     width: 100%;
     z-index: 2;
 }
@@ -208,10 +200,6 @@ a:hover#browseLink {
     </iframe>
 </div>
 
-<div class="ae_contents_frame">
-<table style="width: 100%; height: 100%; margin: 0">
-<tr><td style="width: 100%; height: 100%; text-align: center">
-
 <table class="mainFmtTable" cellspacing="15">
 <tr class="intro">
 <td colspan=2>
@@ -262,7 +250,7 @@ a:hover#browseLink {
 						    </div>
 						</div>
 						
-						<form id="biosd_query_form" method="get" action="http://www.ebi.ac.uk/biosamples/biosamples.html">
+						<form id="biosd_query_form" method="get" action="biosamples.html">
 						<table style="margin-left: 25px;">
 						<tr>
 						<td style="padding-top: 15px" colspan=3>
@@ -376,19 +364,13 @@ a:hover#browseLink {
 </tr>
 </table>
 
-</td></tr>
-
-<tr><td>
-<div id="ebi_footer" >
-    <iframe src="http://www.ebi.ac.uk/inc/foot.html"
+<div id="ebi_footer" class="ae_nodisplay">
+    <iframe src="/inc/foot.html"
             name="foot" frameborder="0" marginwidth="0px" marginheight="0px"
             scrolling="no" height="22px" width="800px" style="z-index:2">
         Your browser does not support inline frames or is currently configured not to display inline frames.
         Content can be viewed at actual source page: http://www.ebi.ac.uk/inc/foot.html
     </iframe>
-</div>
-</td></tr>
-</table>
 </div>
 </body>
 </html>
