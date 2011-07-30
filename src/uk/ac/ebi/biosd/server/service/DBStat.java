@@ -46,13 +46,20 @@ public class DBStat extends HttpServlet
     
     out.print(",\ntopics: {\n");
     
+    boolean first = true;
+    
     for(Map.Entry<String, BioSDStat> me  : stat.getTopics().entrySet() )
     {
+     if( ! first )
+      out.print(",\n");
+     else
+      first=false;
+     
      out.print("\""+me.getKey()+"\": {\n");
      sendStat(out, me.getValue());
-     out.print("},\n");
+     out.print("}");
     }
-    out.print("}\n");
+    out.print("\n}\n");
    }
   
   out.print("\n");
