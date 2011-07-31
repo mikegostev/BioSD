@@ -1,86 +1,284 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 4.01 Transitional//EN">
 <html lang="eng">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
-<meta http-equiv="Content-Language" content="en-GB" />
-<meta http-equiv="Window-target" content="_top" />
-<meta name="no-email-collection" content="http://www.unspam.com/noemailcollection/" />
 
-<title>BioSample DB Home | EBI</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="Content-Language" content="en-GB"/>
+    <meta http-equiv="Window-target" content="_top"/>
+    <meta name="no-email-collection" content="http://www.unspam.com/noemailcollection/"/>
 
-<link rel="stylesheet" href="/inc/css/contents.css" type="text/css">
-<link rel="stylesheet" href="/inc/css/userstyles.css" type="text/css">
-<script src="/inc/js/contents.js" type="text/javascript"></script>
-<link rel="SHORTCUT ICON" href="/bookmark.ico">
-  
-<style type="text/css">
-@media print{
-	body, .contents, .header, .contentsarea, .head{
-		position: relative;
-	}
-} 
-</style>
-  
-<!--  start meta tags, css , javascript here   -->
-<link rel="stylesheet" href="biosd_styles.css" type="text/css">
+    <title>BioSD Home | EBI</title>
+
+    <link rel="stylesheet" href="/inc/css/contents.css" type="text/css"/>
+
+    <link rel="stylesheet" href="/inc/css/userstyles.css" type="text/css"/>
+    <script src="/inc/js/contents.js" type="text/javascript"></script>
+    <link rel="SHORTCUT ICON" href="/bookmark.ico"/>
 
 <meta name="keywords" content="Biosample, database, EBI, Europe, Sample, Bioinformatics"/>
 <meta name="description" content="BioSample database at the European Bioinformatics Institute"/>
+<link rel="stylesheet" href="biosd_styles.css" type="text/css">
+
+<style type="text/css">
+
+body
+{
+ font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+ font-size: 9pt;
+}
+
+#ebi_footer {
+    background-color: #DEDEDE;
+    border-top: 1px solid #BFBFBF;
+    bottom: 0;
+    height: 22px;
+    padding: 0 0 0 15px;
+    position: fixed;
+    width: 100%;
+    z-index: 2;
+}
+
+.biosd_query_area
+{
+ font-size: 9pt;
+}
+
+td
+{
+ font-size: 9pt;
+}
+
+a:link#browseLink , a:visited#browseLink  {
+    color: #006666;
+    text-decoration: none;
+}
+
+a:hover#browseLink {
+    color: #006666;
+    text-decoration: underline;
+}
+
+.mainFmtTable
+{
+ width: 810px;
+ margin: auto;
+ border-spacing: 15px;
+ border-collapse: separate
+}
+
+.mainFmtTable TDXXX 
+{
+ border:1px solid #B1CCCC;
+}
+
+.introIF
+{
+ height: 110px;
+ border: 0px;
+ overflow: hidden;
+ width: 100%;
+}
+
+.newsIF
+{
+ height: 220px;
+ border: 0;
+ overflow: hidden;
+ width: 100%;
+}
+
+.sourcesIF
+{
+ height: 220px;
+ border: 0;
+ overflow: hidden;
+ width: 100%;
+}
+
+.requestBlock
+{
+ background-color: rgb(238,245,245);
+}
+
+.title
+{
+ font-size: 16pt;
+ font-weight: regular;
+}
+
+.form_outer {
+    background-color: #EEF5F5;
+}
+.form_top {
+    background: url("images/fft.gif") repeat-x scroll 0 0 transparent;
+}
+.form_top_left {
+    background: url("images/fftl.gif") no-repeat scroll 0 0 transparent;
+}
+.form_top_right {
+    background: url("images/fftr.gif") no-repeat scroll 100% 0 transparent;
+}
+.form_left {
+    background: url("images/ffl.gif") repeat-y scroll 0 0 transparent;
+}
+.form_right {
+    background: url("images/ffr.gif") repeat-y scroll 100% 0 transparent;
+}
+.form_bottom {
+    background: url("images/ffb.gif") repeat-x scroll 0 100% transparent;
+}
+.form_bottom_left {
+    background: url("images/ffbl.gif") no-repeat scroll 0 100% transparent;
+}
+.form_bottom_right {
+    background: url("images/ffbr.gif") no-repeat scroll 100% 100% transparent;
+}
+.form_inner {
+    padding: 1px;
+}
+
+.light_form_outer {
+    background-color: #EEF5F5;
+    background: url("images/trbg.gif") repeat scroll 0 0;
+}
+.light_form_top {
+    background: url("images/lft.gif") repeat-x scroll 0 0 transparent;
+}
+.light_form_top_left {
+    background: url("images/lftl.gif") no-repeat scroll 0 0 transparent;
+}
+.light_form_top_right {
+    background: url("images/lftr.gif") no-repeat scroll 100% 0 transparent;
+}
+.light_form_left {
+    background: url("images/lfl.gif") repeat-y scroll 0 0 transparent;
+}
+.light_form_right {
+    background: url("images/lfr.gif") repeat-y scroll 100% 0 transparent;
+}
+.light_form_bottom {
+    background: url("images/lfb.gif") repeat-x scroll 0 100% transparent;
+}
+.light_form_bottom_left {
+    background: url("images/lfbl.gif") no-repeat scroll 0 100% transparent;
+}
+.light_form_bottom_right {
+    background: url("images/lfbr.gif") no-repeat scroll 100% 100% transparent;
+}
+.light_form_inner {
+    padding: 1px;
+}
+
+</style>
 
 <script type="text/javascript">
-	(function() {
+	function loadStats() {
 		var ga = document.createElement('script');
 		ga.type = 'text/javascript';
-		ga.src = 'DBStat';
+		ga.src = 'http://www.ebi.ac.uk/biosamples/DBStat';
 		var s = document.getElementsByTagName('script')[0];
 		s.parentNode.insertBefore(ga, s);
-		})();
+		};
+		
+	function statsReady( bioSDStat )
+	{
+		 document.getElementById("totalSamples").innerHTML=bioSDStat.samples;
+		 document.getElementById("totalGroups").innerHTML=bioSDStat.groups;
+
+		 var l=0; for(var k in bioSDStat.topics) l++; ;
+		 document.getElementById("totalDataSources").innerHTML=l;
+	}
 </script>
 
-
-<!--  end meta tags, css , javascript here  -->
-
 </head>
-<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}">
+<body onload="if(navigator.userAgent.indexOf('MSIE') != -1) {document.getElementById('head').allowTransparency = true;}; loadStats();">
 		<div class="headerdiv" id="headerdiv" style="position:absolute; z-index: 1;">
 			<iframe src="/inc/head.html" name="head" id="head" frameborder="0" marginwidth="0px" marginheight="0px" scrolling="no"  width="100%" style="position:absolute; z-index: 1; height: 57px;">Your browser does not support inline frames or is currently configured not to display inline frames. Content can be viewed at actual source page: http://www.ebi.ac.uk/inc/head.html</iframe>
 
 		</div>
 		<div class="contents" id="contents">
 			<table class="contentspane" id="contentspane" summary="The main content pane of the page"  cellpadding="0" cellspacing="0">
+
 			<tr>
  		 			
             <td class="contentsarea" id="contentsarea">
 	  		
 	  		<!-- start content here -->
-	  		<div class="biosd_centered_container_fixed">
-	  			<div class="biosd_intro_container_fixed">
-		  			<div class="biosd_intro">
-		  				<img src="images/ebi_logo.gif" alt="EBI logo"/>
-		  				<img src="images/title.png" alt="EBI logo"/>
-		  			
-					</div>
-					<div class="biosd_intro_text">
-						<div>The <strong>BioSample Database</strong> at the EBI is a new database designed to hold information about biological samples that are referenced from other EBI databases. We have started populating the database with information about commonly reused samples or sample sources such as common cell lines. Samples are assigned accession numbers which are referenced by links from other databases e.g ArrayExpress, PRIDE and ENA. BioSD data will be exchanged with <a href="documents/BioSampleDB_EBI_NCBI.pdf">NCBI</a> 
+
+<table class="mainFmtTable" cellspacing="15">
+<tr class="intro">
+<td colspan=2>
+<div class="light_form_outer">
+<div class="light_form_top">
+<div class="light_form_bottom">
+<div class="light_form_left">
+<div class="light_form_right">
+<div class="light_form_bottom_left">
+<div class="light_form_bottom_right">
+
+<div class="light_form_top_left">
+<div class="light_form_top_right">
+<div class="form_inner">
+<iframe class="introIF" src = "http://www.ebi.ac.uk/microarray-srv/biosd/intro.html" frameBorder="0" allowtransparency="true">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" class="requestBlock">
+<div class="biosd_query_area" style="display: block;">
+<div class="ae_left_box">
+<div class="form_outer">
+<div class="form_top">
+<div class="form_bottom">
+<div class="form_left">
+<div class="form_right">
+<div class="form_bottom_left">
+<div class="form_bottom_right">
+<div class="form_top_left">
+<div class="form_top_right">
+<div class="form_inner">
+						<div class="biosd_facts_box" style=" margin-left: 15px; margin-top: 15px">
+							<div class="title">BioSamples database</div>
+
+							<div class="facts">
+							Samples: <span id="totalSamples"></span>
+							&nbsp; Groups: <span id="totalGroups"></span>
+							&nbsp; Sources: <span id="totalDataSources"></span><br>
+						    </div>
 						</div>
-					</div>
-				</div>
-				<div class="biosd_separator_fixed">
-				</div>
-				<div class="mid_container-fixed">
-					<div class="biosd_query_container_fixed" style="padding-bottom: 5px">
-				
-						<form id="biosd_query_form" method="get" action="biosamples.html">
-				
-						<div class="title">
-							<label for="biosd_query_field">Search:</label><br>
-							<input id="biosd_query_field" name="query" size="50" maxlength="500" style="width: 350px"><br>
-							<input id="biosd_query_submit" type="submit" value="Query"><br> 
-							
-						</div>
-						<br>
-						<div class="search_within_left">
-							<label for="biosd_query_filter">Search within:</label><br>
+
+						
+						<form id="biosd_query_form" method="get" action="http://www.ebi.ac.uk/biosamples/biosamples.html">
+						<table style="margin-left: 25px;">
+						<tr>
+						<td style="padding-top: 15px" colspan=3>
+						<label>Search:</label>
+						</td>
+						</tr>
+						<tr>
+
+						<td style=""  colspan=2> 
+							<input id="biosd_query_field" name="query" size="50" maxlength="500" style="width: 100%"><br>
+						</td>
+						<td>
+							<input id="biosd_query_submit" type="submit" value="Query" style="width: 70px"><br> 
+						</td>
+						</tr>
+						<tr>
+						<td style="padding-top: 10px">
+						<label for="biosd_query_filter">Search within:</label><br>
+
 						<!--	<input type="checkbox" name="samples" value="1" checked> samples<br>
 							<input type="checkbox" name="groups" value="1" checked> groups<br> -->
 							<select name="within">
@@ -88,100 +286,108 @@
 								<option value="sample">Samples</option>
 								<option value="group">Groups</option>
 							</select>
-						</div>
-						<div class="query_among_right">
-							<label for="biosd_query_among_filter">Among: </label><br>
+						</td>
+
+						<td style="padding-top: 10px">
+						<label for="biosd_query_among_filter">Among: </label><br>
 						<!--	<input type="checkbox" name="names" value="1" checked> attribute name (e.g. organism)<br>
 							<input type="checkbox" name="values" value="1" checked> attribute values (e.g. mouse)<br> -->
 							<select name="among">
 								<option selected="selected" value="both">Attribute names and values </option>
 								<option value="name">Attribute names (e.g. organism)</option>
 								<option value="val">Attribute values (e.g. mouse)</option>
+
 							</select>
-							
-						</div>
-						<div class="reference">
-						<label> Dataset: </label>
-						<input type="checkbox" name="reference" value="1" >&nbsp; Use only reference datasets (coming soon)<br>
-						</div>
+						</td>
+						</tr>
+						<tr><td style="padding-top: 5px"><input type="checkbox" name="reference" value="1" >&nbsp; Use only reference datasets</td></tr>
+						<tr>
+						<td></td>
+						<td></td>
+						<td style="padding-top: 10px; padding-bottom: 10px">
+
+						<a target="_top" id="browseLink" href="http://www.ebi.ac.uk/biosamples/biosamples.html">
+						<img src="images/silk_browse.gif" style="border-style: none" alt="browse"/> Browse Samples
+						</a>
+						</td></tr>
+						</table>
 						</form>
-						<div class="biosd_separator_fixed"><hr/>
-						</div>
-						<div class="biosd_facts">
-							<div class="title">SUMMARY OF CONTENTS:</div><br>
-							Number of samples: <script> document.write(bioSDStat.samples); </script><br>
-							Number of groups: <script> document.write(bioSDStat.groups); </script><br>
-						<!--	Number of attributes:<br> -->
-							Number of data sources: <script> var l =0; for(var k in bioSDStat.topics) l++; document.write(l);</script><br>
-						</div>
-						<div class="search_within_left">
-						<a target="_top" href="http://www.ebi.ac.uk/biosamples/biosamples.html" style="text-decoration:none">
-						<img src="images/book_open.png" style="border-style: none" alt="browse"/> Browse Samples
-						</a>
-						</div>
-						<div class="query_among_right">
-						<a target="_top" href="BioSDSubmission.html" target="_top" style="text-decoration:none">
-						<img src="images/book_add.png" style="border-style: none" alt="submit"/> Submit data
-						</a>
-						</div>
-					
-					</div>
-				</div>
-				<div class="biosd_separator_fixed">
-				</div>
-			<!--This is going to be commented out temporarily	-->
-				<div class="biosd_extras_container_fixed">
-					<div class="biosd_extras_container_left">
-						<div class="biosd_news">
-							<div class="title">Current data sources:
-							</div>
-							<div><ul style="margin-top: 10px; margin-bottom:0px;">
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.ebi.ac.uk/ena" style="text-decoration:none">European Nucleotide Archive</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.ebi.ac.uk/pride" style="text-decoration:none">PRIDE</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.ebi.ac.uk/arrayexpress" style="text-decoration:none"> ArrayExpress</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.genome.gov/26524238" style="text-decoration:none"> ENCODE cell lines</a>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<a target="_top" href="http://www.coriell.org/" style="text-decoration:none"> CORIELL cell lines</a>
-								</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="biosd_extras_container_right">
-						<div class="biosd_faqs">
-							<div class="title">FAQs
-							</div>
-							<div><ul style="margin-top: 5px; margin-bottom:0px;">
-								<li style="margin-bottom: 10px;">
-								<strong> How :</strong>
-								<p style="margin-top: 5px;"> 
-								Data can be submitted using Sample-TAB format. For an example of a SAMPLE-TAB file see <a href="documents/encode_cell_lines_sample_tab_example.xls">sample</a></p>
-								</li>
-								<li style="margin-bottom: 10px;">
-								<strong> Feedback</strong>
-								<p style="margin-top: 5px;"> 
-								To send us any feedback or report any bugs with the website please <a href="mailto:biosamples&#64;ebi.ac.uk">Contact Us</a></p>
-								</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>	
-			</div>			
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="news" style="width: 50%">
+<div class="light_form_outer">
+<div class="light_form_top">
+<div class="light_form_bottom">
+<div class="light_form_left">
+<div class="light_form_right">
+<div class="light_form_bottom_left">
+
+<div class="light_form_bottom_right">
+<div class="light_form_top_left">
+<div class="light_form_top_right">
+<div class="form_inner">
+<iframe class="newsIF" src = "http://www.ebi.ac.uk/microarray-srv/biosd/left.html" frameBorder="0" allowtransparency="true">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</td>
+
+<td class="sources" style="width: 50%">
+<div class="light_form_outer">
+<div class="light_form_top">
+<div class="light_form_bottom">
+<div class="light_form_left">
+<div class="light_form_right">
+<div class="light_form_bottom_left">
+<div class="light_form_bottom_right">
+<div class="light_form_top_left">
+<div class="light_form_top_right">
+<div class="form_inner">
+<iframe class="sourcesIF" src = "http://www.ebi.ac.uk/microarray-srv/biosd/right.html" frameBorder="0" allowtransparency="true">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+</table>
 
 <!-- InstanceEndEditable -->
-			
+		</td>
 		</tr>
 		</table>		
 		<table class="footerpane" id="footerpane" summary="The main footer pane of the page" style="position: fixed; bottom:1px;">
+
 		<tr>
 			<td colspan ="4" class="footerrow">
 				<div class="footerdiv" id="footerdiv"  style="z-index:2;">
@@ -191,7 +397,10 @@
 			</td>
 		</tr>
 	  	</table>
+
 	<script src="/inc/js/footer.js" type="text/javascript"></script> 
 	</div>
+
 </body>
 </html>
+

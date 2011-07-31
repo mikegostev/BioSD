@@ -14,10 +14,12 @@
 	<property name="AGEVisual" location="../AGE-Visual"/>
 	<property name="Commons" location="../Commons"/>
 
-	<path id="build.lib">
-		<fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r36v201104261928/gwt-2.3.0" includes="*.jar"/>
-		<fileset dir="buildlib/" includes="*.jar"/>
-	</path>
+
+  <path id="build.lib">
+    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r36v201105191508/gwt-2.3.0" includes="*.jar"/>
+    <fileset dir="buildlib/" includes="*.jar"/>
+    <fileset dir="${AGEVisual}/lib/"/>
+  </path>
 
 	<path id="age.lib">
 		<fileset dir="${AGE}/lib/" includes="*.jar"/>
@@ -31,8 +33,11 @@
 		<fileset dir="${build}/WEB-INF/lib/" includes="*.jar"/>
 	</path>
 
-	<target name="dist" description="generate the distribution" >
-		<tstamp/>
+   <target name="dist" description="generate the distribution" >
+
+    <tstamp>
+        <format property="BUILDTIME" pattern="yyyy-MM-dd HH:mm z Z" locale="en,UK"/>
+    </tstamp> 
 
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
@@ -67,6 +72,7 @@
 		<javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
+
 
 		<javac srcdir="${AGEVisual}/src" destdir="${build}/WEB-INF/classes" classpath="$${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
 			<compilerarg value="-Xlint:deprecation"/>
@@ -103,12 +109,15 @@
 			<arg value="uk.ac.ebi.age.admin.AgeAdmin" />
 		</java>
 
+ <filter token="BUILDTIME" value="${BUILDTIME}"/>
+ 
+ <copy file="war/RELEASE.html" todir="${build}" filtering="true" overwrite="true"/>
 
 
-
-		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-		<jar jarfile="${dist}/BioSD${DSTAMP}.war" basedir="${build}"/>
-	</target>
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+ <jar jarfile="${dist}/BioSD${DSTAMP}.war" basedir="${build}"/>
+ 
+ </target>
 
 
 </project>
