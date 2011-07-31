@@ -178,3 +178,7 @@ span.qualifiedCell
 	font-weight: bold;
 }
 
+.sampleListLink td, .sampleListLink a
+{
+	font-size: 11pt !important;
+}
