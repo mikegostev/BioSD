@@ -309,6 +309,7 @@ public class BioSDServiceImpl extends BioSDService
   
   sb.append(" )");
 
+  int qLen = sb.length();
   
   if( refOnly )
    sb.append(" AND ").append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)");
@@ -316,7 +317,6 @@ public class BioSDServiceImpl extends BioSDService
 //  sb.append(" )");
   
   String lucQuery = sb.toString();
-  int qLen = lucQuery.length();
   
 //  System.out.println("Query: "+lucQuery);
   
