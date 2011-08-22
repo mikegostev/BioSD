@@ -10,6 +10,10 @@ import uk.ac.ebi.age.admin.server.mng.AgeAdminException;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.mng.AgeStorageManager;
 import uk.ac.ebi.age.mng.AgeStorageManager.DB_TYPE;
+import uk.ac.ebi.age.model.IdScope;
+import uk.ac.ebi.age.parser.SyntaxProfile;
+import uk.ac.ebi.age.parser.impl.ClassSpecificSyntaxProfileDefinitionImpl;
+import uk.ac.ebi.age.parser.impl.SyntaxProfileDefinitionImpl;
 import uk.ac.ebi.age.service.id.IdGenerator;
 import uk.ac.ebi.age.service.id.impl.SeqIdGeneratorImpl;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
@@ -58,6 +62,35 @@ public class Init implements ServletContextListener
   conf.setBaseDir( new File(cfg.getBasePath()) );
   conf.setTmpDir( new File(cfg.getTmpPath()) );
 
+  SyntaxProfile sp = new SyntaxProfile();
+  SyntaxProfileDefinitionImpl commSP = new SyntaxProfileDefinitionImpl();
+  commSP.setClusterIdPrefix("$C:");
+  commSP.setModuleIdPrefix("$M:");
+  commSP.setGlobalIdPrefix("$G:");
+  commSP.setDefaultIdScope(IdScope.GLOBAL);
+  commSP.setPrototypeObjectId("<<ALL>>");
+  commSP.setResetPrototype(true);
+ 
+  ClassSpecificSyntaxProfileDefinitionImpl vertClasses = new ClassSpecificSyntaxProfileDefinitionImpl(commSP);
+  vertClasses.setHorizontalBlockDefault(false);
+
+  ClassSpecificSyntaxProfileDefinitionImpl vertModClasses = new ClassSpecificSyntaxProfileDefinitionImpl(commSP);
+  vertModClasses.setHorizontalBlockDefault(false);
+  vertModClasses.setDefaultIdScope(IdScope.MODULE);
+  
+  sp.setCommonSyntaxProfile(commSP);
+  
+  sp.addClassSpecificSyntaxProfile("Submission", vertClasses);
+  sp.addClassSpecificSyntaxProfile("Group", vertClasses);
+
+  sp.addClassSpecificSyntaxProfile("Term Source", vertModClasses);
+  sp.addClassSpecificSyntaxProfile("Person", vertModClasses);
+  sp.addClassSpecificSyntaxProfile("Publication", vertModClasses);
+  sp.addClassSpecificSyntaxProfile("Organization", vertModClasses);
+  sp.addClassSpecificSyntaxProfile("Database", vertModClasses);
+  
+  conf.setSyntaxProfile(sp);
+  
   try
   {
    adm = new AgeAdmin(conf, storage);
