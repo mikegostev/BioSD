@@ -3,6 +3,7 @@ package uk.ac.ebi.biosd.client;
 import uk.ac.ebi.biosd.client.ui.module.QueryFace;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.smartgwt.client.util.Page;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 public class BioSDEntryPoint implements EntryPoint
@@ -10,6 +11,7 @@ public class BioSDEntryPoint implements EntryPoint
 
  public void onModuleLoad()
  {
+  Page.setAppImgDir("[APP]images/");
   VLayout c =  new QueryFace();
 
 //  RootPanel.get("draw_syuda").add(c);
