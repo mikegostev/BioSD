@@ -18,25 +18,25 @@ public class ObjectViewPanelHTML extends HTMLFlow
    String rowSpan ="";
    
    if(  at.getObjectValue() != null  )
-    rowSpan = " rowspan='"+(at.getObjectValue().getAttributes().size()+1)+"'";
+    rowSpan = " rowspan='"+(at.getObjectValue().getAttributes().size())+"'";
    
    html += "<td class='qualifierName'"+rowSpan+">"+at.getName()+":&nbsp</td>";
    
    String val = at.getStringValue();
    
-   if(  at.getObjectValue() != null  )
-    html += "<td class='qualifierObjAttrName'>Name:&nbsp</td><td class='qualifierValue'>"+val.substring(val.indexOf('-')+1)+"</td>";
-   else
+   if(  at.getObjectValue() == null  )
     html += "<td colspan='2' style='qualifierValue'>"+val+"</td>";
-   
-   html += "</tr>";
-
-   if( at.getObjectValue() != null )
+   else
    {
-    html += "<tr>";
+    boolean first = true;
     
     for( AttributedObject obat : at.getObjectValue().getAttributes() )
     {
+     if( first )
+      first = false;
+     else
+      html += "<tr>";
+     
      html += "<td class='qualifierObjAttrName'>"+obat.getName()+":&nbsp</td>";
      
      val = obat.getStringValue();
@@ -44,13 +44,11 @@ public class ObjectViewPanelHTML extends HTMLFlow
      if( val.startsWith("http://") )
       val = "<a target='_blank' href='"+val+"'>"+val+"</a>";
      
-     html += "<td class='qualifierValue'>"+val+"</td>";
+     html += "<td class='qualifierValue'>"+val+"</td></tr>";
     }
-    
-    html += "</tr>";
    }
-   
 
+   html += "</tr>";
   }
   
   html+="</table>";

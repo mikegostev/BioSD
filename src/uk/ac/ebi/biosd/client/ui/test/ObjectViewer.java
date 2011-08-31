@@ -11,8 +11,20 @@ public class ObjectViewer extends Window
  {
   setTitle( "Value properties: "+obj.getStringValue() );  
   setWidth(750);  
-  setHeight(100); 
-//  setLeft(offsetLeft);  
+ 
+  int height = 0;
+  
+  final int rowHeight = 28;
+  
+  for( AttributedObject at : obj.getAttributes() )
+  {
+   if( at.getObjectValue() == null )
+    height+=rowHeight;
+   else
+    height += rowHeight * at.getObjectValue().getAttributes().size();
+  }
+  
+  setHeight(height); 
   setCanDragReposition(true);  
   setCanDragResize(true);  
   setShowMinimizeButton(false);
@@ -22,7 +34,6 @@ public class ObjectViewer extends Window
   
   setAlign(VerticalAlignment.CENTER);
 
-//  addItem( new ObjectViewPanel(obj) );
   addItem( new ObjectViewPanelHTML(obj) );
  }  
 }

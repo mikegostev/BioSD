@@ -2,7 +2,9 @@ package uk.ac.ebi.biosd.client.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.ac.ebi.biosd.client.shared.Pair;
 
@@ -19,8 +21,11 @@ public class GroupImprint extends AttributedImprint implements IsSerializable
  private Collection<String> allSamples = new ArrayList<String>(50);
  private List<Pair<String,String>> othr ;
  private int refCount;
- private List<AttributedImprint> publications;
- private List<AttributedImprint> contacts;
+ 
+ private Map<String,List<AttributedImprint>> attachedObjects;
+ 
+// private List<AttributedImprint> publications;
+// private List<AttributedImprint> contacts;
  
  
 
@@ -99,29 +104,36 @@ public class GroupImprint extends AttributedImprint implements IsSerializable
   return othr;
  }
 
- public void addPublication(AttributedImprint pub)
+ public void attachObjects( String cls, AttributedImprint obj )
  {
-  if( publications == null )
-   publications = new ArrayList<AttributedImprint>(4);
+  List<AttributedImprint> objList=null;
   
-  publications.add(pub);
- }
-
- public List<AttributedImprint> getPublications()
- {
-  return publications;
- }
-
- public void addContact(AttributedImprint pub)
- {
-  if( contacts == null )
-   contacts = new ArrayList<AttributedImprint>(4);
+  if( attachedObjects == null )
+  {
+   attachedObjects = new HashMap<String, List<AttributedImprint>>();
+   attachedObjects.put(cls, objList = new ArrayList<AttributedImprint>(4) );
+  }
+  else
+  {
+   objList = attachedObjects.get(cls);
+   
+   if( objList == null  )
+    attachedObjects.put(cls, objList = new ArrayList<AttributedImprint>(4) );
+  }
   
-  contacts.add(pub);
+  objList.add(obj);
  }
-
- public List<AttributedImprint> getContacts()
+ 
+ public Collection<String> getAttachedClasses()
  {
-  return contacts;
+  if( attachedObjects == null )
+   return null;
+  
+  return attachedObjects.keySet();
+ }
+ 
+ public List<AttributedImprint> getAttachedObjects( String cls )
+ {
+  return attachedObjects.get(cls);
  }
 }

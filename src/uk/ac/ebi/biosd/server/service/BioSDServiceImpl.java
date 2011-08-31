@@ -22,9 +22,11 @@ import uk.ac.ebi.age.model.AgeAttribute;
 import uk.ac.ebi.age.model.AgeAttributeClass;
 import uk.ac.ebi.age.model.AgeClass;
 import uk.ac.ebi.age.model.AgeObject;
+import uk.ac.ebi.age.model.AgeObjectAttribute;
 import uk.ac.ebi.age.model.AgeRelation;
 import uk.ac.ebi.age.model.AgeRelationClass;
 import uk.ac.ebi.age.model.Attributed;
+import uk.ac.ebi.age.model.DataType;
 import uk.ac.ebi.age.query.AgeQuery;
 import uk.ac.ebi.age.query.ClassNameExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
@@ -539,7 +541,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   sgRep.setId( obj.getId() );
 
 //  sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
-  sgRep.addAttribute("ID", obj.getId(), true, 0);
+  sgRep.addAttribute("__ID", obj.getId(), true, 0);
   
   Object descVal = obj.getAttributeValue(desciptionAttributeClass);
   sgRep.setDescription( descVal!=null?descVal.toString():null );
@@ -553,6 +555,10 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    {
     sgRep.addOtherInfo( atCls.getName(), atr.getValue().toString() );
    }
+   else if( atCls.getDataType() == DataType.OBJECT )
+   {
+    sgRep.attachObjects( atCls.getName(), createAttributedObject( ((AgeObjectAttribute)atr).getValue()) );
+   } 
    else
     sgRep.addAttribute(atCls.getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
   }
@@ -562,7 +568,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( pubRels != null )
   {
    for( AgeRelation pRel : pubRels )
-    sgRep.addPublication( createAttributedObject(pRel.getTargetObject()) );
+    sgRep.attachObjects( "Publications", createAttributedObject(pRel.getTargetObject()) );
   }
 
   Collection<? extends AgeRelation> persRels =  obj.getRelationsByClass(groupToContactRelClass, false);
@@ -570,7 +576,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( persRels != null )
   {
    for( AgeRelation pRel : persRels )
-    sgRep.addContact( createAttributedObject(pRel.getTargetObject()) );
+    sgRep.attachObjects( "Contacts", createAttributedObject(pRel.getTargetObject()) );
   }
 
   

@@ -22,7 +22,7 @@ public class BioSDConfigManager extends AgeAdminConfigManager
  public static final String SAMPLEINGROUP_REL_CLASS_NAME = "belongsTo";
  
  public static final String REFERENCE_ATTR_CLASS_NAME = "Reference";
- public static final String DESCRIPTION_ATTR_CLASS_NAME = "Description";
+ public static final String DESCRIPTION_ATTR_CLASS_NAME = "Submission Description";
  public static final String COMMENT_ATTR_CLASS_NAME = "Comment";
  public static final String HAS_PUBLICATION_REL_CLASS_NAME = "hasPublication";
  public static final String CONTACT_OF_REL_CLASS_NAME = "contactOf";

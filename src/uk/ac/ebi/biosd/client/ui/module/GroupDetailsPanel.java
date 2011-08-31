@@ -1,6 +1,8 @@
 package uk.ac.ebi.biosd.client.ui.module;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.ac.ebi.age.ui.client.LinkClickListener;
 import uk.ac.ebi.age.ui.client.LinkManager;
@@ -49,8 +51,9 @@ public class GroupDetailsPanel extends VLayout
  private boolean searchAtValues;
  
  private List< Pair<String, String> > otherInfoList;
- private List< AttributedImprint > publList;
- private List< AttributedImprint > contList;
+ private Map<String, List<AttributedImprint> > attMap = new HashMap<String, List<AttributedImprint>>();
+// private List< AttributedImprint > publList;
+// private List< AttributedImprint > contList;
  
  private PagingRuler pager;
  
@@ -67,7 +70,11 @@ public class GroupDetailsPanel extends VLayout
   
   ListGridRecord rec = new ListGridRecord();
 
-  for( String s : r.getAttributes() )
+  groupID = r.getAttributeAsString("__ID");
+
+  String[] attrs = r.getAttributes();
+
+  for( String s : attrs )
   {
    if( s.startsWith("__")  )
     continue;
@@ -100,9 +107,9 @@ public class GroupDetailsPanel extends VLayout
      rec.setAttribute(s, "<a target='_blank' border=0 href='"+val+"'>"+val+"</a>");
     
    }
-   else if("PubMed ID".equals(s))
+   else if("Submission PubMed ID".equals(s))
     rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+val+"'>"+val+"</a>");
-   else if("DOI".equals(s))
+   else if("Submission DOI".equals(s))
     rec.setAttribute(s, "<a target='_blank' border=0 href='http://dx.doi.org/"+val+"'>"+val+"</a>");
    else
     rec.setAttribute(s, val);
@@ -110,29 +117,45 @@ public class GroupDetailsPanel extends VLayout
    //   System.out.println("At: "+s+" "+r.getAttributeAsString(s));
   }
 
-  groupID = r.getAttributeAsString("ID");
   
-  publList = (List< AttributedImprint >) r.getAttributeAsObject("__publ");
-  
-  if( publList != null && publList.size() > 0 )
+  for( String attr : attrs )
   {
-   String repstr = makeRepresentationString(publList, "publ");
+   if( attr.startsWith("__$att$") )
+   {
+    List< AttributedImprint > list = (List< AttributedImprint >) r.getAttributeAsObject(attr);
+    String title = attr.substring(7);
+    
+    String repstr = makeRepresentationString(list, title);
 
-   ds.addField(new DataSourceTextField("publ", "Publications") );
-   
-   rec.setAttribute("publ", repstr);
+    ds.addField(new DataSourceTextField(title, title) );
+    
+    rec.setAttribute(title, repstr);
+    
+    attMap.put(title, list);
+   }
   }
   
-  contList = (List< AttributedImprint >) r.getAttributeAsObject("__contact");
-  
-  if( contList != null && contList.size() > 0 )
-  {
-   String repstr = makeRepresentationString(contList, "contact");
-
-   ds.addField(new DataSourceTextField("contact", "Contacts") );
-   
-   rec.setAttribute("contact", repstr);
-  }
+//  publList = (List< AttributedImprint >) r.getAttributeAsObject("__publ");
+//  
+//  if( publList != null && publList.size() > 0 )
+//  {
+//   String repstr = makeRepresentationString(publList, "publ");
+//
+//   ds.addField(new DataSourceTextField("publ", "Publications") );
+//   
+//   rec.setAttribute("publ", repstr);
+//  }
+//  
+//  contList = (List< AttributedImprint >) r.getAttributeAsObject("__contact");
+//  
+//  if( contList != null && contList.size() > 0 )
+//  {
+//   String repstr = makeRepresentationString(contList, "contact");
+//
+//   ds.addField(new DataSourceTextField("contact", "Contacts") );
+//   
+//   rec.setAttribute("contact", repstr);
+//  }
 
   
   otherInfoList = (List< Pair<String, String> >) r.getAttributeAsObject("__other");
@@ -285,18 +308,12 @@ public class GroupDetailsPanel extends VLayout
      new NameValuePanel( otherInfoList ).show();
      return;
     }
-    else if( "publ".equals(param) )
+    else if( attMap.containsKey(param) )
     {
-     new AttributedListPanel( "Publications", publList ).show();
+     new AttributedListPanel( param, attMap.get(param) ).show();
      return;
     }
-    else if( "contact".equals(param) )
-    {
-     new AttributedListPanel( "Contacts", contList ).show();
-     return;
-    }
-
-    
+   
     int pNum = 1;
     
     try
@@ -535,10 +552,6 @@ public class GroupDetailsPanel extends VLayout
  
  private void renderSampleList2(final VLayout lay, SampleList smpls, int pg)
  {
-  System.out.println("Start rendering");
-//  DataSource ds = new DataSource();
-//  ds.setClientOnly(true);
-
   ListGrid attrList = new SampleListGrid();
   
   attrList.setShowAllRecords(true);
@@ -606,7 +619,7 @@ public class GroupDetailsPanel extends VLayout
    {
     if( at.getFullName().equals(prideKey) )
      rec.setAttribute(at.getFullName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getStringValue()+"'>"+at.getStringValue()+"</a>");
-    else if( at.getAttributes() != null )
+    else if( at.getAttributes() != null && at.getAttributes().size() > 0 )
      rec.setAttribute(at.getFullName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
     else
      rec.setAttribute(at.getFullName(), at.getStringValue());

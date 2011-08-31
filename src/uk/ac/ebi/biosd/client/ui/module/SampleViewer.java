@@ -48,10 +48,7 @@ public class SampleViewer  extends Window
   if( height > 600 )
    height = 600;
 
-  System.out.println("Height: "+height);
-  
   setHeight(height); 
-
   
   ds.addData(rec);
   
@@ -60,7 +57,7 @@ public class SampleViewer  extends Window
   dv.setHeight("100%");
   dv.setCanSelectText(true);
   dv.setDataSource(ds);
-  dv.setStyleName("groupDetails");
+  dv.setStyleName("sampleDetails");
   dv.setAutoFetchData(true);
 
   dv.setMargin(3);

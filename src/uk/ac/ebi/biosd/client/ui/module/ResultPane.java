@@ -187,11 +187,17 @@ public class ResultPane extends VLayout implements ResultRenderer
    if( sgr.getOtherInfo() != null )
     det.setAttribute("__other", sgr.getOtherInfo());
 
-   if( sgr.getPublications() != null )
-    det.setAttribute("__publ", sgr.getPublications() );
-
-   if( sgr.getContacts() != null )
-    det.setAttribute("__contact", sgr.getContacts() );
+   if( sgr.getAttachedClasses() != null )
+   {
+    for( String atCls : sgr.getAttachedClasses() )
+     det.setAttribute("__$att$"+atCls, sgr.getAttachedObjects(atCls) );
+   }
+   
+//   if( sgr.getPublications() != null )
+//    det.setAttribute("__publ", sgr.getPublications() );
+//
+//   if( sgr.getContacts() != null )
+//    det.setAttribute("__contact", sgr.getContacts() );
    
    det.setAttribute("__total", sgr.getRefCount());
    det.setAttribute("__matched", sgr.getMatchedCount());

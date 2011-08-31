@@ -16,7 +16,7 @@
 
 
   <path id="build.lib">
-    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r36v201105191508/gwt-2.3.0" includes="*.jar"/>
+    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r37v201106211634/gwt-2.3.0" includes="*.jar"/>
     <fileset dir="buildlib/" includes="*.jar"/>
     <fileset dir="${AGEVisual}/lib/"/>
   </path>
@@ -67,27 +67,28 @@
 		<copy todir="${build}/WEB-INF/lib/">
 			<fileset dir="${AGE}/lib/" />
 			<fileset dir="${AGEAdmin}/war/WEB-INF/lib/" />
+		    <fileset dir="${AGEVisual}/lib/"/>
 		</copy>
 
-		<javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
+		<javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
 
-		<javac srcdir="${AGEVisual}/src" destdir="${build}/WEB-INF/classes" classpath="$${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
+		<javac srcdir="${AGEVisual}/src" destdir="${build}/WEB-INF/classes" classpath="$${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
-		<javac srcdir="${AGE}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
+		<javac srcdir="${AGE}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
-		<javac srcdir="${AGEAdmin}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on">
+		<javac srcdir="${AGEAdmin}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 
-		<javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" target="1.6" debug="on" nowarn="on">
+		<javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
