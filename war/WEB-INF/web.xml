@@ -11,12 +11,14 @@
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
+
   <servlet>
     <description></description>
     <display-name>QueryService</display-name>
     <servlet-name>QueryService</servlet-name>
     <servlet-class>uk.ac.ebi.biosd.server.service.GWTServlet</servlet-class>
   </servlet>
+
   <servlet>
     <description>
   	</description>
@@ -25,6 +27,7 @@
     <servlet-class>
   	uk.ac.ebi.age.admin.server.service.AgeAdminServiceImpl</servlet-class>
   </servlet>
+
   <servlet>
     <description>
   	</description>
@@ -33,6 +36,7 @@
     <servlet-class>
   	uk.ac.ebi.age.admin.server.service.UploadSvc</servlet-class>
   </servlet>
+
   <servlet>
     <description>
   	</description>
@@ -41,6 +45,7 @@
     <servlet-class>
   	uk.ac.ebi.age.admin.server.service.LoginSvc</servlet-class>
   </servlet>
+
   <servlet>
     <description>
   	</description>
@@ -49,30 +54,16 @@
     <servlet-class>
   	uk.ac.ebi.biosd.server.service.DBStat</servlet-class>
   </servlet>
-  <servlet-mapping>
-    <servlet-name>QueryService</servlet-name>
-    <url-pattern>/biosd/ageQueryGWT</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AgeAdminServiceImpl</servlet-name>
-    <url-pattern>/admin/ageAdminGWT</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>UploadSvc</servlet-name>
-    <url-pattern>/upload</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>LoginSvc</servlet-name>
-    <url-pattern>/Login</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DBStat</servlet-name>
-    <url-pattern>/DBStat</url-pattern>
-  </servlet-mapping>
-  <listener>
-    <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
-  </listener>
-  
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>DownloadSvc</display-name>
+    <servlet-name>DownloadSvc</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.DownloadSvc</servlet-class>
+  </servlet>
+
   <servlet>
     <description>
   	</description>
@@ -81,8 +72,48 @@
     <servlet-class>
   	uk.ac.ebi.age.admin.server.service.DataSourceServlet</servlet-class>
   </servlet>
+
+  
+  
+  
+  <servlet-mapping>
+    <servlet-name>QueryService</servlet-name>
+    <url-pattern>/biosd/ageQueryGWT</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>AgeAdminServiceImpl</servlet-name>
+    <url-pattern>/admin/ageAdminGWT</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>UploadSvc</servlet-name>
+    <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>LoginSvc</servlet-name>
+    <url-pattern>/Login</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>DBStat</servlet-name>
+    <url-pattern>/DBStat</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>DownloadSvc</servlet-name>
+    <url-pattern>/download</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>DataSourceSvc</servlet-name>
     <url-pattern>/dataSourceService</url-pattern>
   </servlet-mapping>
+
+
+  <listener>
+    <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
+  </listener>
+  
 </web-app>

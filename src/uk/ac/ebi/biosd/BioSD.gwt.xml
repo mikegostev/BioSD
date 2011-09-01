@@ -18,8 +18,8 @@
 
   <!-- Other module inherits                                      -->
   <inherits name="uk.ac.ebi.age.ui.AGE_Visual"/>
-  <!-- Other module inherits<inherits name="uk.ac.ebi.age.admin.AgeAdmin"/> -->
-
+  <!-- <inherits name="uk.ac.ebi.age.admin.AgeAdmin"/> -->
+ 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='uk.ac.ebi.biosd.client.BioSDEntryPoint'/>
 
