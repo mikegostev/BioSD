@@ -52,7 +52,9 @@ public class ResultPane extends VLayout implements ResultRenderer
   resultGrid.setWrapCells(true);
   resultGrid.setFixedRecordHeights(false);
   resultGrid.setCellHeight(20);
-  
+  resultGrid.setCanDragSelectText(true);
+  resultGrid.setCanDrag(false);
+ 
 //  resultGrid.setBodyOverflow(Overflow.VISIBLE);
   resultGrid.setOverflow(Overflow.VISIBLE);
   

@@ -215,6 +215,7 @@ public class GroupDetailsPanel extends VLayout
   dv.setWidth("90%");
   dv.setDataSource(ds);
   dv.setStyleName("groupDetails");
+  dv.setCanSelectText(true);
   
   dv.setAutoFetchData(true);
   
