@@ -32,6 +32,7 @@ import uk.ac.ebi.age.query.ClassNameExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
 import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.DataChangeListener;
+import uk.ac.ebi.age.storage.exeption.IndexIOException;
 import uk.ac.ebi.age.storage.index.KeyExtractor;
 import uk.ac.ebi.age.storage.index.SortedTextIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
@@ -51,6 +52,9 @@ import com.pri.util.StringUtils;
 public class BioSDServiceImpl extends BioSDService implements SecurityChangedListener
 {
  private AgeStorage storage;
+ 
+ private static final String GROUP_INDEX_NAME="GROUPINDEX";
+ private static final String SAMPLE_INDEX_NAME="SAMPLEINDEX";
  
  private SortedTextIndex<GroupKey> groupsIndex;
  private TextIndex samplesIndex;
@@ -130,7 +134,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 // };
  
  
- public BioSDServiceImpl( AgeStorage stor )
+ public BioSDServiceImpl( AgeStorage stor ) throws BioSDInitException
  {
   storage=stor;
   
@@ -204,33 +208,40 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
   
-  groupsIndex = storage.createSortedTextIndex(groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
+  try
+  {
+   groupsIndex = storage.createSortedTextIndex(GROUP_INDEX_NAME, groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
 
-   ObjectRecycler<GroupKey> fact = new ObjectRecycler<GroupKey>(4);
-   
-   @Override
-   public GroupKey extractKey(AgeObject o1)
-   {
-    GroupKey k = fact.getObject();
+    ObjectRecycler<GroupKey> fact = new ObjectRecycler<GroupKey>(4);
+    
+    @Override
+    public GroupKey extractKey(AgeObject o1)
+    {
+     GroupKey k = fact.getObject();
 
-    if(k == null)
-     k = new GroupKey();
+     if(k == null)
+      k = new GroupKey();
 
-    AgeAttribute ref1 = o1.getAttribute(referenceAttributeClass);
+     AgeAttribute ref1 = o1.getAttribute(referenceAttributeClass);
 
-    k.grpName = o1.getId();
-    k.refGroup = ref1 != null ? ref1.getValueAsBoolean() : false;
+     k.grpName = o1.getId();
+     k.refGroup = ref1 != null ? ref1.getValueAsBoolean() : false;
 
-    return k;
-   }
+     return k;
+    }
 
-   @Override
-   public void recycleKey(GroupKey k)
-   {
-    fact.recycleObject(k);
-   }},
-   
-   groupComparator);
+    @Override
+    public void recycleKey(GroupKey k)
+    {
+     fact.recycleObject(k);
+    }},
+    
+    groupComparator);
+  }
+  catch(IndexIOException e)
+  {
+   throw new BioSDInitException("Init failed. Can't create group index",e);
+  }
 
   Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
   
@@ -281,7 +292,15 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
   
-  samplesIndex = storage.createTextIndex(q, extr);
+  try
+  {
+   samplesIndex = storage.createTextIndex(SAMPLE_INDEX_NAME, q, extr);
+  }
+  catch(IndexIOException e)
+  {
+   throw new BioSDInitException("Init failed. Can't create group index",e);
+  }
+
  }
 
  private void collectStats()

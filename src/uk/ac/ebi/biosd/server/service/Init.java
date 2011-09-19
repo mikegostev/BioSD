@@ -99,9 +99,20 @@ public class Init implements ServletContextListener
   {
    // TODO Auto-generated catch block
    e.printStackTrace();
+   return;
   }
   
-  BioSDServiceImpl biosd = new BioSDServiceImpl( storage );
+  BioSDServiceImpl biosd=null;
+  try
+  {
+   biosd = new BioSDServiceImpl( storage );
+  }
+  catch(BioSDInitException e)
+  {
+   // TODO Auto-generated catch block
+   e.printStackTrace();
+   return;
+  }
   
   Configuration.getDefaultConfiguration().getAuthDB().addSecurityChangedListener(biosd);
   
