@@ -12,7 +12,6 @@ import java.util.WeakHashMap;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
-import uk.ac.ebi.age.authz.BuiltInUsers;
 import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.SecurityChangedListener;
 import uk.ac.ebi.age.entity.ID;
@@ -408,17 +407,16 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( refOnly )
    sb.append(" AND ").append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)");
 
-  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
-  {
-   UserCacheObject uco = getUserCacheobject(user);
-
-   sb.append(" AND (").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
-   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))");
-
-   if(uco.getDenyTags().length() > 0)
-    sb.append(" NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(")");
-  }
-//  sb.append(" )");
+//  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
+//  {
+//   UserCacheObject uco = getUserCacheobject(user);
+//
+//   sb.append(" AND (").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
+//   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))");
+//
+//   if(uco.getDenyTags().length() > 0)
+//    sb.append(" NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(")");
+//  }
   
   String lucQuery = sb.toString(); 
   int qLen = lucQuery.length();

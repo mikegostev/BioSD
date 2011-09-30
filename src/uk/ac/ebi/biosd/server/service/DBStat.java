@@ -19,13 +19,15 @@ public class DBStat extends HttpServlet
  {
   BioSDStat stat = BioSDService.getInstance().getStatistics();
   
+  resp.setContentType("application/x-javascript");
+  
   try
   {
    PrintWriter out = resp.getWriter();
    
-   out.print("var bioSDStat = {\n");
+   out.print("( function() {\nvar bioSDStat = {\n");
    sendStat(out,stat);
-   out.print("}\n");
+   out.print("}\n\nif( typeof statsReady == \"function\" )\n statsReady(bioSDStat);\n})();");
   }
   catch(IOException e)
   {
@@ -48,7 +50,7 @@ public class DBStat extends HttpServlet
     
     boolean first = true;
     
-    for(Map.Entry<String, BioSDStat> me  : stat.getTopics().entrySet() )
+    for(Map.Entry<String, BioSDStat> me : stat.getTopics().entrySet() )
     {
      if( ! first )
       out.print(",\n");
@@ -63,5 +65,4 @@ public class DBStat extends HttpServlet
    }
   
   out.print("\n");
- }
-}
+ }}

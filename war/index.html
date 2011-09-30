@@ -175,7 +175,7 @@ a:hover#browseLink {
 	function loadStats() {
 		var ga = document.createElement('script');
 		ga.type = 'text/javascript';
-		ga.src = 'http://www.ebi.ac.uk/biosamples/DBStat';
+		ga.src = 'DBStat';
 		var s = document.getElementsByTagName('script')[0];
 		s.parentNode.insertBefore(ga, s);
 		};
@@ -185,8 +185,8 @@ a:hover#browseLink {
 		 document.getElementById("totalSamples").innerHTML=bioSDStat.samples;
 		 document.getElementById("totalGroups").innerHTML=bioSDStat.groups;
 
-		 var l=0; for(var k in bioSDStat.topics) l++; ;
-		 document.getElementById("totalDataSources").innerHTML=l;
+//		 var l=0; for(var k in bioSDStat.topics) l++; ;
+//		 document.getElementById("totalDataSources").innerHTML=l;
 	}
 </script>
 
@@ -254,7 +254,8 @@ a:hover#browseLink {
 							<div class="facts">
 							Samples: <span id="totalSamples"></span>
 							&nbsp; Groups: <span id="totalGroups"></span>
-							&nbsp; Sources: <span id="totalDataSources"></span><br>
+						<!-- &nbsp; Sources: <span id="totalDataSources"></span>  -->	
+						<br> 
 						    </div>
 						</div>
 
