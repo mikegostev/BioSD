@@ -10,11 +10,12 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import uk.ac.ebi.age.admin.server.mng.Configuration;
+import uk.ac.ebi.age.annotation.AnnotationDBException;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
 import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.SecurityChangedListener;
-import uk.ac.ebi.age.entity.ID;
+import uk.ac.ebi.age.entity.Entity;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.ext.authz.TagRef;
 import uk.ac.ebi.age.model.AgeAttribute;
@@ -653,9 +654,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   @Override
   public String getValue(AgeObject ao)
   {
-   ID entId = ao.getEntityID();
-   
-   Collection<TagRef> tags = permMngr.getEffectiveTags( entId );
+   Collection<TagRef> tags = permMngr.getEffectiveTags( ao );
    
    if( tags == null )
     return "";
@@ -676,18 +675,26 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   @Override
   public String getValue(AgeObject ao)
   {
-   ID entId = ao.getEntityID();
+   Entity entId = ao;
    
    String own = null;
    
    while( entId != null )
    {
-    own = (String)annorMngr.getAnnotation(Topic.OWNER, entId);
+    try
+    {
+     own = (String)annorMngr.getAnnotation(Topic.OWNER, entId, true);
+    }
+    catch(AnnotationDBException e)
+    {
+     e.printStackTrace();
+     return "";
+    }
     
     if( own != null )
      break;
     
-    entId = entId.getParentObjectID();
+    entId = entId.getParentEntity();
    }
    
    if( own == null )
