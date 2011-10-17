@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import uk.ac.ebi.age.admin.server.mng.Configuration;
-import uk.ac.ebi.age.annotation.AnnotationDBException;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
 import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.SecurityChangedListener;
-import uk.ac.ebi.age.entity.Entity;
+import uk.ac.ebi.age.ext.annotation.AnnotationDBException;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.ext.authz.TagRef;
+import uk.ac.ebi.age.ext.entity.Entity;
 import uk.ac.ebi.age.model.AgeAttribute;
 import uk.ac.ebi.age.model.AgeAttributeClass;
 import uk.ac.ebi.age.model.AgeClass;
