@@ -16,5 +16,5 @@ public interface QueryServiceAsync
 
  void getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count, AsyncCallback<SampleList> asyncCallback);
 
- void getAllGroups(int offs, int count, boolean refOnly, AsyncCallback<Report> asyncCallback);
+// void getAllGroups(int offs, int count, boolean refOnly, AsyncCallback<Report> asyncCallback);
 }

@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
+import uk.ac.ebi.age.authz.BuiltInUsers;
 import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.SecurityChangedListener;
 import uk.ac.ebi.age.ext.annotation.AnnotationDBException;
@@ -243,7 +244,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    throw new BioSDInitException("Init failed. Can't create group index",e);
   }
 
-  Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
+//  Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
   
   storage.addDataChangeListener( new DataChangeListener() 
   {
@@ -305,6 +306,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
  private void collectStats()
  {
+  AgeAttributeClass pubsClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.PUBLICATIONS_ATTR_CLASS_NAME );
+  AgeAttributeClass pubMedIdClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.PUBMEDID_ATTR_CLASS_NAME );
+  AgeAttributeClass pubDOIClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.PUBDOI_ATTR_CLASS_NAME );
+  
+  Map<String,String> pubMedMap = new HashMap<String, String>();
+  Map<String,String> doiMap = new HashMap<String, String>();
+  
   statistics = new BioSDStat();
   
   List<? extends AgeObject> groupList = groupsIndex.getObjectList();
@@ -356,9 +364,41 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     if( isRef )
      dsStat.addRefSamples( samples );
    }
+   
+   Collection<? extends AgeAttribute> pubs = grp.getAttributesByClass(pubsClass, false);
+   
+   if( pubs != null )
+   {
+    for( AgeAttribute pub : pubs )
+    {
+     AgeObject pubObj = ((AgeObjectAttribute)pub).getValue();
+     
+     String pmId = (String)pubObj.getAttributeValue(pubMedIdClass);
+     
+     if( pmId != null && pmId.length() == 0 )
+      pmId = null;
+     
+     String doi = (String)pubObj.getAttributeValue(pubDOIClass);
+ 
+     if( doi != null && doi.length() == 0 )
+      doi = null;
+     
+     if( pmId != null )
+      pubMedMap.put(pmId, doi);
+
+     if( doi != null && doiMap.get(doi) == null )
+      doiMap.put(doi,pmId);
+    }
+   }
   }
   
+  int doiCount = 0;
+  for( Map.Entry<String, String> me : doiMap.entrySet() )
+   if( me.getValue() == null )
+    doiCount++;
+  
   statistics.setRefGroups(refGrp);
+  statistics.setPublications( pubMedMap.size() + doiCount );
  }
  
  @Override
@@ -371,53 +411,60 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
   
   if( query == null )
-   return getAllGroups(offset, count, refOnly);
+   query = "";
+  else
+   query=query.trim();
   
-  query=query.trim();
+//  if( query == null )
+//   return getAllGroups(offset, count, refOnly);
   
-  if( query.length() == 0 )
-   return getAllGroups(offset, count, refOnly);
+//  if( query.length() == 0 )
+//   return getAllGroups(offset, count, refOnly);
   
   StringBuilder sb = new StringBuilder();
   
-  sb.append("( ");
-  
-  if( searchAttrNm )
+  if( query.length() > 0  )
   {
-   if( searchGrp )
-    sb.append(BioSDConfigManager.GROUP_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+   sb.append("( ");
 
-   if( searchSmp )
-    sb.append(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+   if(searchAttrNm)
+   {
+    if(searchGrp)
+     sb.append(BioSDConfigManager.GROUP_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+
+    if(searchSmp)
+     sb.append(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+   }
+
+   if(searchAttrVl)
+   {
+    if(searchGrp)
+     sb.append(BioSDConfigManager.GROUP_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
+
+    if(searchSmp)
+     sb.append(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
+   }
+
+   sb.setLength(sb.length() - 4);
+
+   sb.append(" ) AND ");
   }
-
-  if( searchAttrVl )
-  {
-   if( searchGrp )
-    sb.append(BioSDConfigManager.GROUP_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
-
-   if( searchSmp )
-    sb.append(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
-  }
-  
-  sb.setLength(sb.length()-4);
-  
-  sb.append(" )");
-
   
   if( refOnly )
-   sb.append(" AND ").append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)");
+   sb.append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)").append(" AND ");
 
-//  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
-//  {
-//   UserCacheObject uco = getUserCacheobject(user);
-//
-//   sb.append(" AND (").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
-//   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))");
-//
-//   if(uco.getDenyTags().length() > 0)
-//    sb.append(" NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(")");
-//  }
+  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
+  {
+   UserCacheObject uco = getUserCacheobject(user);
+
+   sb.append("(").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
+   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))").append(" AND ");
+
+   if(uco.getDenyTags().length() > 0)
+    sb.append("NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(") AND ");
+  }
+
+  sb.setLength(sb.length() - 5);
   
   String lucQuery = sb.toString(); 
   int qLen = lucQuery.length();
@@ -447,7 +494,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    GroupImprint gr = createGroupObject(sel.get(i));
    
-   if( searchSmp )
+   if( searchSmp && query.length() > 0 )
    {
     sb.setLength(qLen);
    
@@ -1265,31 +1312,49 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   return rep;
  }
 
- @Override
- public Report getAllGroups(int offset, int count, boolean refOnly )
- {
-  
-  int lim = offset+count;
-  
-  List<? extends AgeObject> groupList = groupsIndex.getObjectList();
-  
-  int last = refOnly?getStatistics().getRefGroups():groupList.size();
-  
-  if( lim > last )
-   lim=last;
-  
-  List<GroupImprint> res = new ArrayList<GroupImprint>(count);
-  
-  for( ; offset < lim; offset++)
-   res.add( createGroupObject(groupList.get(offset)) );
-  
-  Report rep = new Report();
-  rep.setObjects(res);
-  rep.setTotalGroups(refOnly?getStatistics().getRefGroups():getStatistics().getGroups());
-  rep.setTotalSamples(refOnly?getStatistics().getRefSamples():getStatistics().getSamples());
-  
-  return rep;
- }
+// @Override
+// public Report getAllGroups(int offset, int count, boolean refOnly )
+// {
+//  
+//  int lim = offset+count;
+//  
+//  List<? extends AgeObject> groupList = groupsIndex.getObjectList();
+//  
+//  int last = refOnly?getStatistics().getRefGroups():groupList.size();
+//  
+//  if( lim > last )
+//   lim=last;
+//  
+//  List<GroupImprint> res = new ArrayList<GroupImprint>(count);
+//  
+//  String user = Configuration.getDefaultConfiguration().getSessionManager().getEffectiveUser();
+//
+//  
+//  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
+//  {
+//   UserCacheObject uco = getUserCacheobject(user);
+//
+//   sb.append(" AND (").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
+//   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))");
+//
+//   if(uco.getDenyTags().length() > 0)
+//    sb.append(" NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(")");
+//  }
+//  else
+//  {
+//   for( ; offset < lim; offset++)
+//    res.add( createGroupObject(groupList.get(offset)) );
+//  }
+//
+//  
+//  
+//  Report rep = new Report();
+//  rep.setObjects(res);
+//  rep.setTotalGroups(refOnly?getStatistics().getRefGroups():getStatistics().getGroups());
+//  rep.setTotalSamples(refOnly?getStatistics().getRefSamples():getStatistics().getSamples());
+//  
+//  return rep;
+// }
 
  @Override
  public BioSDStat getStatistics()

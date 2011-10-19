@@ -27,10 +27,10 @@ public class GWTServlet extends SessionRemoteServiceServlet implements QueryServ
   return BioSDService.getInstance().getSamplesByGroupAndQuery(grpId, query, searchAtNames, searchAtValues, offs, cnt);
  }
 
- @Override
- public Report getAllGroups(int offs, int count, boolean refOnly)
- {
-  return BioSDService.getInstance().getAllGroups(offs, count, refOnly);
- }
+// @Override
+// public Report getAllGroups(int offs, int count, boolean refOnly)
+// {
+//  return BioSDService.getInstance().getAllGroups(offs, count, refOnly);
+// }
 
 }

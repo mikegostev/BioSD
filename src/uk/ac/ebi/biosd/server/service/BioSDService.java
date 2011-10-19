@@ -19,7 +19,6 @@ public abstract class BioSDService
  }
 
  public abstract Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offset, int count);
- public abstract Report getAllGroups(int offset, int count, boolean refOnly);
 
  public abstract void shutdown();
 

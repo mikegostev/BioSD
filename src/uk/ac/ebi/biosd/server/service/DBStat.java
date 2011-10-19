@@ -42,6 +42,7 @@ public class DBStat extends HttpServlet
  
    out.print("samples : "+stat.getSamples());
    out.print(",\ngroups : "+stat.getGroups());
+   out.print(",\npublications : "+stat.getPublications());
    
    if( stat.getTopics() != null )
    {

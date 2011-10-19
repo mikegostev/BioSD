@@ -38,6 +38,5 @@ public interface QueryService extends RemoteService
  SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count);
 
 
- Report getAllGroups(int offs, int count, boolean refOnly);
 
 }

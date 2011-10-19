@@ -27,6 +27,9 @@ public class BioSDConfigManager extends AgeAdminConfigManager
  public static final String HAS_PUBLICATION_REL_CLASS_NAME = "hasPublication";
  public static final String CONTACT_OF_REL_CLASS_NAME = "contactOf";
  public static final String DATASOURCE_ATTR_CLASS_NAME = "Data Source";
+ public static final String PUBLICATIONS_ATTR_CLASS_NAME = "Publications";
+ public static final String PUBMEDID_ATTR_CLASS_NAME = "Publication PubMed ID";
+ public static final String PUBDOI_ATTR_CLASS_NAME = "Publication DOI";
 
  private static BioSDConfigManager instance = null;
  
