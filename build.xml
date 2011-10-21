@@ -16,7 +16,7 @@
 
 
   <path id="build.lib">
-    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r37v201106211634/gwt-2.3.0" includes="*.jar"/>
+    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.4.0.relr37v201110112027/gwt-2.4.0" includes="*.jar"/>
     <fileset dir="buildlib/" includes="*.jar"/>
     <fileset dir="${AGEVisual}/lib/"/>
   </path>
