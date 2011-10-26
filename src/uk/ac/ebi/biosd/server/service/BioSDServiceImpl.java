@@ -33,6 +33,7 @@ import uk.ac.ebi.age.query.ClassNameExpression;
 import uk.ac.ebi.age.query.ClassNameExpression.ClassType;
 import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.DataChangeListener;
+import uk.ac.ebi.age.storage.MaintenanceModeListener;
 import uk.ac.ebi.age.storage.exeption.IndexIOException;
 import uk.ac.ebi.age.storage.index.KeyExtractor;
 import uk.ac.ebi.age.storage.index.SortedTextIndex;
@@ -78,6 +79,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  private BioSDStat statistics;
  
+ private boolean maintenanceMode = false;
+ 
  private WeakHashMap<String, UserCacheObject> userCache  = new WeakHashMap<String, UserCacheObject>();
  
  private static class GroupKey
@@ -100,39 +103,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  };
  
-// private Comparator<AgeObject> groupComparator = new Comparator<AgeObject>()
-// {
-//  @Override
-//  public int compare(AgeObject o1, AgeObject o2)
-//  {
-//   Collection<? extends AgeAttribute> ref1 = o1.getAttributesByClass(referenceAttributeClass, false);
-//   Collection<? extends AgeAttribute> ref2 = o2.getAttributesByClass(referenceAttributeClass, false);
-//
-//   boolean isRef1, isRef2;
-//   
-//   if( ref1 == null || ref1.size() == 0 )
-//    isRef1=false;
-//   else
-//   {
-//    AgeAttribute at = ref1.iterator().next();
-//    isRef1 = at.getValueAsBoolean();
-//   }
-//
-//   if( ref2 == null || ref2.size() == 0 )
-//    isRef2=false;
-//   else
-//   {
-//    AgeAttribute at = ref2.iterator().next();
-//    isRef2 = at.getValueAsBoolean();
-//   }
-//   
-//   if( isRef1 == isRef2 )
-//    return StringUtils.naturalCompare(o1.getId(), o2.getId());
-//
-//   return isRef1?-1:1;
-//   
-//  }
-// };
+
  
  
  public BioSDServiceImpl( AgeStorage stor ) throws BioSDInitException
@@ -244,38 +215,30 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    throw new BioSDInitException("Init failed. Can't create group index",e);
   }
 
-//  Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
-  
   storage.addDataChangeListener( new DataChangeListener() 
   {
    @Override
    public void dataChanged()
    {
-//    Collection<AgeObject> grps = storage.executeQuery(groupSelectQuery);
-//    
-//    if( grps instanceof List<?> )
-//     groupList = (List<AgeObject>)grps;
-//    else
-//    {
-//     groupList = new ArrayList<AgeObject>( grps.size() );
-//     groupList.addAll(grps);
-//    }
-//
-//    Collections.sort( groupList, groupComparator );
-
     collectStats();
    }
   } );
   
-//  if( grps instanceof List<?> )
-//   groupList = (List<AgeObject>)grps;
-//  else
-//  {
-//   groupList = new ArrayList<AgeObject>( grps.size() );
-//   groupList.addAll(grps);
-//  }
-//  
-//  Collections.sort( groupList, groupComparator );
+
+  storage.addMaintenanceModeListener(new MaintenanceModeListener()
+  {
+   @Override
+   public void exitMaintenanceMode()
+   {
+    maintenanceMode = false;
+   }
+   
+   @Override
+   public void enterMaintenanceMode()
+   {
+    maintenanceMode = true;
+   }
+  });
   
   collectStats();
  

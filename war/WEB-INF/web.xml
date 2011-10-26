@@ -14,9 +14,9 @@
 
   <servlet>
     <description></description>
-    <display-name>QueryService</display-name>
-    <servlet-name>QueryService</servlet-name>
-    <servlet-class>uk.ac.ebi.biosd.server.service.GWTServlet</servlet-class>
+    <display-name>BioSDService</display-name>
+    <servlet-name>BioSDService</servlet-name>
+    <servlet-class>uk.ac.ebi.biosd.server.service.BioSDServlet</servlet-class>
   </servlet>
 
   <servlet>

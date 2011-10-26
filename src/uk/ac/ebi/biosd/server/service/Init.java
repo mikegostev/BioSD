@@ -8,8 +8,6 @@ import javax.servlet.ServletContextListener;
 import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
 import uk.ac.ebi.age.admin.server.mng.AgeAdminException;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
-import uk.ac.ebi.age.mng.AgeStorageManager;
-import uk.ac.ebi.age.mng.AgeStorageManager.DB_TYPE;
 import uk.ac.ebi.age.model.IdScope;
 import uk.ac.ebi.age.parser.SyntaxProfile;
 import uk.ac.ebi.age.parser.impl.ClassSpecificSyntaxProfileDefinitionImpl;
@@ -17,6 +15,8 @@ import uk.ac.ebi.age.parser.impl.SyntaxProfileDefinitionImpl;
 import uk.ac.ebi.age.service.id.IdGenerator;
 import uk.ac.ebi.age.service.id.impl.SeqIdGeneratorImpl;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
+import uk.ac.ebi.age.storage.impl.ser.SerializedStorage;
+import uk.ac.ebi.age.storage.impl.ser.SerializedStorageConfiguration;
 
 /**
  * Application Lifecycle Listener implementation class Init
@@ -43,13 +43,15 @@ public class Init implements ServletContextListener
   
   try
   {
-   boolean master = cfg.isMaster();
+   IdGenerator.setInstance( new SeqIdGeneratorImpl(cfg.getIDGenPath()) );
    
-   if( master )
-    IdGenerator.setInstance( new SeqIdGeneratorImpl(cfg.getServicesPath()+"/SeqIdGen") );
+   SerializedStorageConfiguration serConf = new SerializedStorageConfiguration();
    
-   storage = AgeStorageManager.createInstance( DB_TYPE.AgeDB, cfg.getAgeDBPath(), master );
-
+   serConf.setStorageBaseDir( new File( cfg.getAgeDBPath() ) );
+   serConf.setMaintenanceModeTimeout(cfg.getMaintenanceModeTimeout());
+   serConf.setMaster(cfg.isMaster());
+   
+   storage = new SerializedStorage(serConf);
   }
   catch(Exception e)
   {

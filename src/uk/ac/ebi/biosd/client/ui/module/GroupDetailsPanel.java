@@ -7,12 +7,13 @@ import java.util.Map;
 import uk.ac.ebi.age.ui.client.LinkClickListener;
 import uk.ac.ebi.age.ui.client.LinkManager;
 import uk.ac.ebi.age.ui.client.module.PagingRuler;
-import uk.ac.ebi.biosd.client.QueryService;
+import uk.ac.ebi.biosd.client.BioSDGWTService;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
 import uk.ac.ebi.biosd.client.query.AttributedObject;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.client.shared.AttributeReport;
+import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 import uk.ac.ebi.biosd.client.shared.Pair;
 import uk.ac.ebi.biosd.client.ui.SampleListGrid;
 import uk.ac.ebi.biosd.client.ui.SourceIconBundle;
@@ -25,6 +26,7 @@ import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.types.Overflow;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
@@ -369,13 +371,20 @@ public class GroupDetailsPanel extends VLayout
   
 //  WaitWindow.showWait();
   
-  QueryService.Util.getInstance().getSamplesByGroup(groupID,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
+  BioSDGWTService.Util.getInstance().getSamplesByGroup(groupID,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    new AsyncCallback<SampleList>(){
 
    @Override
    public void onFailure(Throwable arg0)
    {
     WaitWindow.hideWait();
+    
+    if( arg0 instanceof MaintenanceModeException )
+    {
+     SC.say("Sorry. The system is being maintained right now. Please repeate your action later");
+     return;
+    }
+
     arg0.printStackTrace();
    }
 
@@ -410,13 +419,19 @@ public class GroupDetailsPanel extends VLayout
   allSamples=false;
   
   WaitWindow.showWait();
-  QueryService.Util.getInstance().getSamplesByGroupAndQuery(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
+  BioSDGWTService.Util.getInstance().getSamplesByGroupAndQuery(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    
   new AsyncCallback<SampleList>(){
 
    @Override
    public void onFailure(Throwable arg0)
    {
+    if( arg0 instanceof MaintenanceModeException )
+    {
+     SC.say("Sorry. The system is being maintained right now. Please repeate your action later");
+     return;
+    }
+
     arg0.printStackTrace();
     WaitWindow.hideWait();
    }

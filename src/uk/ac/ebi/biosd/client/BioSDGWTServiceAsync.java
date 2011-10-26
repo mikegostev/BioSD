@@ -5,10 +5,7 @@ import uk.ac.ebi.biosd.client.query.SampleList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-/**
- * The async counterpart of <code>GreetingService</code>.
- */
-public interface QueryServiceAsync
+public interface BioSDGWTServiceAsync
 {
  void selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offs, int cnt, AsyncCallback<Report> acb);
 

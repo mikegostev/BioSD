@@ -4,8 +4,9 @@ import java.util.LinkedHashMap;
 
 import uk.ac.ebi.age.ui.client.LinkClickListener;
 import uk.ac.ebi.age.ui.client.LinkManager;
-import uk.ac.ebi.biosd.client.QueryService;
+import uk.ac.ebi.biosd.client.BioSDGWTService;
 import uk.ac.ebi.biosd.client.query.Report;
+import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 import uk.ac.ebi.biosd.client.ui.ResultRenderer;
 
 import com.google.gwt.core.client.Scheduler;
@@ -286,13 +287,19 @@ public class QueryPanel extends VLayout implements LinkClickListener
 
    query = (String) queryField.getValue();
 
-   QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
+   BioSDGWTService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
      searchAttribNames, searchAttribValues, onlyRef.getValueAsBoolean(), 0, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
      {
 
       @Override
       public void onFailure(Throwable arg0)
       {
+       if( arg0 instanceof MaintenanceModeException )
+       {
+        SC.say("Sorry. The system is being maintained right now. Please repeate your action later");
+        return;
+       }
+
        arg0.printStackTrace();
        SC.say("Query error: " + arg0.getMessage());
       }
@@ -324,13 +331,19 @@ public class QueryPanel extends VLayout implements LinkClickListener
   
   final int pageNum = pNum;
   
-  QueryService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
+  BioSDGWTService.Util.getInstance().selectSampleGroups(query, searchSample, searchGroup,
     searchAttribNames, searchAttribValues, false, (pNum-1)*ResultPane.MAX_GROUPS_PER_PAGE, ResultPane.MAX_GROUPS_PER_PAGE, new AsyncCallback<Report>()
     {
 
      @Override
      public void onFailure(Throwable arg0)
      {
+      if( arg0 instanceof MaintenanceModeException )
+      {
+       SC.say("Sorry. The system is being maintained right now. Please repeate your action later");
+       return;
+      }
+      
       arg0.printStackTrace();
       SC.say("Query error: " + arg0.getMessage());
      }
