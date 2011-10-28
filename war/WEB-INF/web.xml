@@ -77,7 +77,7 @@
   
   
   <servlet-mapping>
-    <servlet-name>QueryService</servlet-name>
+    <servlet-name>BioSDService</servlet-name>
     <url-pattern>/biosd/ageQueryGWT</url-pattern>
   </servlet-mapping>
 
