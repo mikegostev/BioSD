@@ -46,13 +46,18 @@ import uk.ac.ebi.biosd.client.query.GroupImprint;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
+import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 import uk.ac.ebi.biosd.server.stat.BioSDStat;
+import uk.ac.ebi.mg.assertlog.Log;
+import uk.ac.ebi.mg.assertlog.LogFactory;
 
 import com.pri.util.ObjectRecycler;
 import com.pri.util.StringUtils;
 
 public class BioSDServiceImpl extends BioSDService implements SecurityChangedListener
 {
+ private static Log log = LogFactory.getLog(BioSDServiceImpl.class);
+ 
  private AgeStorage storage;
  
  private static final String GROUP_INDEX_NAME="GROUPINDEX";
@@ -108,6 +113,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  public BioSDServiceImpl( AgeStorage stor ) throws BioSDInitException
  {
+  long startTime=0;
+  
   storage=stor;
   
   sampleClass = storage.getSemanticModel().getDefinedAgeClass( BioSDConfigManager.SAMPLE_CLASS_NAME );
@@ -172,14 +179,19 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   ArrayList<TextFieldExtractor> extr = new ArrayList<TextFieldExtractor>(4);
   
+  TagsExtractor tagExtr = new TagsExtractor();
+  OwnerExtractor ownExtr = new OwnerExtractor();
+  
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new SampleAttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new SampleAttrValuesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, tagExtr ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, ownExtr ) );
   
+  assert ( startTime = System.currentTimeMillis() ) != 0;
+
   try
   {
    groupsIndex = storage.createSortedTextIndex(GROUP_INDEX_NAME, groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
@@ -215,6 +227,35 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    throw new BioSDInitException("Init failed. Can't create group index",e);
   }
 
+  
+  clsExp = new ClassNameExpression();
+  clsExp.setClassName( BioSDConfigManager.SAMPLE_CLASS_NAME );
+  clsExp.setClassType( ClassType.DEFINED );
+
+  AgeQuery q = AgeQuery.create(clsExp);
+  
+  extr = new ArrayList<TextFieldExtractor>(3);
+  
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_ID_FIELD_NAME, new GroupIDExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, tagExtr ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, ownExtr ) );
+  
+  try
+  {
+   samplesIndex = storage.createTextIndex(SAMPLE_INDEX_NAME, q, extr);
+  }
+  catch(IndexIOException e)
+  {
+   throw new BioSDInitException("Init failed. Can't create group index",e);
+  }
+  
+  assert log.info("Index building time: "+StringUtils.millisToString(System.currentTimeMillis()-startTime)+" Tag extraction: "+tagExtr.getTime()+"ms. Owner extraction: "+tagExtr.getTime()+"ms");
+
+  
+  
+  
   storage.addDataChangeListener( new DataChangeListener() 
   {
    @Override
@@ -239,31 +280,15 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     maintenanceMode = true;
    }
   });
+
+  assert ( startTime = System.currentTimeMillis() ) != 0;
   
   collectStats();
- 
-  clsExp = new ClassNameExpression();
-  clsExp.setClassName( BioSDConfigManager.SAMPLE_CLASS_NAME );
-  clsExp.setClassType( ClassType.DEFINED );
 
-  AgeQuery q = AgeQuery.create(clsExp);
+  assert log.info("Stats collecting time: "+(System.currentTimeMillis()-startTime)+"ms");
+
   
-  extr = new ArrayList<TextFieldExtractor>(3);
-  
-  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_ID_FIELD_NAME, new GroupIDExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, new TagsExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, new OwnerExtractor() ) );
-  
-  try
-  {
-   samplesIndex = storage.createTextIndex(SAMPLE_INDEX_NAME, q, extr);
-  }
-  catch(IndexIOException e)
-  {
-   throw new BioSDInitException("Init failed. Can't create group index",e);
-  }
+
 
  }
 
@@ -366,9 +391,11 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  @Override
  public Report selectSampleGroups(String query, boolean searchSmp, boolean searchGrp, boolean searchAttrNm,
-   boolean searchAttrVl, boolean refOnly, int offset, int count)
+   boolean searchAttrVl, boolean refOnly, int offset, int count) throws MaintenanceModeException
  {
-//  List<AgeObject> sel = null;
+  
+  if( maintenanceMode )
+   throw new MaintenanceModeException();
  
   String user = Configuration.getDefaultConfiguration().getSessionManager().getEffectiveUser();
 
@@ -661,9 +688,15 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   private StringBuilder sb = new StringBuilder();
   private PermissionManager permMngr = Configuration.getDefaultConfiguration().getPermissionManager();
 
+  private long execTime=0;
+  
   @Override
   public String getValue(AgeObject ao)
   {
+   long startTime=0;
+   
+   assert (startTime=System.currentTimeMillis()) > 0 || true ;
+   
    Collection<TagRef> tags = permMngr.getEffectiveTags( ao );
    
    if( tags == null )
@@ -674,17 +707,32 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for( TagRef tr : tags )
     sb.append(tr.getClassiferName().length()).append(tr.getClassiferName()).append(tr.getTagName()).append(" ");
     
-   return sb.toString();
+   String val = sb.toString(); 
+   
+   assert ( execTime += (System.currentTimeMillis()-startTime)  ) > 0 || true ;
+     
+   return val;
+  }
+  
+  public long getTime()
+  {
+   return execTime;
   }
  }
  
  class OwnerExtractor implements TextValueExtractor
  {
+  private long execTime=0;
+
   private AnnotationManager annorMngr = Configuration.getDefaultConfiguration().getAnnotationManager();
 
   @Override
   public String getValue(AgeObject ao)
   {
+   long startTime=0;
+   
+   assert (startTime=System.currentTimeMillis()) > 0 || true ;
+
    Entity entId = ao;
    
    String own = null;
@@ -709,9 +757,17 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    
    if( own == null )
     own = "";
-   
+  
+   assert ( execTime += (System.currentTimeMillis()-startTime)  ) > 0 || true ;
+
    return own;
   }
+  
+  public long getTime()
+  {
+   return execTime;
+  }
+
  }
  
  class AttrValuesExtractor implements TextValueExtractor
@@ -1036,8 +1092,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  
  @Override
- public SampleList getSamplesByGroup(String grpID, int offset, int count)
+ public SampleList getSamplesByGroup(String grpID, int offset, int count) throws MaintenanceModeException
  {
+  
+  if( maintenanceMode )
+   throw new MaintenanceModeException();
+
+  
   AgeObject grpObj = storage.getGlobalObject(grpID);
   
   if( grpObj == null )
@@ -1138,8 +1199,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
  
  @Override
- public SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
+ public SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl, int offset, int count) throws MaintenanceModeException
  {
+  
+  if( maintenanceMode )
+   throw new MaintenanceModeException();
+
+  
   StringBuilder sb = new StringBuilder();
   
   sb.append("( ");

@@ -17,6 +17,10 @@ import uk.ac.ebi.age.service.id.impl.SeqIdGeneratorImpl;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
 import uk.ac.ebi.age.storage.impl.ser.SerializedStorage;
 import uk.ac.ebi.age.storage.impl.ser.SerializedStorageConfiguration;
+import uk.ac.ebi.mg.assertlog.Log;
+import uk.ac.ebi.mg.assertlog.LogFactory;
+
+import com.pri.util.StringUtils;
 
 /**
  * Application Lifecycle Listener implementation class Init
@@ -24,6 +28,8 @@ import uk.ac.ebi.age.storage.impl.ser.SerializedStorageConfiguration;
  */
 public class Init implements ServletContextListener
 {
+ private static Log log = LogFactory.getLog(Init.class);
+ 
  private AgeAdmin adm;
  
  public Init()
@@ -35,6 +41,10 @@ public class Init implements ServletContextListener
   */
  public void contextInitialized(ServletContextEvent arg0)
  {
+  long startTime=0;
+  
+  assert ( startTime = System.currentTimeMillis() ) != 0;
+
   BioSDConfigManager cfg = new BioSDConfigManager( arg0.getServletContext() );
 
   BioSDConfigManager.setInstance(cfg);
@@ -119,6 +129,8 @@ public class Init implements ServletContextListener
   Configuration.getDefaultConfiguration().getAuthDB().addSecurityChangedListener(biosd);
   
   BioSDService.setDefaultInstance( biosd );
+
+  assert log.info("System startup time: "+StringUtils.millisToString(System.currentTimeMillis()-startTime) );
 
  }
 
