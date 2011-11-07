@@ -1,5 +1,7 @@
 package uk.ac.ebi.biosd.server.service;
 
+import java.io.PrintWriter;
+
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
@@ -33,5 +35,7 @@ public abstract class BioSDService
 
 
  public abstract BioSDStat getStatistics();
+
+ public abstract void exportData(PrintWriter out);
 
 }

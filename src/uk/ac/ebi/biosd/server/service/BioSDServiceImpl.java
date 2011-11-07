@@ -1,5 +1,6 @@
 package uk.ac.ebi.biosd.server.service;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1341,6 +1342,82 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   return rep;
  }
 
+ @Override
+ public void exportData( PrintWriter out )
+ {
+  
+  out.println("<Biosamples>");
+  
+  for( AgeObject ao : groupsIndex.getObjectList() )
+  {
+   out.print("<SampleGroup id=\"");
+   out.print(StringUtils.htmlEscaped(ao.getId()));
+   out.println("\">");
+   
+   exportAttributed( ao, out );
+   
+   for( AgeRelation rel : ao.getRelations() )
+   {
+    if( rel.getAgeElClass() == groupToSampleRelClass )
+     exportSample( rel.getTargetObject(), out );
+   }
+   
+   out.println("</SampleGroup>");
+  }
+  
+  out.println("</Biosamples>");
+
+ }
+ 
+ private void exportAttributed( Attributed ao,PrintWriter out )
+ {
+  for( AgeAttributeClass aac : ao.getAttributeClasses() )
+  {
+   out.print("<attribute class=\"");
+   out.print(StringUtils.htmlEscaped(aac.getName()));
+   out.println("\" classDefined=\""+(aac.isCustom()?"false":"true")+"\" dataType=\""+aac.getDataType().name()+"\">");
+
+   for( AgeAttribute attr : ao.getAttributesByClass(aac, false) )
+   {
+    out.println("<value>");
+    
+    exportAttributed( attr, out );
+
+    if( aac.getDataType() != DataType.OBJECT )
+     out.print(StringUtils.htmlEscaped(attr.getValue().toString()));
+    else
+    {
+     AgeObject tgtObj = (AgeObject)attr.getValue();
+     
+     out.print("<object id=\""+StringUtils.htmlEscaped(tgtObj.getId())+"\" class=\"");
+     out.print(StringUtils.htmlEscaped(tgtObj.getAgeElClass().getName()));
+     out.println("\" classDefined=\""+(tgtObj.getAgeElClass().isCustom()?"false":"true")+"\">");
+ 
+     exportAttributed( tgtObj, out );
+    
+     out.println("</object>");
+    }
+
+    out.println("</value>");
+   }
+
+   out.println("</attribute>");
+  }
+ }
+ 
+ private void exportSample( Attributed ao,PrintWriter out )
+ {
+  out.print("<Sample id=\"");
+  out.print(StringUtils.htmlEscaped(ao.getId()));
+  out.println("\">");
+
+  exportAttributed( ao, out );
+
+  
+  out.println("</Sample>");
+ }
+
+ 
 // @Override
 // public Report getAllGroups(int offset, int count, boolean refOnly )
 // {

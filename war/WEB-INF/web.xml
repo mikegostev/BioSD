@@ -58,6 +58,15 @@
   <servlet>
     <description>
   	</description>
+    <display-name>XML data export</display-name>
+    <servlet-name>XMLDataExport</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.xmlexport.BiosamplesXMLExport</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
     <display-name>DownloadSvc</display-name>
     <servlet-name>DownloadSvc</servlet-name>
     <servlet-class>
@@ -94,6 +103,11 @@
   <servlet-mapping>
     <servlet-name>LoginSvc</servlet-name>
     <url-pattern>/Login</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>XMLDataExport</servlet-name>
+    <url-pattern>/XMLDataExport</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
