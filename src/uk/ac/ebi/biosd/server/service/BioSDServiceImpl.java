@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import uk.ac.ebi.age.admin.server.mng.Configuration;
@@ -774,6 +776,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  class AttrValuesExtractor implements TextValueExtractor
  {
   StringBuilder sb = new StringBuilder();
+  Set<String> tokSet = new HashSet<String>();
  
   public String getValue(AgeObject gobj)
   {
@@ -784,7 +787,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     Object val = attr.getValue();
     
     if( val instanceof String )
-     sb.append( val ).append(' ');
+     tokSet.add( val.toString() );
     
     if( attr.getAttributes() != null )
     {
@@ -793,12 +796,17 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
       Object qval = qual.getValue();
       
       if( qval instanceof String )
-       sb.append( qval ).append(' ');
+       tokSet.add( qval.toString() );
      }
     }
 
    }
     
+   for( String tk : tokSet )
+    sb.append( tk ).append(' ');
+    
+   tokSet.clear();  
+     
    return sb.toString();
   }
  }
@@ -806,11 +814,12 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  class SampleAttrValuesExtractor implements TextValueExtractor
  {
   StringBuilder sb = new StringBuilder();
+  Set<String> tokSet = new HashSet<String>();
  
   public String getValue(AgeObject gobj)
   {
    sb.setLength(0);
-
+   
    for(AgeRelation rel : gobj.getRelations())
    {
     if(rel.getAgeElClass() == groupToSampleRelClass)
@@ -822,7 +831,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
       Object val = attr.getValue();
       
       if( val instanceof String )
-       sb.append( val ).append(' ');
+       tokSet.add( (String)val );
 
       if(attr.getAttributes() != null)
       {
@@ -831,12 +840,17 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
         Object qval = qual.getValue();
         
         if( qval instanceof String )
-         sb.append( qval ).append(' ');
+         tokSet.add( (String)val );
        }
       }
      }
     }
    }
+   
+   for( String tk : tokSet )
+    sb.append( tk ).append(' ');
+
+   tokSet.clear();
    return sb.toString();
   }
  }
@@ -860,6 +874,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  class SampleAttrNamesExtractor implements TextValueExtractor
  {
   StringBuilder sb = new StringBuilder();
+  Set<String> tokSet = new HashSet<String>();
 
   public String getValue(AgeObject gobj)
   {
@@ -870,6 +885,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     return "";
 
    sb.setLength(0);
+   
    for(AgeRelation rel : rels)
    {
     if(rel.getAgeElClass() == groupToSampleRelClass)
@@ -878,18 +894,21 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
      for(AgeAttribute attr : obj.getAttributes())
      {
-      sb.append(attr.getAgeElClass().getName()).append(' ');
+      tokSet.add(attr.getAgeElClass().getName());
 
       if(attr.getAttributes() != null)
       {
        for(AgeAttribute qual : attr.getAttributes())
-       {
-        sb.append(qual.getAgeElClass().getName()).append(' ');
-       }
+        tokSet.add(qual.getAgeElClass().getName());
       }
      }
     }
    }
+   
+   for( String tk : tokSet )
+    sb.append( tk ).append(' ');
+
+   tokSet.clear();
 
    return sb.toString();
   }
@@ -898,24 +917,30 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  class AttrNamesExtractor implements TextValueExtractor
  {
   StringBuilder sb = new StringBuilder();
- 
+  Set<String> tokSet = new HashSet<String>();
+
   public String getValue(AgeObject gobj)
   {
    sb.setLength(0);
    
    for( AgeAttribute attr : gobj.getAttributes() )
    {
+    tokSet.add(attr.getAgeElClass().getName());
     sb.append( attr.getAgeElClass().getName() ).append(' ');
     
     if( attr.getAttributes() != null )
     {
      for( AgeAttribute qual : attr.getAttributes() )
-     {
-      sb.append( qual.getAgeElClass().getName() ).append(' ');
-     }
+      tokSet.add(qual.getAgeElClass().getName());
     }
    }
     
+   for( String tk : tokSet )
+    sb.append( tk ).append(' ');
+
+   tokSet.clear();
+
+   
    return sb.toString();
   }
  }
