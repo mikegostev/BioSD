@@ -1,8 +1,0 @@
-{group},{description},,
-G2,This is group 2,,
-,,,
-{sample},{name},temp(TYPE=INTEGER),{belongsTo}
-S4,Sample 4,33,G2
-S5,Mike,44,G2
-S6,Sample 6,33,G2
-S7,Mike,44,G2
