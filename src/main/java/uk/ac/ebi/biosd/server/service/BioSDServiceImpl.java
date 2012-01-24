@@ -759,8 +759,12 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    }
    
    if( own == null )
-    own = "";
-  
+   {
+    own = Configuration.getDefaultConfiguration().getSessionManager().getEffectiveUser();
+    
+    if( own == null )
+     own = "";
+   }
    assert ( execTime += (System.currentTimeMillis()-startTime)  ) > 0 || true ;
 
    return own;

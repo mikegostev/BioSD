@@ -49,6 +49,8 @@ public class Init implements ServletContextListener
 
   BioSDConfigManager.setInstance(cfg);
   
+  assert log.info("BioSD base path: "+cfg.getBasePath());
+
   AgeStorageAdm storage;
   
   try
@@ -74,6 +76,7 @@ public class Init implements ServletContextListener
   conf.setBaseDir( new File(cfg.getBasePath()) );
   conf.setTmpDir( new File(cfg.getTmpPath()) );
 
+  
   SyntaxProfile sp = new SyntaxProfile();
   SyntaxProfileDefinitionImpl commSP = new SyntaxProfileDefinitionImpl();
   commSP.setClusterIdPrefix("$C:");
