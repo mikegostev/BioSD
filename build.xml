@@ -15,11 +15,11 @@
 	<property name="Commons" location="../Commons"/>
 
 
-  <path id="build.lib">
-    <fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.4.0.relr37v201110112027/gwt-2.4.0" includes="*.jar"/>
-    <fileset dir="buildlib/" includes="*.jar"/>
-    <fileset dir="${AGEVisual}/lib/"/>
-  </path>
+	<path id="build.lib">
+		<fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.4.0.relr37v201110112027/gwt-2.4.0" includes="*.jar"/>
+		<fileset dir="buildlib/" includes="*.jar"/>
+		<fileset dir="${AGEVisual}/lib/"/>
+	</path>
 
 	<path id="age.lib">
 		<fileset dir="${AGE}/lib/" includes="*.jar"/>
@@ -33,11 +33,11 @@
 		<fileset dir="${build}/WEB-INF/lib/" includes="*.jar"/>
 	</path>
 
-   <target name="dist" description="generate the distribution" >
+	<target name="dist" description="generate the distribution" >
 
-    <tstamp>
-        <format property="BUILDTIME" pattern="yyyy-MM-dd HH:mm z Z" locale="en,UK"/>
-    </tstamp> 
+		<tstamp>
+			<format property="BUILDTIME" pattern="yyyy-MM-dd HH:mm z Z" locale="en,UK"/>
+		</tstamp>
 
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
@@ -67,7 +67,7 @@
 		<copy todir="${build}/WEB-INF/lib/">
 			<fileset dir="${AGE}/lib/" />
 			<fileset dir="${AGEAdmin}/war/WEB-INF/lib/" />
-		    <fileset dir="${AGEVisual}/lib/"/>
+			<fileset dir="${AGEVisual}/lib/"/>
 		</copy>
 
 		<javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
@@ -110,15 +110,27 @@
 			<arg value="uk.ac.ebi.age.admin.AgeAdmin" />
 		</java>
 
- <filter token="BUILDTIME" value="${BUILDTIME}"/>
- 
- <copy file="war/RELEASE.html" todir="${build}" filtering="true" overwrite="true"/>
+		<filter token="BUILDTIME" value="${BUILDTIME}"/>
+
+		<copy file="war/RELEASE.html" todir="${build}" filtering="true" overwrite="true"/>
 
 
-    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
- <jar jarfile="${dist}/BioSD${DSTAMP}.war" basedir="${build}"/>
- 
- </target>
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="${dist}/BioSD${DSTAMP}.war" basedir="${build}"/>
 
+	</target>
+
+
+	<target name="syncRes">
+
+		<sync todir="war">
+			<fileset dir="src/main/webapp"/>
+			<preserveintarget>
+				<include name="WEB-INF/classes/**"/>
+				<include name="WEB-INF/lib/**"/>
+			</preserveintarget>
+		</sync>
+
+	</target>
 
 </project>
