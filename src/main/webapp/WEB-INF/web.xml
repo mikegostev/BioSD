@@ -83,6 +83,14 @@
   </servlet>
 
   
+    <servlet>
+    <description>
+  	</description>
+    <display-name>SampleViewRedirector</display-name>
+    <servlet-name>SampleViewRedirector</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.service.SampleViewRedirector</servlet-class>
+  </servlet>
   
   
   <servlet-mapping>
@@ -125,6 +133,10 @@
     <url-pattern>/dataSourceService</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>SampleViewRedirector</servlet-name>
+    <url-pattern>/sample/*</url-pattern>
+  </servlet-mapping>
 
   <listener>
     <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>

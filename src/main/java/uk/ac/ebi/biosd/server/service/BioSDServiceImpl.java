@@ -1506,5 +1506,20 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
 
+ @Override
+ public AgeObject getSample(String sampleId) throws MaintenanceModeException
+ {
+  if( maintenanceMode )
+   throw new MaintenanceModeException();
+
+  
+  AgeObject smpObj = storage.getGlobalObject(sampleId);
+  
+  if( smpObj == null || ! smpObj.getAgeElClass().isClassOrSubclass(sampleClass) )
+   return null;
+  
+  return smpObj;
+ }
+
 
 }

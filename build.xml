@@ -128,6 +128,9 @@
 			<preserveintarget>
 				<include name="WEB-INF/classes/**"/>
 				<include name="WEB-INF/lib/**"/>
+				<include name="WEB-INF/deploy/**"/>
+				<include name="admin/**"/>
+		        <include name="biosd/**"/>
 			</preserveintarget>
 		</sync>
 
