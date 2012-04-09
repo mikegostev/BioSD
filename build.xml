@@ -5,7 +5,7 @@
 
 	<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
 
-	<property name="src" location="src"/>
+	<property name="src" location="src/main/java"/>
 	<property name="build" location="build"/>
 	<property name="dist" location="dist"/>
 
@@ -16,7 +16,7 @@
 
 
 	<path id="build.lib">
-		<fileset dir="${eclipse.home}/plugins/com.google.gwt.eclipse.sdkbundle_2.4.0.relr37v201110112027/gwt-2.4.0" includes="*.jar"/>
+		<fileset dir="${gwt.home}" includes="*.jar"/>
 		<fileset dir="buildlib/" includes="*.jar"/>
 		<fileset dir="${AGEVisual}/lib/"/>
 	</path>
@@ -33,7 +33,7 @@
 		<fileset dir="${build}/WEB-INF/lib/" includes="*.jar"/>
 	</path>
 
-	<target name="dist" description="generate the distribution" >
+	<target name="dist" description="generate the distribution" depends="syncRes" >
 
 		<tstamp>
 			<format property="BUILDTIME" pattern="yyyy-MM-dd HH:mm z Z" locale="en,UK"/>
@@ -70,20 +70,20 @@
 			<fileset dir="${AGEVisual}/lib/"/>
 		</copy>
 
-		<javac srcdir="${Commons}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${Commons}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
 
-		<javac srcdir="${AGEVisual}/src" destdir="${build}/WEB-INF/classes" classpath="$${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${AGEVisual}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="$${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
-		<javac srcdir="${AGE}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${AGE}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
-		<javac srcdir="${AGEAdmin}/src" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${AGEAdmin}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
@@ -97,10 +97,12 @@
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 			<classpath>
 				<pathelement location="${src}" />
-				<pathelement location="${AGE}/gwt" />
-				<pathelement location="${AGE}/src" />
-				<pathelement location="${AGEAdmin}/src" />
-				<pathelement location="${AGEVisual}/src" />
+				<pathelement location="${AGE}/src/main/resources" />
+				<pathelement location="${AGE}/src/main/java" />
+				<pathelement location="${AGEAdmin}/src/main/resources" />
+				<pathelement location="${AGEAdmin}/src/main/java" />
+				<pathelement location="${AGEVisual}/src/main/resources" />
+				<pathelement location="${AGEVisual}/src/main/java" />
 				<path refid="build.lib" />
 			</classpath>
 			<jvmarg value="-Xmx256M" />
@@ -125,6 +127,7 @@
 
 		<sync todir="war">
 			<fileset dir="src/main/webapp"/>
+			<fileset dir="${AGEAdmin}/war"/>
 			<preserveintarget>
 				<include name="WEB-INF/classes/**"/>
 				<include name="WEB-INF/lib/**"/>
