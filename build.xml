@@ -47,20 +47,16 @@
 
 		<mkdir dir="${build}/WEB-INF/classes"/>
 
-		<copy todir="${build}">
-			<fileset dir="war">
-				<exclude name="admin/"/>
-				<exclude name="biosd/"/>
-				<exclude name="var/"/>
+		<copy todir="${build}" verbose="true">
+			<fileset dir="src/main/webapp">
 				<exclude name="**/.gitignore"/>
-				<exclude name="WEB-INF/classes"/>
 			</fileset>
 			<fileset dir="${AGEAdmin}/war">
 				<exclude name="admin/"/>
 				<exclude name="biosd/" />
 				<exclude name="var/" />
 				<exclude name="**/.gitignore" />
-				<exclude name="WEB-INF/classes" />
+				<exclude name="WEB-INF/" />
 			</fileset>
 		</copy>
 
@@ -88,7 +84,7 @@
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 
-		<javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
@@ -125,15 +121,19 @@
 
 	<target name="syncRes">
 
-		<sync todir="war">
+		<sync todir="war" verbose="true">
+			<fileset dir="${AGEAdmin}/war">
+				<exclude name="META-INF/"/>
+				<exclude name="WEB-INF/"/>
+				<exclude name="admin/"/>
+			</fileset>
 			<fileset dir="src/main/webapp"/>
-			<fileset dir="${AGEAdmin}/war"/>
 			<preserveintarget>
-				<include name="WEB-INF/classes/**"/>
-				<include name="WEB-INF/lib/**"/>
-				<include name="WEB-INF/deploy/**"/>
-				<include name="admin/**"/>
-		        <include name="biosd/**"/>
+				<include name="WEB-INF/classes/"/>
+				<include name="WEB-INF/lib/"/>
+				<include name="WEB-INF/deploy/"/>
+				<include name="admin/"/>
+		        <include name="biosd/"/>
 			</preserveintarget>
 		</sync>
 
