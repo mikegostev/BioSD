@@ -1,0 +1,298 @@
+/*
+ * Copyright 2009-2011 European Molecular Biology Laboratory
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+.ae_fullpage {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	top: 0;
+	bottom: 0;
+	visibility: visible;
+	z-index: 1;
+	_height: expression(document.body.clientHeight-79);
+}
+
+.ae_stripe_bg {
+    background-color: #c0c0c0;
+    background-size: 15px 15px;
+    background-image: -webkit-gradient(linear, 0 0, 100% 100%,
+	    color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
+		color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
+		color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
+		to(transparent));
+    background-image: -webkit-linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+	    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+		transparent 75%, transparent);
+	background-image: -moz-linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+        transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+		transparent 75%, transparent);
+    background-image: -ms-linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+        transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+	    transparent 75%, transparent);
+    background-image: -o-linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+		transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+		transparent 75%, transparent);
+	background-image: linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+	    transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+	    transparent 75%, transparent);
+    }
+
+.ae_white_bg {
+    background-color: white;
+}
+
+#ae_contents {
+    z-index: 1;
+}
+
+#ae_noscript {
+    z-index: 566;
+    }
+
+#ae_login_box {
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    background-color: #eef5f5;
+    border: 1px solid #5e9e9e;
+    padding: 5px 10px 10px;
+    width: 400px;
+}
+
+#ae_login_title {
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: #005555;
+}
+
+#ae_login_form fieldset {
+    border: 0 none;
+    padding: 0;
+}
+
+#ae_login_user_fset {
+    width: 50%;
+    margin: 0 5px 0 0;
+    float: left;
+}
+
+#ae_login_pass_fset {
+    margin: 0;
+}
+
+#ae_login_form label {
+    font-size: 11px;
+}
+
+#ae_user_field,
+#ae_pass_field {
+    border: 1px solid #5e9e9e;
+    width: 100%;
+    font-size: 11px;
+    margin: 3px 0 8px 0;
+}
+#ae_login_submit {
+    float: right;
+    font-size: 11px;
+}
+
+#ae_login_status {
+    margin: 5px 0 0;
+    color: red;
+}
+
+#ae_query_box {
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    background-color: #eef5f5;
+    border: 1px solid #5e9e9e;
+    padding: 5px 10px;
+    width: 100%;
+}
+
+#ae_keywords_fset {
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+    width: 100%;
+}
+
+#ae_keywords_fset label {
+    font-size: 11px;
+}
+
+#ae_keywords_field {
+    border: 1px solid #5e9e9e;
+    width: 100%;
+    font-size: 11px;
+    margin: 3px 0 8px 0;
+}
+
+#ae_submit_box {
+    background-color: #eef5f5;
+    float: right;
+    padding: 0 0 0 5px;
+}
+
+#ae_query_submit {
+    font-size: 11px;
+}
+
+#ae_results_stats {
+    font-size: 11px;
+    width: 100%;
+    height: 20px;
+    border-top: 1px solid #bdd7d7;
+    margin: 10px 0 0;
+    padding: 5px 0 0;
+}
+
+#ae_results_stats div {
+    float: left;
+    padding: 0 4px;
+}
+
+#ae_results_pager {
+    display: none;
+}
+
+#current_page {
+    background-color: #9E9E9E;
+    color: white;
+}
+
+#ae_results_pager a
+, #ae_results_pager span {
+    padding: 2px 3px;
+}
+
+#ae_results_header {
+    font-style: italic;
+    padding: 15px 0 10px;
+}
+
+#ae_results_box {
+    padding: 10px 0 0;
+}
+
+#ae_results_table {
+    table-layout: fixed;
+    width: 100%;
+    background-color: rgba(255,255,255,0.67);
+}
+
+#ae_results_table th,
+#ae_results_table td {
+    font-size: 12px;
+    padding: 3px 5px;
+}
+
+#ae_results_table th {
+    font-weight: bold;
+    border-bottom: 2px solid #408c8c;
+    vertical-align: bottom;
+    white-space: nowrap;
+}
+#ae_results_table th img {
+    margin: 0 0 0 2px;
+    vertical-align: bottom;
+}
+
+#ae_results_table td {
+    font-weight: normal;
+    border-bottom: 1px solid #bdd7d7;
+    vertical-align: top;
+}
+
+#ae_results_table td img {
+    margin: 0 2px;
+    vertical-align: baseline;
+}
+
+#ae_results_table tr.expanded td,
+#ae_results_table td.detail_name,
+#ae_results_table td.detail_value {
+    border-bottom: 0 none;
+}
+
+div.detail_table table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#ae_results_table td.detail_name {
+    border-top: 1px solid #E5F0F0;
+    color: #005555;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 0 0 2px;
+    text-align: right;
+    vertical-align: top;
+}
+
+#ae_results_table td.detail_name div.outer {
+    margin: 2px 10px 2px 0;
+}
+
+#ae_results_table td.detail_name div.outer div {
+    margin: 0;
+}
+
+#ae_results_table td.detail_value {
+    background-color: #F2F8F8;
+    border-top: 1px solid #E5F0F0;
+    font-weight: normal;
+    font-size: 11px;
+    padding: 0 0 2px;
+    text-align: left;
+    vertical-align: top;
+}
+
+#ae_results_table td.detail_value img {
+    margin: 0 2px 0 0;
+    vertical-align: bottom;
+}
+
+#ae_results_table td.detail_value div.outer {
+    margin: 2px 0 2px 3px;
+}
+
+#ae_results_table td.detail_value td {
+    border: 0 none;
+    font-size: 11px;
+    margin: 0;
+    padding: 0 0 2px;
+}
+
+#ae_results_table td.detail_value td.attr_name {
+    overflow: hidden;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 25%;
+}
+
+#ae_results_table td.detail_value td.attr_value {
+    vertical-align: top;
+    width: 75%;
+}
