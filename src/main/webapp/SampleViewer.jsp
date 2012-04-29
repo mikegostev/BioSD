@@ -1,4 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@page import="java.io.IOException"%>
+<%@page import="uk.ac.ebi.age.model.AgeObjectAttribute"%>
+<%@page import="uk.ac.ebi.age.model.Attributed"%>
 <html lang="en">
 
 <%@page import="java.util.Iterator"%>
@@ -80,24 +83,43 @@
 						<table id="ae_results_table" border="0" cellpadding="0"
 							cellspacing="0">
 							<tbody>
+<%!private void printAttbt( Attributed atObj, JspWriter out ) throws IOException
+{
+ Iterator clsIt = atObj.getAttributeClasses().iterator();
+
+ while( clsIt.hasNext() )
+ {
+  AgeAttributeClass cls = (AgeAttributeClass) clsIt.next();
+  
+  Iterator prmIt = atObj.getAttributesByClass(cls, false).iterator();
+  
+  while( prmIt.hasNext() )
+  {
+   AgeAttribute attr = (AgeAttribute) prmIt.next();
+   
+   if( attr instanceof AgeObjectAttribute )
+    printAttbt( ((AgeObjectAttribute)attr).getValue(), out );
+   else
+   {
+     String val = attr.getValue().toString();
+
+     if(val.length() > 8 && "http://".equalsIgnoreCase(val.substring(0, 8)))
+      val = "<a target=\"_blank\" href=\"" + val + "\">" + StringUtils.htmlEscaped(val) + "</a>";
+     else
+      val = StringUtils.htmlEscaped(val);
+
+     out.print("<tr><td class=\"col_1\">" + StringUtils.htmlEscaped(cls.getName()) + "</td><td class=\"col_2\">" + val
+       + "</td></tr>");
+     
+     if( attr.getAttributes() != null )
+      printAttbt( attr, out);
+    }
+   }
+  }
+ }%>
 <%
 
-
-Iterator clsIt = obj.getAttributeClasses().iterator();
-
-while( clsIt.hasNext() )
-{
- AgeAttributeClass cls = (AgeAttributeClass) clsIt.next();
- 
- Iterator prmIt = obj.getAttributesByClass(cls, false).iterator();
- 
- while( prmIt.hasNext() )
- {
-  AgeAttribute attr = (AgeAttribute) prmIt.next();
-  
-  out.print("<tr><td class=\"col_1\">"+StringUtils.htmlEscaped(cls.getName())+"</td><td class=\"col_2\">"+StringUtils.htmlEscaped(attr.getValue().toString())+"</td></tr>");
- }
-}
+printAttbt( obj, out );
 
 %>
 

@@ -113,6 +113,8 @@ public class GroupDetailsPanel extends VLayout
     rec.setAttribute(s, "<a target='_blank' border=0 href='http://www.ncbi.nlm.nih.gov/pubmed/"+val+"'>"+val+"</a>");
    else if("Submission DOI".equals(s))
     rec.setAttribute(s, "<a target='_blank' border=0 href='http://dx.doi.org/"+val+"'>"+val+"</a>");
+   else if( val.length() > 8 && val.substring(0, 8).equalsIgnoreCase("http://") )
+    rec.setAttribute(s, "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
    else
     rec.setAttribute(s, val);
 
@@ -638,7 +640,14 @@ public class GroupDetailsPanel extends VLayout
     else if( at.getAttributes() != null && at.getAttributes().size() > 0 )
      rec.setAttribute(at.getFullName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
     else
-     rec.setAttribute(at.getFullName(), at.getStringValue());
+    {
+     String val = at.getStringValue();
+     
+     if( val.length() > 8 && val.substring(0, 8).equalsIgnoreCase("http://") )
+      rec.setAttribute(at.getFullName(), "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
+     else
+      rec.setAttribute(at.getFullName(), at.getStringValue());
+    }
    }
    records[i++]=rec;
   }

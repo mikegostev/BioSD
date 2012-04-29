@@ -68,7 +68,7 @@ public class SampleViewRedirector extends ServiceServlet
    return;
   }
    
-  RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/SampleViewer.jsp?");
+  RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/SampleViewer.jsp?");
   req.setAttribute("Object",sample);
   dispatcher.forward(req,resp);
   
