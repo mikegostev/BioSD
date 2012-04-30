@@ -9,9 +9,8 @@
 <%@page import="uk.ac.ebi.age.model.AgeAttribute"%>
 <%@page import="uk.ac.ebi.age.model.AgeAttributeClass"%>
 <%@page import="java.util.Collection"%>
-<%@ page import="uk.ac.ebi.age.model.AgeObject"%>
-<%@ page language="java" contentType="text/html; charset=utf-8"
-	pageEncoding="utf-8"%>
+<%@page import="uk.ac.ebi.age.model.AgeObject"%>
+<%@page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%
  AgeObject obj = (AgeObject) request.getAttribute("Object");
 %>
@@ -56,7 +55,7 @@
 <body class="">
 	<div class="headerdiv" id="headerdiv"
 		style="position: absolute; z-index: 1;">
-		<iframe src="sview_files/head.htm" name="head" id="head"
+		<iframe src="/inc/head.htm" name="head" id="head"
 			marginwidth="0px" marginheight="0px"
 			style="position: absolute; z-index: 1; height: 57px;" frameborder="0"
 			scrolling="no" width="100%">Your browser does not support
@@ -83,7 +82,8 @@
 						<table id="ae_results_table" border="0" cellpadding="0"
 							cellspacing="0">
 							<tbody>
-<%!private void printAttbt( Attributed atObj, JspWriter out ) throws IOException
+<%!
+private void printAttbt( Attributed atObj, JspWriter out ) throws IOException
 {
  Iterator clsIt = atObj.getAttributeClasses().iterator();
 
@@ -116,7 +116,8 @@
     }
    }
   }
- }%>
+ }
+%>
 <%
 
 printAttbt( obj, out );
@@ -143,7 +144,7 @@ printAttbt( obj, out );
 		</div>
 	</noscript>
 	<div id="ebi_footer">
-		<iframe src="sview_files/foot.htm" name="foot" marginwidth="0px"
+		<iframe src="/inc/foot.htm" name="foot" marginwidth="0px"
 			marginheight="0px" style="z-index: 2;" frameborder="0" height="22px"
 			scrolling="no" width="800px">Your browser does not support
 			inline frames or is currently configured not to display inline
