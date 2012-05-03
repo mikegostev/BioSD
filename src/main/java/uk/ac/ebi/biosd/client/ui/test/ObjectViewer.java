@@ -24,7 +24,7 @@ public class ObjectViewer extends Window
     height += rowHeight * at.getObjectValue().getAttributes().size();
   }
   
-  setHeight(height); 
+  setHeight(height+10); 
   setCanDragReposition(true);  
   setCanDragResize(true);  
   setShowMinimizeButton(false);

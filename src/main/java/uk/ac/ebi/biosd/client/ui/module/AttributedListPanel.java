@@ -55,7 +55,14 @@ public class AttributedListPanel  extends Window
     else if("DOI".equals(attr.getName()))
      rec.setAttribute(atNm, "<a target='_blank' border=0 href='http://dx.doi.org/"+attr.getValue()+"'>"+attr.getValue()+"</a>");
     else
-     rec.setAttribute(atNm, attr.getValue());
+    {
+     String val = attr.getValue();
+     
+     if( val.length() > 8 && val.substring(0, 7).equalsIgnoreCase("http://") )
+      rec.setAttribute(atNm, "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
+     else
+      rec.setAttribute(atNm, val);
+    }
    }
 
    ds.addData(rec);

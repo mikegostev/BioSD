@@ -39,7 +39,12 @@ public class NameValuePanel extends Window
    
    ds.addField(new DataSourceTextField(atNm, p.getFirst()));
   
-   rec.setAttribute(atNm, p.getSecond());
+   String val = p.getSecond();
+   
+   if( val.length() > 8 && val.substring(0, 7).equalsIgnoreCase("http://") )
+    rec.setAttribute(atNm, "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
+   else
+    rec.setAttribute(atNm, val);
   }
 
   ds.addData(rec);
