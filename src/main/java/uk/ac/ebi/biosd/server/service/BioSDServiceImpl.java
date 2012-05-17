@@ -364,16 +364,34 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     {
      AgeObject pubObj = ((AgeObjectAttribute)pub).getValue();
      
-     String pmId = (String)pubObj.getAttributeValue(pubMedIdClass);
+     Object val = pubObj.getAttributeValue(pubMedIdClass);
      
-     if( pmId != null && pmId.length() == 0 )
+     String pmId = null;
+     
+     if( val == null )
       pmId = null;
+     else
+     {
+      pmId = val.toString();
+      
+      if( pmId.length() == 0 )
+       pmId=null;
+     }
      
-     String doi = (String)pubObj.getAttributeValue(pubDOIClass);
- 
-     if( doi != null && doi.length() == 0 )
+     val = pubObj.getAttributeValue(pubDOIClass);
+     
+     String doi = null;
+     
+     if( val == null )
       doi = null;
-     
+     else
+     {
+      doi = val.toString();
+      
+      if( doi.length() == 0 )
+       doi=null;
+     }
+    
      if( pmId != null )
       pubMedMap.put(pmId, doi);
 
@@ -832,19 +850,20 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
      for(AgeAttribute attr : obj.getAttributes())
      {
-      Object val = attr.getValue();
+      if( ! attr.getAgeElClass().getDataType().isTextual() )
+       continue;
       
-      if( val instanceof String )
-       tokSet.add( (String)val );
+      tokSet.add( attr.getValue().toString() ); 
+       
 
       if(attr.getAttributes() != null)
       {
        for(AgeAttribute qual : attr.getAttributes() )
        {
-        Object qval = qual.getValue();
-        
-        if( qval instanceof String )
-         tokSet.add( (String)val );
+        if( ! qual.getAgeElClass().getDataType().isTextual() )
+         continue;
+
+        tokSet.add( qual.getValue().toString() );
        }
       }
      }
@@ -968,8 +987,6 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  private SampleList createSampleReport(List<AgeObject> samples)
  {
-  int id=1;
-  
   SampleList sl = new SampleList();
   
   Map<AgeAttributeClass, AttributeClassReport > valMap = new HashMap<AgeAttributeClass, AttributeClassReport>();
