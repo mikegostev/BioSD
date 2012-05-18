@@ -47,7 +47,7 @@
 
 		<mkdir dir="${build}/WEB-INF/classes"/>
 
-		<copy todir="${build}" verbose="true">
+		<copy todir="${build}" verbose="false">
 			<fileset dir="src/main/webapp">
 				<exclude name="**/.gitignore"/>
 			</fileset>
@@ -64,6 +64,10 @@
 			<fileset dir="${AGE}/lib/" />
 			<fileset dir="${AGEAdmin}/war/WEB-INF/lib/" />
 			<fileset dir="${AGEVisual}/lib/"/>
+		</copy>
+
+		<copy todir="${build}/WEB-INF/classes/">
+			<fileset dir="src/main/resources/" />
 		</copy>
 
 		<javac srcdir="${Commons}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
