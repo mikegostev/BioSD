@@ -1396,8 +1396,10 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   for( AgeObject ao : groupsIndex.getObjectList() )
   {
+   String grpId = StringUtils.htmlEscaped(ao.getId());
+   
    out.print("<SampleGroup id=\"");
-   out.print(StringUtils.htmlEscaped(ao.getId()));
+   out.print(grpId);
    out.println("\">");
    
    exportAttributed( ao, out );
@@ -1405,7 +1407,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for( AgeRelation rel : ao.getRelations() )
    {
     if( rel.getAgeElClass() == groupToSampleRelClass )
-     exportSample( rel.getTargetObject(), out );
+     exportSample( rel.getTargetObject(), grpId, out );
    }
    
    out.println("</SampleGroup>");
@@ -1451,11 +1453,11 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
  
- private void exportSample( Attributed ao,PrintWriter out )
+ private void exportSample( Attributed ao, String grpId, PrintWriter out )
  {
   out.print("<Sample id=\"");
   out.print(StringUtils.htmlEscaped(ao.getId()));
-  out.println("\">");
+  out.println("\" groupId=\"" +grpId +"\">");
 
   exportAttributed( ao, out );
 
