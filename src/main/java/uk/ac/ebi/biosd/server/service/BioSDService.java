@@ -41,5 +41,6 @@ public abstract class BioSDService
 
  public abstract AgeObject getSample(String sampleId) throws MaintenanceModeException;
 
+ public abstract AgeObject getGroup(String groupId) throws MaintenanceModeException;
 
 }

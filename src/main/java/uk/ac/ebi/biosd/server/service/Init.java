@@ -62,6 +62,7 @@ public class Init implements ServletContextListener
    serConf.setStorageBaseDir( new File( cfg.getAgeDBPath() ) );
    serConf.setMaintenanceModeTimeout(cfg.getMaintenanceModeTimeout());
    serConf.setMaster(cfg.isMaster());
+   serConf.setIndexDir(cfg.getIndexDir());
    
    storage = new SerializedStorage(serConf);
   }

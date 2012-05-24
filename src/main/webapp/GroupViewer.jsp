@@ -21,7 +21,7 @@
 <meta http-equiv="Window-target" content="_top">
 <meta name="no-email-collection"
 	content="http://www.unspam.com/noemailcollection/">
-<title> Sample <%=obj.getId()%></title>
+<title> Group <%=obj.getId()%></title>
 <link rel="SHORTCUT ICON" href="http://www.ebi.ac.uk/bookmark.ico">
 <link rel="stylesheet" href="../sview_files/contents.css" type="text/css">
 <link rel="stylesheet" href="../sview_files/userstyles.css" type="text/css">
@@ -70,7 +70,7 @@
 				<div id="ae_content">
 					<div id="ae_navi">
 						<a href="http://www.ebi.ac.uk/">EBI</a> &gt; <a
-							href="http://www.ebi.ac.uk/biosamples">bisamples</a> &gt; Sample <%=obj.getId()%>
+							href="http://www.ebi.ac.uk/biosamples">bisamples</a> &gt; Group <%=obj.getId()%>
 					</div>
 					<div id="ae_summary_box">
 						<div id="ae_accession">

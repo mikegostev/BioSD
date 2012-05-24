@@ -54,7 +54,7 @@ import uk.ac.ebi.biosd.server.stat.BioSDStat;
 import uk.ac.ebi.mg.assertlog.Log;
 import uk.ac.ebi.mg.assertlog.LogFactory;
 
-import com.pri.util.ObjectRecycler;
+import com.pri.util.ArrayObjectRecycler;
 import com.pri.util.StringUtils;
 
 public class BioSDServiceImpl extends BioSDService implements SecurityChangedListener
@@ -195,11 +195,15 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   assert ( startTime = System.currentTimeMillis() ) != 0;
 
+  long idxTime=0;
+
   try
   {
-   groupsIndex = storage.createSortedTextIndex(GROUP_INDEX_NAME, groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
+   assert ( idxTime = System.currentTimeMillis() ) != 0;
 
-    ObjectRecycler<GroupKey> fact = new ObjectRecycler<GroupKey>(4);
+    groupsIndex = storage.createSortedTextIndex(GROUP_INDEX_NAME, groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
+
+    ArrayObjectRecycler<GroupKey> fact = new ArrayObjectRecycler<GroupKey>(4);
     
     @Override
     public GroupKey extractKey(AgeObject o1)
@@ -224,6 +228,9 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     }},
     
     groupComparator);
+   
+   assert log.info("Group index building time: "+StringUtils.millisToString(System.currentTimeMillis()-idxTime));
+
   }
   catch(IndexIOException e)
   {
@@ -247,14 +254,19 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   try
   {
+   assert ( idxTime = System.currentTimeMillis() ) != 0;
+   
    samplesIndex = storage.createTextIndex(SAMPLE_INDEX_NAME, q, extr);
+   
+   assert log.info("Sample index building time: "+StringUtils.millisToString(System.currentTimeMillis()-idxTime));
+
   }
   catch(IndexIOException e)
   {
    throw new BioSDInitException("Init failed. Can't create group index",e);
   }
   
-  assert log.info("Index building time: "+StringUtils.millisToString(System.currentTimeMillis()-startTime)+" Tag extraction: "+tagExtr.getTime()+"ms. Owner extraction: "+tagExtr.getTime()+"ms");
+  assert log.info("Indices building time: "+StringUtils.millisToString(System.currentTimeMillis()-startTime)+" Tag extraction: "+tagExtr.getTime()+"ms. Owner extraction: "+tagExtr.getTime()+"ms");
 
   
   
@@ -1540,5 +1552,19 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   return smpObj;
  }
 
+ @Override
+ public AgeObject getGroup(String groupId) throws MaintenanceModeException
+ {
+  if( maintenanceMode )
+   throw new MaintenanceModeException();
+
+  
+  AgeObject smpObj = storage.getGlobalObject(groupId);
+  
+  if( smpObj == null || ! smpObj.getAgeElClass().isClassOrSubclass(groupClass) )
+   return null;
+  
+  return smpObj;
+ }
 
 }

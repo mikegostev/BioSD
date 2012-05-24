@@ -84,7 +84,7 @@
   </servlet>
 
   
-    <servlet>
+  <servlet>
     <description>
   	</description>
     <display-name>SampleViewRedirector</display-name>
@@ -93,6 +93,14 @@
   	uk.ac.ebi.biosd.server.service.SampleViewRedirector</servlet-class>
   </servlet>
   
+  <servlet>
+    <description>
+  	</description>
+    <display-name>GroupViewRedirector</display-name>
+    <servlet-name>GroupViewRedirector</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.service.GroupViewRedirector</servlet-class>
+  </servlet>
   
   <servlet-mapping>
     <servlet-name>BioSDService</servlet-name>
@@ -137,6 +145,11 @@
   <servlet-mapping>
     <servlet-name>SampleViewRedirector</servlet-name>
     <url-pattern>/sample/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>GroupViewRedirector</servlet-name>
+    <url-pattern>/group/*</url-pattern>
   </servlet-mapping>
 
   <listener>

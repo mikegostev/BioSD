@@ -16,6 +16,7 @@ import uk.ac.ebi.biosd.server.service.BioSDService;
 
 public class BiosamplesXMLExport extends ServiceServlet
 {
+ private static final long serialVersionUID = 1L;
 
  @Override
  protected void service(HttpServletRequest req, HttpServletResponse resp, Session sess) throws ServletException, IOException
