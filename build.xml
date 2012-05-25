@@ -51,10 +51,7 @@
 			<fileset dir="src/main/webapp">
 				<exclude name="**/.gitignore"/>
 			</fileset>
-			<fileset dir="${AGEAdmin}/war">
-				<exclude name="admin/"/>
-				<exclude name="biosd/" />
-				<exclude name="var/" />
+			<fileset dir="${AGEAdmin}/src/main/webapp">
 				<exclude name="**/.gitignore" />
 				<exclude name="WEB-INF/" />
 			</fileset>
