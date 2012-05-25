@@ -492,7 +492,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   String lucQuery = sb.toString(); 
   int qLen = lucQuery.length();
   
-  System.out.println("Query: "+lucQuery);
+  assert log.debug("Query: "+lucQuery);
   
   List<AgeObject> sel = groupsIndex.select( lucQuery );
   
