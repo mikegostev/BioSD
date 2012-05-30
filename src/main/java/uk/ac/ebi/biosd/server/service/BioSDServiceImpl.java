@@ -473,8 +473,6 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    sb.append(" ) AND ");
   }
   
-  if( refOnly )
-   sb.append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)").append(" AND ");
 
   if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
   {
@@ -486,11 +484,16 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    if(uco.getDenyTags().length() > 0)
     sb.append("NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(") AND ");
   }
+  
+  int qLen = sb.length()-5;
+
+  
+  if( refOnly )
+   sb.append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)").append(" AND ");
 
   sb.setLength(sb.length() - 5);
   
   String lucQuery = sb.toString(); 
-  int qLen = lucQuery.length();
   
   assert log.debug("Query: "+lucQuery);
   
