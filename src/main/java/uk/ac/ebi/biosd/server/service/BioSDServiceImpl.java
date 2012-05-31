@@ -12,6 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.NullFragmenter;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+import org.apache.lucene.util.Version;
+
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
@@ -87,10 +97,14 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  private BioSDStat statistics;
  
- private boolean maintenanceMode = false;
+ private volatile boolean  maintenanceMode = false;
  
  private WeakHashMap<String, UserCacheObject> userCache  = new WeakHashMap<String, UserCacheObject>();
  
+ private Analyzer analizer = new StandardAnalyzer(Version.LUCENE_30);
+ private QueryParser queryParser = new QueryParser( Version.LUCENE_30, BioSDConfigManager.GROUP_VALUE_FIELD_NAME, analizer );
+ private SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class='sHL'>","</span>");
+
  private static class GroupKey
  {
   String grpName;
@@ -302,9 +316,6 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
   assert log.info("Stats collecting time: "+(System.currentTimeMillis()-startTime)+"ms");
 
-  
-
-
  }
 
  private void collectStats()
@@ -427,6 +438,25 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    boolean searchAttrVl, boolean refOnly, int offset, int count) throws MaintenanceModeException
  {
   
+  Highlighter highlighter = null;
+
+  try
+  {
+   highlighter = new Highlighter(htmlFormatter, new QueryScorer( queryParser.parse(query) ) );
+  }
+  catch(ParseException e)
+  {
+   Report rep = new Report();
+   rep.setObjects(new ArrayList<GroupImprint>());
+   rep.setTotalGroups(0);
+   rep.setTotalSamples(0);
+  
+   return rep;
+  }
+  
+  highlighter.setTextFragmenter(new NullFragmenter());
+  
+  
   if( maintenanceMode )
    throw new MaintenanceModeException();
  
@@ -497,6 +527,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   assert log.debug("Query: "+lucQuery);
   
+  
+  
   List<AgeObject> sel = groupsIndex.select( lucQuery );
   
   int nSmp = 0;
@@ -518,7 +550,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   for( int i=offset; i< lim; i++ )
   {
-   GroupImprint gr = createGroupObject(sel.get(i));
+   GroupImprint gr = createGroupObject(sel.get(i), searchGrp? highlighter: null, searchAttrNm, searchAttrVl);
    
    if( searchSmp && query.length() > 0 )
    {
@@ -625,17 +657,55 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
 
- private GroupImprint createGroupObject( AgeObject obj )
+ private String highlight( Highlighter hlighter, Object str )
+ {
+  if( hlighter == null || str == null )
+   return null;
+  
+  String s = str.toString();
+  
+  try
+  {
+   String out = hlighter.getBestFragment(analizer, "", s);
+   
+   if( out == null )
+    return s;
+   
+   return out;
+  }
+  catch(Exception e)
+  {
+  }
+ 
+  return s;
+ }
+ 
+ private GroupImprint createGroupObject( AgeObject obj, Highlighter hlighter, boolean hlName, boolean hlValue )
  {
   GroupImprint sgRep = new GroupImprint();
 
+  String strN = null;
+  String strV = null;
+  
   sgRep.setId( obj.getId() );
 
+  if( hlValue )  
+   strV = highlight(hlighter, obj.getId());
+  else
+   strV = obj.getId();
+
 //  sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
-  sgRep.addAttribute("__ID", obj.getId(), true, 0);
+  sgRep.addAttribute("__ID", strV, true, 0);
   
   Object descVal = obj.getAttributeValue(desciptionAttributeClass);
-  sgRep.setDescription( descVal!=null?descVal.toString():null );
+  
+  if( hlValue )  
+   strV = highlight(hlighter, descVal);
+  else
+   strV = descVal!=null?descVal.toString():null;
+
+  
+  sgRep.setDescription( strV );
   
  
   for( AgeAttribute atr : obj.getAttributes() )
@@ -644,30 +714,70 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    
    if( atCls.isClassOrSubclass( commentAttributeClass ) )
    {
-    sgRep.addOtherInfo( atCls.getName(), atr.getValue().toString() );
+
+    if( hlName )  
+     strN = highlight(hlighter, atCls.getName());
+    else
+     strN = atCls.getName();
+
+     if( hlValue )  
+     strV = highlight(hlighter, atr.getValue());
+    else
+     strV = atr.getValue()!=null?atr.getValue().toString():null;
+
+    
+    sgRep.addOtherInfo( strN, strV );
    }
    else if( atCls.getDataType() == DataType.OBJECT )
    {
-    sgRep.attachObjects( atCls.getName(), createAttributedObject( ((AgeObjectAttribute)atr).getValue()) );
+    if( hlName )  
+     strN = highlight(hlighter, atCls.getName());
+    else
+     strN = atCls.getName();
+
+    
+    sgRep.attachObjects( strN, createAttributedObject( ((AgeObjectAttribute)atr).getValue(), hlighter, hlName, hlValue)  );
    } 
    else
-    sgRep.addAttribute(atCls.getName(), atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
+   {
+    if( hlName )  
+     strN = highlight(hlighter, atCls.getName());
+    else
+     strN = atCls.getName();
+
+     if( hlValue )  
+     strV = highlight(hlighter, atr.getValue());
+    else
+     strV = atr.getValue()!=null?atr.getValue().toString():null;
+
+     sgRep.addAttribute(strN, strV, atr.getAgeElClass().isCustom(),atr.getOrder());
+   }
   }
   
   Collection<? extends AgeRelation> pubRels =  obj.getRelationsByClass(groupToPublicationRelClass, false);
 
   if( pubRels != null )
   {
+   if( hlName )  
+    strN = highlight(hlighter, "Publications");
+   else
+    strN = "Publications";
+
    for( AgeRelation pRel : pubRels )
-    sgRep.attachObjects( "Publications", createAttributedObject(pRel.getTargetObject()) );
+    sgRep.attachObjects( strN, createAttributedObject(pRel.getTargetObject(), hlighter, hlName, hlValue ) );
   }
 
   Collection<? extends AgeRelation> persRels =  obj.getRelationsByClass(groupToContactRelClass, false);
 
   if( persRels != null )
   {
+   if( hlName )  
+    strN = highlight(hlighter, "Contacts");
+   else
+    strN = "Contacts";
+
    for( AgeRelation pRel : persRels )
-    sgRep.attachObjects( "Contacts", createAttributedObject(pRel.getTargetObject()) );
+    sgRep.attachObjects( "Contacts", createAttributedObject(pRel.getTargetObject(), hlighter, hlName, hlValue ) );
   }
 
   
@@ -686,15 +796,29 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   return sgRep;
  }
 
- private AttributedImprint createAttributedObject(AgeObject ageObj)
+ private AttributedImprint createAttributedObject(AgeObject ageObj, Highlighter hlighter, boolean hlName, boolean hlValue )
  {
+  String strN;
+  String strV;
+  
   AttributedImprint obj = new AttributedImprint();
   
   if( ageObj.getAttributes() != null )
   {
    for( AgeAttribute attr : ageObj.getAttributes() )
    {
-    obj.addAttribute(attr.getAgeElClass().getName(), attr.getValue().toString(), attr.getAgeElClass().isCustom(), attr.getOrder());
+    if( hlName )  
+     strN = highlight(hlighter, attr.getAgeElClass().getName());
+    else
+     strN = attr.getAgeElClass().getName();
+
+     if( hlValue )  
+     strV = highlight(hlighter, attr.getValue());
+    else
+     strV = attr.getValue()!=null?attr.getValue().toString():null;
+
+    
+    obj.addAttribute(strN, strV, attr.getAgeElClass().isCustom(), attr.getOrder());
    }
   }
   

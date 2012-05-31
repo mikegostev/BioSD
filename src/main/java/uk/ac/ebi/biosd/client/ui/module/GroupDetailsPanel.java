@@ -43,7 +43,7 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 public class GroupDetailsPanel extends VLayout
 {
- private static final int BRIEF_LEN=100;
+ private static final int BRIEF_LEN=200;
  
  private boolean allSamples;
  private String groupID;
@@ -121,7 +121,6 @@ public class GroupDetailsPanel extends VLayout
    //   System.out.println("At: "+s+" "+r.getAttributeAsString(s));
   }
 
-  
   for( String attr : attrs )
   {
    if( attr.startsWith("__$att$") )
@@ -129,7 +128,7 @@ public class GroupDetailsPanel extends VLayout
     List< AttributedImprint > list = (List< AttributedImprint >) r.getAttributeAsObject(attr);
     String title = attr.substring(7);
     
-    String repstr = makeRepresentationString(list, title);
+    String repstr = makeRepresentationString2(list, title);
 
     ds.addField(new DataSourceTextField(title, title) );
     
@@ -139,66 +138,29 @@ public class GroupDetailsPanel extends VLayout
    }
   }
   
-//  publList = (List< AttributedImprint >) r.getAttributeAsObject("__publ");
-//  
-//  if( publList != null && publList.size() > 0 )
-//  {
-//   String repstr = makeRepresentationString(publList, "publ");
-//
-//   ds.addField(new DataSourceTextField("publ", "Publications") );
-//   
-//   rec.setAttribute("publ", repstr);
-//  }
-//  
-//  contList = (List< AttributedImprint >) r.getAttributeAsObject("__contact");
-//  
-//  if( contList != null && contList.size() > 0 )
-//  {
-//   String repstr = makeRepresentationString(contList, "contact");
-//
-//   ds.addField(new DataSourceTextField("contact", "Contacts") );
-//   
-//   rec.setAttribute("contact", repstr);
-//  }
-
   
   otherInfoList = (List< Pair<String, String> >) r.getAttributeAsObject("__other");
   
   if( otherInfoList != null && otherInfoList.size() > 0 )
   {
-   String repstr = "";
-   int lastBold = -1;
+   String repstr = "<div style='float: left' class='briefObjectRepString'>";
+   
+   int cCount = 0;
    
    for( Pair<String, String> fstEl : otherInfoList )
    {
-    if( repstr.length() > BRIEF_LEN )
+    if( cCount > BRIEF_LEN )
      break;
     
     repstr += "<b>"+fstEl.getFirst()+"</b>"; 
     
-    lastBold=repstr.length();
-    
     repstr += ": "+fstEl.getSecond()+"; ";
+
+    cCount+=fstEl.getFirst().length()+fstEl.getSecond().length();
    }
 
-   if( repstr.length() > BRIEF_LEN )
-    repstr=repstr.substring(0,BRIEF_LEN);
-   
-   if( BRIEF_LEN < lastBold )
-    repstr+="</b>";
-   
-//   Pair<String, String> fstEl = otherInfoList.get(0);
-//   String repstr = "<b>"+fstEl.getFirst()+"</b>";
-//   
-//   if( repstr.length() > BRIEF_LEN )
-//    repstr.substring(0,BRIEF_LEN);
-//   else
-//    repstr += ": "+fstEl.getSecond();
-// 
-//   if( repstr.length() > BRIEF_LEN )
-//    repstr=repstr.substring(0,BRIEF_LEN);
-   
-   repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;other&quot;)'>more</a>";
+   repstr += "</div><div><a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;other&quot;)'>more</a></div>";
+
    
    ds.addField(new DataSourceTextField("Other", "Other") );
    
@@ -363,6 +325,30 @@ public class GroupDetailsPanel extends VLayout
    repstr+="</b>";
  
   repstr += "... <a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;"+theme+"&quot;)'>more</a>";
+  
+  return repstr;
+ }
+ 
+ private String makeRepresentationString2( List< AttributedImprint > list, String theme )
+ {
+  AttributedImprint fstEl = list.get(0);
+  String repstr = "<div style='float: left' class='briefObjectRepString'>";
+  
+  int cCount = 0;
+  
+  for( AttributeReport attr : fstEl.getAttributes() )
+  {
+   if( cCount > BRIEF_LEN )
+    break;
+   
+   repstr += "<b>"+attr.getName()+"</b>"; 
+   
+   repstr += ": "+attr.getValue()+"; ";
+
+   cCount+=attr.getName().length()+attr.getValue().length();
+  }
+
+  repstr += "</div><div><a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;"+theme+"&quot;)'>more</a></div>";
   
   return repstr;
  }

@@ -186,3 +186,17 @@ table.listTable span.qualifiedCell, table.listTable span.idCell
 {
 	font-size: 11pt !important;
 }
+
+div.briefObjectRepString
+{
+	width: 300px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	float: left
+}
+
+span.sHL
+{
+	background-color: yellow;
+}
