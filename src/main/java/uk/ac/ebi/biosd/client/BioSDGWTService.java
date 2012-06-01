@@ -34,8 +34,7 @@ public interface BioSDGWTService extends RemoteService
    throws MaintenanceModeException;
 
 
- SampleList getSamplesByGroup(String grpID, int offs, int count)
-  throws MaintenanceModeException;
+ SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count) throws MaintenanceModeException;
 
 
  SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count)

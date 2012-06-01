@@ -359,7 +359,7 @@ public class GroupDetailsPanel extends VLayout
   
 //  WaitWindow.showWait();
   
-  BioSDGWTService.Util.getInstance().getSamplesByGroup(groupID,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
+  BioSDGWTService.Util.getInstance().getSamplesByGroup(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    new AsyncCallback<SampleList>(){
 
    @Override

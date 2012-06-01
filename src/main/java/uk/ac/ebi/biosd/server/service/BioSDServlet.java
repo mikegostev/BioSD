@@ -18,10 +18,10 @@ public class BioSDServlet extends SessionRemoteServiceServlet implements BioSDGW
  }
 
  @Override
- public SampleList getSamplesByGroup(String grpID, int offs, int cnt)
+ public SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offs, int cnt)
    throws MaintenanceModeException
  {
-  return BioSDService.getInstance().getSamplesByGroup(grpID, offs, cnt);
+  return BioSDService.getInstance().getSamplesByGroup(grpID, query, searchAtNames, searchAtValues, offs, cnt);
  }
 
  @Override

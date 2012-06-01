@@ -442,7 +442,11 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
   try
   {
-   highlighter = new Highlighter(htmlFormatter, new QueryScorer( queryParser.parse(query) ) );
+   if( query != null )
+   {
+    highlighter = new Highlighter(htmlFormatter, new QueryScorer( queryParser.parse(query) ) );
+    highlighter.setTextFragmenter(new NullFragmenter());
+   }
   }
   catch(ParseException e)
   {
@@ -454,7 +458,6 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    return rep;
   }
   
-  highlighter.setTextFragmenter(new NullFragmenter());
   
   
   if( maintenanceMode )
@@ -516,7 +519,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
   
   int qLen = sb.length()-5;
-
+ 
   
   if( refOnly )
    sb.append(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME).append(":(true)").append(" AND ");
@@ -659,10 +662,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
  private String highlight( Highlighter hlighter, Object str )
  {
-  if( hlighter == null || str == null )
+  if( str == null )
    return null;
   
   String s = str.toString();
+
+  if( hlighter == null )
+   return s;
   
   try
   {
@@ -687,12 +693,12 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   String strN = null;
   String strV = null;
   
-  sgRep.setId( obj.getId() );
+  strV=obj.getId();
+  
+  sgRep.setId(strV );
 
-  if( hlValue )  
-   strV = highlight(hlighter, obj.getId());
-  else
-   strV = obj.getId();
+//  if( hlValue )  
+//   strV = highlight(hlighter, obj.getId());
 
 //  sgRep.addAttribute("Submission ID", obj.getSubmission().getId(), true, 0);
   sgRep.addAttribute("__ID", strV, true, 0);
@@ -947,7 +953,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    {
     Object val = attr.getValue();
     
-    if( val instanceof String )
+    if( attr.getAgeElClass().getDataType().isTextual() )
      tokSet.add( val.toString() );
     
     if( attr.getAttributes() != null )
@@ -956,7 +962,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
      {
       Object qval = qual.getValue();
       
-      if( qval instanceof String )
+      if( qual.getAgeElClass().getDataType().isTextual() )
        tokSet.add( qval.toString() );
      }
     }
@@ -1085,10 +1091,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    sb.setLength(0);
    
+   if( gobj.getId().equals("SAME316677") )
+    System.out.println("Hello");
+   
    for( AgeAttribute attr : gobj.getAttributes() )
    {
     tokSet.add(attr.getAgeElClass().getName());
-    sb.append( attr.getAgeElClass().getName() ).append(' ');
+//    sb.append( attr.getAgeElClass().getName() ).append(' ');
     
     if( attr.getAttributes() != null )
     {
@@ -1124,55 +1133,50 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  }
 
  
- private SampleList createSampleReport(List<AgeObject> samples)
+ private SampleList createSampleReport(List<AgeObject> samples, Highlighter hlite, boolean hlNm, boolean hlVl )
  {
   SampleList sl = new SampleList();
   
-  Map<AgeAttributeClass, AttributeClassReport > valMap = new HashMap<AgeAttributeClass, AttributeClassReport>();
+  Map<AgeAttributeClass, Int > valMap = new HashMap<AgeAttributeClass, Int>();
   
   for( AgeObject smpl : samples )
   {
-   sl.addSample( convertAttributed(smpl) );
+   sl.addSample( convertAttributed(smpl, hlite, hlNm, hlVl) );
 
-   
-//   List<AttributedObject> clSmpl = new ArrayList<AttributedObject>();
-   
-//   Map<String,String> attrMap = new HashMap<String, String>(); 
-   
-//   clSmpl.add( new AttributedObject("__id",smpl.getId()) );
-   
-//   attrMap.put("__id",smpl.getId());
-   
+  
    for( AgeAttribute attr : smpl.getAttributes() )
    {
     AgeAttributeClass ageAtCls = attr.getAgeElClass();
     String attrval = attr.getValue().toString();
     
-    AttributeClassReport atCls = valMap.get(ageAtCls);
+    Int cCnt = valMap.get(ageAtCls);
     
-    if( atCls == null )
+    if( cCnt == null )
     {
-     atCls = new AttributeClassReport();
-     
-     atCls.setCustom( ageAtCls.isCustom() );
-     atCls.setName( ageAtCls.getName() );
-//     atCls.setId("AttrClass"+(id++));
-     atCls.setId((ageAtCls.isCustom()?"CC:":"DC:")+ageAtCls.getName());
-     
-     valMap.put(attr.getAgeElClass(), atCls);
+     cCnt = new Int();
+     cCnt.value=1;
+     valMap.put(attr.getAgeElClass(), cCnt);
     }
+    else
+     cCnt.value++;
     
+    AttributeClassReport atCls = new AttributeClassReport();
+     
+    atCls.setCustom( ageAtCls.isCustom() );
+     
+    String cName = ageAtCls.getName();
+     
+    if( hlNm )
+     cName = highlight(hlite, cName);
+     
+    atCls.setName( cName );
+//     atCls.setId("AttrClass"+(id++));
+    atCls.setId((ageAtCls.isCustom()?"CC:":"DC:")+ageAtCls.getName()+"$"+cCnt.value);
+     
     atCls.addValue(attrval);
     
-//    AttributedObject a = convertAttributed(obj);
-//    
-//    if( attr.getAttributes() != null )
-//     collectQualifiers(attr,a);
-//    
-//    clSmpl.add( a );
    }
    
-//   sl.addSample( clSmpl );
   }
   
   List<AttributeClassReport> clsLst = new ArrayList<AttributeClassReport>( valMap.size()+1 );
@@ -1213,10 +1217,12 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   return sl;
  }
 
- private AttributedObject convertAttributed( Attributed obj )
+ private AttributedObject convertAttributed( Attributed obj, Highlighter hlite, boolean hlNm, boolean hlVl  )
  {
   AttributedObject objAttr = new AttributedObject();
 
+  String strV = null;
+  
   if( obj instanceof AgeObject )
   {
    objAttr.setName( ((AgeObject) obj).getId() );
@@ -1226,7 +1232,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     List<AttributedObject> attrs = new ArrayList<AttributedObject>();
     
     for( Attributed oa : obj.getAttributes() )
-     attrs.add(convertAttributed(oa));
+     attrs.add(convertAttributed(oa, hlite, hlNm, hlVl ));
     
     objAttr.setAttributes(attrs);
    }
@@ -1240,16 +1246,26 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    Object val = ageAt.getValue();
    
    if( val instanceof Attributed )
-    objAttr.setObjectValue( convertAttributed( (Attributed)val ) );
+    objAttr.setObjectValue( convertAttributed( (Attributed)val, hlite, hlNm, hlVl ) );
    else
-    objAttr.setStringValue(val.toString());
+   {
+    strV = val.toString();
+    
+    if( hlVl )  
+     strV = highlight(hlite, val);
+    else
+     strV = val!=null?val.toString():null;
+
+    
+    objAttr.setStringValue(strV);
+   }
    
    if( ageAt.getAttributes() != null )
    {
     List<AttributedObject> attrs = new ArrayList<AttributedObject>();
     
     for( Attributed oa : ageAt.getAttributes() )
-     attrs.add(convertAttributed(oa));
+     attrs.add(convertAttributed(oa, hlite, hlNm, hlVl));
     
     objAttr.setAttributes(attrs);
    }
@@ -1278,9 +1294,29 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  
  @Override
- public SampleList getSamplesByGroup(String grpID, int offset, int count) throws MaintenanceModeException
+ public SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count) throws MaintenanceModeException
  {
+  if( query.trim().length() == 0 )
+   query = null;
   
+  Highlighter highlighter = null;
+
+  try
+  {
+   if( query != null )
+   {
+    highlighter = new Highlighter(htmlFormatter, new QueryScorer( queryParser.parse(query) ) );
+    highlighter.setTextFragmenter(new NullFragmenter());
+   }
+  }
+  catch(ParseException e)
+  {
+   SampleList lst = createSampleReport( new ArrayList<AgeObject>(1), null, false, false );
+   lst.setTotalRecords(0);
+ 
+   return lst;
+  }
+
   if( maintenanceMode )
    throw new MaintenanceModeException();
 
@@ -1316,7 +1352,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    }
   }
   
-  SampleList sl = createSampleReport(res);
+  SampleList sl = createSampleReport(res, highlighter, searchAtNames, searchAtValues);
   sl.setTotalRecords(total);
   
   return sl;
@@ -1387,6 +1423,25 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  @Override
  public SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl, int offset, int count) throws MaintenanceModeException
  {
+  Highlighter highlighter = null;
+
+  try
+  {
+   if( query != null )
+   {
+    highlighter = new Highlighter(htmlFormatter, new QueryScorer( queryParser.parse(query) ) );
+    highlighter.setTextFragmenter(new NullFragmenter());
+   }
+  }
+  catch(ParseException e)
+  {
+   SampleList lst = createSampleReport( new ArrayList<AgeObject>(1), null, false, false );
+   lst.setTotalRecords(0);
+ 
+   return lst;
+  }
+  
+
   
   if( maintenanceMode )
    throw new MaintenanceModeException();
@@ -1417,7 +1472,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   int end = (offset+count) > sel.size()? sel.size() : (offset+count); 
   
-  SampleList lst = createSampleReport( sel.subList(offset, end) );
+  SampleList lst = createSampleReport( sel.subList(offset, end), highlighter, searchAttrNm, searchAttrVl );
   lst.setTotalRecords(sel.size());
   
   return lst;
@@ -1694,4 +1749,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   return smpObj;
  }
 
+ private static class Int
+ {
+  int value;
+ }
 }
