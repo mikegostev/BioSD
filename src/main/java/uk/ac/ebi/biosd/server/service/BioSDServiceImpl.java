@@ -53,12 +53,18 @@ import uk.ac.ebi.age.storage.index.SortedTextIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextIndex;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
+import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder;
+import uk.ac.ebi.age.ui.server.imprint.ImprintingHint;
+import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectValue;
+import uk.ac.ebi.age.ui.shared.imprint.Value;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
 import uk.ac.ebi.biosd.client.query.AttributedObject;
 import uk.ac.ebi.biosd.client.query.GroupImprint;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
-import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 import uk.ac.ebi.biosd.server.stat.BioSDStat;
 import uk.ac.ebi.mg.assertlog.Log;
@@ -105,6 +111,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  private QueryParser queryParser = new QueryParser( Version.LUCENE_30, BioSDConfigManager.GROUP_VALUE_FIELD_NAME, analizer );
  private SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class='sHL'>","</span>");
 
+ private ImprintingHint sampleConvHint;
+ 
  private static class GroupKey
  {
   String grpName;
@@ -184,6 +192,12 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 //  clsExp.setClassType( ClassType.DEFINED );
 //  
 //  orExp.addExpression(clsExp);
+  
+  sampleConvHint = new ImprintingHint();
+  sampleConvHint.setConvertRelations(false);
+  sampleConvHint.setConvertAttributes(true);
+  sampleConvHint.setQualifiersDepth(2);
+  sampleConvHint.setResolveObjectAttributesTarget(false);
   
   ClassNameExpression clsExp = new ClassNameExpression();
   clsExp.setClassName( BioSDConfigManager.SAMPLEGROUP_CLASS_NAME );
@@ -1137,84 +1151,129 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  {
   SampleList sl = new SampleList();
   
-  Map<AgeAttributeClass, Int > valMap = new HashMap<AgeAttributeClass, Int>();
+  class LinkCount
+  {
+   ClassImprint imprint;
+   int counter;
+  }
+  
+  Map<ClassImprint, LinkCount > clsMap = new HashMap<ClassImprint, LinkCount>();
+  
+  
+  
+  ImprintBuilder iBld = new ImprintBuilder();
   
   for( AgeObject smpl : samples )
   {
-   sl.addSample( convertAttributed(smpl, hlite, hlNm, hlVl) );
+   ObjectImprint imp = iBld.convert(smpl,sampleConvHint);
+   
+   sl.addSample( imp );
+   
+//   sl.addSample( convertAttributed(smpl, hlite, hlNm, hlVl) );
 
-  
-   for( AgeAttribute attr : smpl.getAttributes() )
+   int ord=0;
+   
+   for( AttributeImprint attr : imp.getAttributes() )
    {
-    AgeAttributeClass ageAtCls = attr.getAgeElClass();
-    String attrval = attr.getValue().toString();
+    ord++;
     
-    Int cCnt = valMap.get(ageAtCls);
+    LinkCount cCnt = clsMap.get(attr.getClassImprint());
     
     if( cCnt == null )
     {
-     cCnt = new Int();
-     cCnt.value=1;
-     valMap.put(attr.getAgeElClass(), cCnt);
+     cCnt = new LinkCount();
+     cCnt.counter=5000-ord;
+     cCnt.imprint=attr.getClassImprint();
+     clsMap.put(cCnt.imprint, cCnt);
     }
     else
-     cCnt.value++;
+     cCnt.counter+=5000-ord;
     
-    AttributeClassReport atCls = new AttributeClassReport();
-     
-    atCls.setCustom( ageAtCls.isCustom() );
-     
-    String cName = ageAtCls.getName();
-     
-    if( hlNm )
-     cName = highlight(hlite, cName);
-     
-    atCls.setName( cName );
-//     atCls.setId("AttrClass"+(id++));
-    atCls.setId((ageAtCls.isCustom()?"CC:":"DC:")+ageAtCls.getName()+"$"+cCnt.value);
-     
-    atCls.addValue(attrval);
+//    AttributeClassReport atCls = new AttributeClassReport();
+//     
+//    atCls.setCustom( ageAtCls.isCustom() );
+//     
+//    String cName = ageAtCls.getName();
+//     
+//    if( hlNm )
+//     cName = highlight(hlite, cName);
+//     
+//    atCls.setName( cName );
+////     atCls.setId("AttrClass"+(id++));
+//    atCls.setId((ageAtCls.isCustom()?"CC:":"DC:")+ageAtCls.getName()+"$"+cCnt.value);
+//     
+//    atCls.addValue(attrval);
     
    }
    
   }
   
-  List<AttributeClassReport> clsLst = new ArrayList<AttributeClassReport>( valMap.size()+1 );
-  clsLst.addAll(valMap.values());
+  List<LinkCount> clsLst = new ArrayList<LinkCount>( clsMap.size() );
+  clsLst.addAll(clsMap.values());
   
-  Collections.sort(clsLst, new Comparator<AttributeClassReport>()
+  Collections.sort(clsLst, new Comparator<LinkCount>()
   {
    @Override
-   public int compare(AttributeClassReport arg0, AttributeClassReport arg1)
+   public int compare(LinkCount o1, LinkCount o2)
    {
-    if( arg0.getName().equals("Name") )
+    if( BioSDConfigManager.SAMPLE_ACCS_ATTR_CLASS_NAME.equals( o1.imprint.getName() ) )
     {
-     if( arg1.getName().equals("Name") )
+     if( BioSDConfigManager.SAMPLE_ACCS_ATTR_CLASS_NAME.equals( o2.imprint.getName() ) )
       return 0;
      else
       return -1;
     }
-    else if( arg1.getName().equals("Name") )
+    else if( BioSDConfigManager.SAMPLE_ACCS_ATTR_CLASS_NAME.equals( o2.imprint.getName() ) )
      return 1;
     
-    return arg1.getValues().size()-arg0.getValues().size();
+    return o2.counter-o1.counter;
    }
   });
   
-  for( AttributeClassReport atr : clsLst )
-   atr.clearValues();
+  for( LinkCount lc : clsLst )
+  {
+   sl.addHeader( lc.imprint );
   
-  AttributeClassReport idCls = new AttributeClassReport();
+   if( hlNm )
+    lc.imprint.setName( highlight(hlite, lc.imprint.getName()) );
+  }
   
-  idCls.setCustom(false);
-  idCls.setName("ID");
-  idCls.setId("__id");
-  
-  clsLst.add(idCls);
-  
-  sl.setHeader( clsLst );
+  if( hlVl && hlite != null)
+  {
+   for( ObjectImprint obj : sl.getSamples() )
+    highlightAttributedImprint(hlite, obj);
+  }
   
   return sl;
+ }
+ 
+ private void highlightAttributedImprint( Highlighter hlite, uk.ac.ebi.age.ui.shared.imprint.AttributedImprint obj )
+ {
+  if( obj.getAttributes() == null )
+   return;
+  
+  for( AttributeImprint atImp : obj.getAttributes() )
+  {
+   if( atImp.getClassImprint().getType() == uk.ac.ebi.age.ui.shared.imprint.ClassType.ATTR_STRING)
+   {
+    for( Value v : atImp.getValues() )
+    {
+     ((uk.ac.ebi.age.ui.shared.imprint.StringValue)v).setValue( highlight(hlite, v.getStringValue() ) );
+     
+     highlightAttributedImprint( hlite, v);
+    }
+   }
+   else if( atImp.getClassImprint().getType() == uk.ac.ebi.age.ui.shared.imprint.ClassType.ATTR_OBJECT )
+   {
+    for( Value v : atImp.getValues() )
+    {
+     if( ((ObjectValue)v).getObjectImprint() != null )
+      highlightAttributedImprint( hlite, ((ObjectValue)v).getObjectImprint() );
+     
+     highlightAttributedImprint( hlite, v );
+    }
+   }
+  }
  }
 
  private AttributedObject convertAttributed( Attributed obj, Highlighter hlite, boolean hlNm, boolean hlVl  )

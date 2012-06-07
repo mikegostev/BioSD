@@ -2,7 +2,7 @@ package uk.ac.ebi.biosd.client.ui.module;
 
 import java.util.List;
 
-import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
+import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
 
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.fields.DataSourceTextField;
@@ -12,7 +12,7 @@ import com.smartgwt.client.widgets.viewer.DetailViewer;
 
 public class SampleViewer  extends Window
 {
- public SampleViewer(List<AttributeClassReport> header, ListGridRecord rec )
+ public SampleViewer(List<ClassImprint> header, ListGridRecord rec )
  {
   
 //  setAutoSize(true);  
@@ -31,7 +31,7 @@ public class SampleViewer  extends Window
 
   int height=38;
   
-  for( AttributeClassReport cls : header )
+  for( ClassImprint cls : header )
   {
    ds.addField(new DataSourceTextField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") ));
    

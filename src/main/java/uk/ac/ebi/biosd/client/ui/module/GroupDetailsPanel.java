@@ -1,5 +1,6 @@
 package uk.ac.ebi.biosd.client.ui.module;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,11 +8,13 @@ import java.util.Map;
 import uk.ac.ebi.age.ui.client.LinkClickListener;
 import uk.ac.ebi.age.ui.client.LinkManager;
 import uk.ac.ebi.age.ui.client.module.PagingRuler;
+import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
+import uk.ac.ebi.age.ui.shared.imprint.Value;
 import uk.ac.ebi.biosd.client.BioSDGWTService;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
-import uk.ac.ebi.biosd.client.query.AttributedObject;
 import uk.ac.ebi.biosd.client.query.SampleList;
-import uk.ac.ebi.biosd.client.shared.AttributeClassReport;
 import uk.ac.ebi.biosd.client.shared.AttributeReport;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 import uk.ac.ebi.biosd.client.shared.Pair;
@@ -559,7 +562,7 @@ public class GroupDetailsPanel extends VLayout
   ListGrid attrList = new SampleListGrid();
   
   attrList.setShowAllRecords(true);
-  attrList.setShowRowNumbers(true); 
+//  attrList.setShowRowNumbers(true); 
   
   attrList.setWidth("99%");
   attrList.setHeight(1);
@@ -589,17 +592,20 @@ public class GroupDetailsPanel extends VLayout
 //   ds.addField(dsf );
 //  }
 
-  final ListGridField[] lfl = new ListGridField[smpls.getHeader().size()];
+  final ListGridField[] fields = new ListGridField[smpls.getHeaders().size()+1];
 
   String prideKey = null;
   
-  final List<AttributeClassReport> header = smpls.getHeader();
+  final List<ClassImprint> header = smpls.getHeaders();
   
-  int i=0;
-  for( AttributeClassReport cls : header )
+  fields[0] = new ListGridField("__num", "N" );
+
+  
+  int i=1;
+  for( ClassImprint cls : header )
   {
-   lfl[i] = new ListGridField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") );
-   lfl[i].setShowHover(true);
+   fields[i] = new ListGridField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") );
+   fields[i].setShowHover(true);
    
    if( cls.getName().equals("Pride ID") )
     prideKey = cls.getId();
@@ -607,35 +613,76 @@ public class GroupDetailsPanel extends VLayout
    i++;
   }
 
-  
+  int offset = (pg-1)*ResultPane.MAX_SAMPLES_PER_PAGE;
 //  attrList.setDataSource(ds);
-  ListGridRecord[] records = new ListGridRecord[smpls.getSamples().size()];
+  ArrayList<ListGridRecord> records = new ArrayList<ListGridRecord>();
 
-  i=0;
-  for( AttributedObject sample : smpls.getSamples() )
+  ArrayList<ListGridRecord> recList = new ArrayList<ListGridRecord>();
+  
+  for( ObjectImprint sample : smpls.getSamples() )
   {
-   ListGridRecord rec = new ListGridRecord();
-
-   rec.setAttribute("__obj", sample);
-   rec.setAttribute("__id", "<span class='idCell'>"+sample.getFullName()+"</span>");
+   offset++;
    
-   for( AttributedObject at : sample.getAttributes() )
+   ListGridRecord mainRec = new ListGridRecord();
+
+   mainRec.setAttribute("__obj", sample);
+   mainRec.setAttribute("__id", "<span class='idCell'>"+sample.getId()+"</span>");
+   mainRec.setAttribute("__ord", 0);
+   mainRec.setAttribute("__num", offset);
+   
+   recList.clear();
+   
+   recList.add(mainRec);
+   
+   int colNum=0;
+   for( AttributeImprint at : sample.getAttributes() )
    {
-    if( at.getFullName().equals(prideKey) )
-     rec.setAttribute(at.getFullName(), "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+at.getStringValue()+"'>"+at.getStringValue()+"</a>");
-    else if( at.getAttributes() != null && at.getAttributes().size() > 0 )
-     rec.setAttribute(at.getFullName(), "<span class='qualifiedCell'>"+at.getStringValue()+"</span>");
-    else
+    colNum++;
+    
+    String atId = at.getClassImprint().getId();
+    
+    int recNum = -1;
+    for( Value v : at.getValues() )
     {
-     String val = at.getStringValue();
+     recNum++;
      
-     if( val.length() > 8 && val.substring(0, 7).equalsIgnoreCase("http://") )
-      rec.setAttribute(at.getFullName(), "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
+     ListGridRecord cRec = null;
+     
+     if( recNum >= recList.size() )
+     {
+      recList.add( cRec = new ListGridRecord() );
+
+      cRec.setAttribute("__obj", sample);
+      cRec.setAttribute("__ord", recNum);
+      cRec.setAttribute("__num", offset);
+     }
      else
-      rec.setAttribute(at.getFullName(), val);
+      cRec = recList.get(recNum);
+     
+     if( atId.equals(prideKey) )
+     {
+      cRec.setAttribute(atId, "<a target='_blank' href='http://www.ebi.ac.uk/pride/directLink.do?experimentAccessionNumber="+v.getStringValue()+"'>"+v.getStringValue()+"</a>");
+     }
+     else if( v.getAttributes() != null && v.getAttributes().size() > 0 )
+      cRec.setAttribute(atId, "<span class='qualifiedCell'>"+v.getStringValue()+"</span>");
+     else
+     {
+      String val = v.getStringValue();
+      
+      if( val.length() > 8 && val.substring(0, 7).equalsIgnoreCase("http://") )
+       cRec.setAttribute(atId, "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
+      else if( colNum == 1 )
+       mainRec.setAttribute(atId, "<span class='idCell'>"+val+"</span>");
+      else
+       cRec.setAttribute(atId, val);
+     }     
     }
+    
+
    }
-   records[i++]=rec;
+   
+   for( ListGridRecord lr : recList )
+    records.add(lr);
   }
 
 //  ListGridRecord rec = new ListGridRecord();
@@ -651,8 +698,8 @@ public class GroupDetailsPanel extends VLayout
    pager.setVisible(false);
 
   
-  attrList.setFields(lfl);
-  attrList.setData(records);
+  attrList.setFields(fields);
+  attrList.setData( (ListGridRecord[]) records.toArray() );
   
   attrList.setHoverCustomizer(new HoverCustomizer()
   {
@@ -663,7 +710,7 @@ public class GroupDetailsPanel extends VLayout
      return null;
   
 //    return value.toString();
-    return record.getAttributeAsString(lfl[colNum-1].getName());
+    return record.getAttributeAsString(fields[colNum-1].getName());
    }
   });
   
@@ -674,27 +721,32 @@ public class GroupDetailsPanel extends VLayout
    {
     String attrId = header.get(event.getColNum()-1).getId();
     
-    AttributedObject sample = (AttributedObject) event.getRecord().getAttributeAsObject("__obj");
+    ObjectImprint sample = (ObjectImprint) event.getRecord().getAttributeAsObject("__obj");
     
-    AttributedObject clickedObj = null;
+    int valOrd = event.getRecord().getAttributeAsInt("__ord");
     
-    for( AttributedObject at : sample.getAttributes() )
+    Value clickedVal = null;
+    
+    for( AttributeImprint at : sample.getAttributes() )
     {
-     if(attrId.equals(at.getFullName()))
+     if(attrId.equals(at.getClassImprint().getId()))
      {
-      clickedObj = at;
+      if( at.getValueCount() <= valOrd )
+       return;
+      
+      clickedVal = at.getValues().get(valOrd);
       break;
      }
     }
     
 //    System.out.println("Clicked: "+attrId+" -> "+clickedObj.getStringValue());
     
-    if( event.getColNum() != lfl.length  )
+    if( event.getColNum() != 1  )
     {
-     if( clickedObj == null || clickedObj.getAttributes() == null || clickedObj.getAttributes().size() == 0 )
+     if( clickedVal == null || clickedVal.getAttributes() == null || clickedVal.getAttributes().size() == 0 )
       return;
 
-     new ObjectViewer(clickedObj).show();
+     new ObjectViewer(clickedVal).show();
      return;
     }
     

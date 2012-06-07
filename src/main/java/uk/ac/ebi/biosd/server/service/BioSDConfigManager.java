@@ -31,6 +31,8 @@ public class BioSDConfigManager extends AgeAdminConfigManager
  public static final String PUBMEDID_ATTR_CLASS_NAME = "Publication PubMed ID";
  public static final String PUBDOI_ATTR_CLASS_NAME = "Publication DOI";
 
+ public static final String SAMPLE_ACCS_ATTR_CLASS_NAME = "Sample Accession";
+
  private static BioSDConfigManager instance = null;
  
  public BioSDConfigManager(ServletContext servletContext)

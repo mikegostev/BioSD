@@ -1,13 +1,18 @@
 package uk.ac.ebi.biosd.client.ui.test;
 
-import uk.ac.ebi.biosd.client.query.AttributedObject;
+import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ClassType;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectValue;
+import uk.ac.ebi.age.ui.shared.imprint.Value;
 
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.Window;
 
 public class ObjectViewer extends Window
 {
- public ObjectViewer( AttributedObject obj )
+ static final int MAX_HEIGHT = 700;
+ 
+ public ObjectViewer( Value obj )
  {
   setTitle( "Value properties: "+obj.getStringValue() );  
   setWidth(750);  
@@ -16,13 +21,28 @@ public class ObjectViewer extends Window
   
   final int rowHeight = 28;
   
-  for( AttributedObject at : obj.getAttributes() )
+  for( AttributeImprint at : obj.getAttributes() )
   {
-   if( at.getObjectValue() == null )
-    height+=rowHeight;
+   if( at.getClassImprint().getType() != ClassType.ATTR_OBJECT )
+    height+=rowHeight*at.getValueCount();
    else
-    height += rowHeight * at.getObjectValue().getAttributes().size();
+   {
+    for( Value v : at.getValues() )
+    {
+     if( ((ObjectValue)v).getObjectImprint() == null || ((ObjectValue)v).getObjectImprint().getAttributes() == null )
+      height += rowHeight;
+     else
+     {
+      for( AttributeImprint oat : ((ObjectValue)v).getObjectImprint().getAttributes() )
+       height += rowHeight * oat.getValueCount();
+     }
+    }
+    
+   }
   }
+  
+  if( height > MAX_HEIGHT )
+   height = MAX_HEIGHT;
   
   setHeight(height+10); 
   setCanDragReposition(true);  
