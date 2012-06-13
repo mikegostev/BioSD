@@ -61,6 +61,7 @@
 			<fileset dir="${AGE}/lib/" />
 			<fileset dir="${AGEAdmin}/war/WEB-INF/lib/" />
 			<fileset dir="${AGEVisual}/lib/"/>
+			<fileset dir="lib/"/>
 		</copy>
 
 		<copy todir="${build}/WEB-INF/classes/">
@@ -71,12 +72,11 @@
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
-
-		<javac srcdir="${AGEVisual}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="$${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${AGE}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
-		<javac srcdir="${AGE}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+		<javac srcdir="${AGEVisual}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
 			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 

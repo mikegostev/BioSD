@@ -599,6 +599,7 @@ public class GroupDetailsPanel extends VLayout
   final List<ClassImprint> header = smpls.getHeaders();
   
   fields[0] = new ListGridField("__num", "N" );
+  fields[0].setWidth(25);
 
   
   int i=1;
@@ -654,7 +655,7 @@ public class GroupDetailsPanel extends VLayout
 
       cRec.setAttribute("__obj", sample);
       cRec.setAttribute("__ord", recNum);
-      cRec.setAttribute("__num", offset);
+//      cRec.setAttribute("__num", offset);
      }
      else
       cRec = recList.get(recNum);
@@ -671,7 +672,7 @@ public class GroupDetailsPanel extends VLayout
       
       if( val.length() > 8 && val.substring(0, 7).equalsIgnoreCase("http://") )
        cRec.setAttribute(atId, "<a target=\"_blank\" href=\"" + val + "\">" + val + "</a>");
-      else if( colNum == 1 )
+      else if( at.getClassImprint() == header.get(0)  )
        mainRec.setAttribute(atId, "<span class='idCell'>"+val+"</span>");
       else
        cRec.setAttribute(atId, val);
@@ -699,7 +700,10 @@ public class GroupDetailsPanel extends VLayout
 
   
   attrList.setFields(fields);
-  attrList.setData( (ListGridRecord[]) records.toArray() );
+  
+  ListGridRecord[] data = new ListGridRecord[records.size()];
+  
+  attrList.setData( records.toArray( data ) );
   
   attrList.setHoverCustomizer(new HoverCustomizer()
   {
@@ -710,7 +714,7 @@ public class GroupDetailsPanel extends VLayout
      return null;
   
 //    return value.toString();
-    return record.getAttributeAsString(fields[colNum-1].getName());
+    return record.getAttributeAsString(fields[colNum].getName());
    }
   });
   

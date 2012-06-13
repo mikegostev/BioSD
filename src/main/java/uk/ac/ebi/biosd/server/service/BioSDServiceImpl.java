@@ -54,6 +54,7 @@ import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextIndex;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
 import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder;
+import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder.StringProcessor;
 import uk.ac.ebi.age.ui.server.imprint.ImprintingHint;
 import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
@@ -134,7 +135,14 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  };
  
 
- 
+ private ImprintBuilder.StringProcessor htmlEscProc = new StringProcessor()
+ {
+  @Override
+  public String process(String str)
+  {
+   return StringUtils.htmlEscaped(str);
+  }
+ };
  
  public BioSDServiceImpl( AgeStorage stor ) throws BioSDInitException
  {
@@ -719,13 +727,15 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   Object descVal = obj.getAttributeValue(desciptionAttributeClass);
   
-  if( hlValue )  
-   strV = highlight(hlighter, descVal);
-  else
-   strV = descVal!=null?descVal.toString():null;
-
-  
-  sgRep.setDescription( strV );
+  if( descVal != null  )
+  {
+   strV = StringUtils.htmlEscaped( descVal.toString() );
+   
+   if( hlValue )  
+    strV = highlight(hlighter, strV);
+    
+   sgRep.setDescription( strV );
+  }
   
  
   for( AgeAttribute atr : obj.getAttributes() )
@@ -734,41 +744,39 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    
    if( atCls.isClassOrSubclass( commentAttributeClass ) )
    {
-
+    strN = StringUtils.htmlEscaped( atCls.getName() );
+    
     if( hlName )  
-     strN = highlight(hlighter, atCls.getName());
-    else
-     strN = atCls.getName();
+     strN = highlight(hlighter, strN);
 
-     if( hlValue )  
-     strV = highlight(hlighter, atr.getValue());
-    else
-     strV = atr.getValue()!=null?atr.getValue().toString():null;
-
+    strV = atr.getValue()!=null? StringUtils.htmlEscaped(atr.getValue().toString()):null;
+    
+    if( hlValue )  
+     strV = highlight(hlighter, strV );
     
     sgRep.addOtherInfo( strN, strV );
    }
    else if( atCls.getDataType() == DataType.OBJECT )
    {
+    strN = StringUtils.htmlEscaped( atCls.getName() );
+    
     if( hlName )  
-     strN = highlight(hlighter, atCls.getName());
-    else
-     strN = atCls.getName();
+     strN = highlight(hlighter, strN);
 
     
     sgRep.attachObjects( strN, createAttributedObject( ((AgeObjectAttribute)atr).getValue(), hlighter, hlName, hlValue)  );
    } 
    else
    {
+    strN = StringUtils.htmlEscaped( atCls.getName() );
+    
     if( hlName )  
-     strN = highlight(hlighter, atCls.getName());
-    else
-     strN = atCls.getName();
+     strN = highlight(hlighter, strN);
 
-     if( hlValue )  
-     strV = highlight(hlighter, atr.getValue());
-    else
-     strV = atr.getValue()!=null?atr.getValue().toString():null;
+    strV = atr.getValue()!=null? StringUtils.htmlEscaped(atr.getValue().toString()):null;
+    
+    if( hlValue )  
+     strV = highlight(hlighter, strV );
 
      sgRep.addAttribute(strN, strV, atr.getAgeElClass().isCustom(),atr.getOrder());
    }
@@ -827,17 +835,16 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    for( AgeAttribute attr : ageObj.getAttributes() )
    {
-    if( hlName )  
-     strN = highlight(hlighter, attr.getAgeElClass().getName());
-    else
-     strN = attr.getAgeElClass().getName();
-
-     if( hlValue )  
-     strV = highlight(hlighter, attr.getValue());
-    else
-     strV = attr.getValue()!=null?attr.getValue().toString():null;
-
+    strN = StringUtils.htmlEscaped( attr.getAgeElClass().getName() );
     
+    if( hlName )  
+     strN = highlight(hlighter, strN);
+
+    strV = attr.getValue()!=null? StringUtils.htmlEscaped(attr.getValue().toString()):null;
+    
+    if( hlValue )  
+     strV = highlight( hlighter, strV );
+
     obj.addAttribute(strN, strV, attr.getAgeElClass().isCustom(), attr.getOrder());
    }
   }
@@ -1105,8 +1112,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    sb.setLength(0);
    
-   if( gobj.getId().equals("SAME316677") )
-    System.out.println("Hello");
+//   if( gobj.getId().equals("SAME316677") )
+//    System.out.println("Hello");
    
    for( AgeAttribute attr : gobj.getAttributes() )
    {
@@ -1161,7 +1168,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   
   
-  ImprintBuilder iBld = new ImprintBuilder();
+  ImprintBuilder iBld = new ImprintBuilder( htmlEscProc, htmlEscProc, null, null);
   
   for( AgeObject smpl : samples )
   {
@@ -1260,7 +1267,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     {
      ((uk.ac.ebi.age.ui.shared.imprint.StringValue)v).setValue( highlight(hlite, v.getStringValue() ) );
      
-     highlightAttributedImprint( hlite, v);
+     highlightAttributedImprint( hlite, v );
     }
    }
    else if( atImp.getClassImprint().getType() == uk.ac.ebi.age.ui.shared.imprint.ClassType.ATTR_OBJECT )
@@ -1355,7 +1362,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  @Override
  public SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count) throws MaintenanceModeException
  {
-  if( query.trim().length() == 0 )
+  if( query != null && query.trim().length() == 0 )
    query = null;
   
   Highlighter highlighter = null;
