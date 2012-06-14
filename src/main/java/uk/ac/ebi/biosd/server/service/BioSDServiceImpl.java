@@ -1649,13 +1649,30 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  }
 
  @Override
- public void exportData( PrintWriter out )
+ public void exportData( PrintWriter out, String[] grps )
  {
   
   out.println("<Biosamples>");
   
   for( AgeObject ao : groupsIndex.getObjectList() )
   {
+   if( grps != null )
+   {
+    boolean ok=false;
+    
+    for( String grp : grps )
+    {
+     if( ao.getId().equals(grp) )
+     {
+      ok = true;
+      break;
+     }
+    }
+    
+    if( !ok )
+     continue;
+   }
+   
    String grpId = StringUtils.htmlEscaped(ao.getId());
    
    out.print("<SampleGroup id=\"");

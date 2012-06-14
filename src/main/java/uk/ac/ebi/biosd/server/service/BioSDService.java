@@ -37,7 +37,7 @@ public abstract class BioSDService
 
  public abstract BioSDStat getStatistics();
 
- public abstract void exportData(PrintWriter out);
+ public abstract void exportData(PrintWriter out, String[] grpLst);
 
  public abstract AgeObject getSample(String sampleId) throws MaintenanceModeException;
 

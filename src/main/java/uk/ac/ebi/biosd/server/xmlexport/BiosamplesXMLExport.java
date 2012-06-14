@@ -37,10 +37,17 @@ public class BiosamplesXMLExport extends ServiceServlet
    return;
   }
   
+  String groupIds = req.getParameter("group");
+  
+  String[] grpLst = null;
+  
+  if( groupIds != null )
+   grpLst = groupIds.split(";");
+  
   resp.setContentType("text/xml; charset=UTF-8");
   resp.setHeader("Content-Disposition", "attachment; filename=\"biosamples.xml\"");
 
-  biosd.exportData( resp.getWriter() );
+  biosd.exportData( resp.getWriter(), grpLst );
  }
 
 }
