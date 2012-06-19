@@ -21,7 +21,7 @@ public class ObjectViewPanelHTML extends HTMLFlow
 
     String rowSpan = "";
 
-    if(at.getClassImprint().getType() != ClassType.ATTR_OBJECT)
+    if(at.getClassImprint().getType() == ClassType.ATTR_OBJECT)
     {
      if(((ObjectValue) atv).getObjectImprint() != null && ((ObjectValue) atv).getObjectImprint().getAttributes() != null)
       rowSpan = " rowspan='" + (((ObjectValue) atv).getObjectImprint().getAttributes().size()) + "'";
@@ -33,11 +33,10 @@ public class ObjectViewPanelHTML extends HTMLFlow
 
     if(at.getClassImprint().getType() != ClassType.ATTR_OBJECT)
      html += "<td colspan='2' style='qualifierValue'>" + val + "</td>";
+    else if(((ObjectValue) atv).getObjectImprint() == null || ((ObjectValue) atv).getObjectImprint().getAttributes() == null)
+     html += "<td colspan='2' style='qualifierValue'>" + ((ObjectValue) atv).getTargetObjectId() + "</td>";
     else
     {
-     if(((ObjectValue) atv).getObjectImprint() == null || ((ObjectValue) atv).getObjectImprint().getAttributes() == null)
-      html += "<td colspan='2' style='qualifierValue'>" + ((ObjectValue) atv).getTargetObjectId() + "</td>";
-
      boolean first = true;
 
      for(AttributeImprint obat : ((ObjectValue) atv).getObjectImprint().getAttributes())

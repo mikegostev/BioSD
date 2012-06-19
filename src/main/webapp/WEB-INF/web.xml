@@ -23,19 +23,18 @@
   <servlet>
     <description>
   	</description>
-    <display-name>AgeAdminServiceImpl</display-name>
-    <servlet-name>AgeAdminServiceImpl</servlet-name>
-    <servlet-class>
-  	uk.ac.ebi.age.admin.server.service.AgeAdminServiceImpl</servlet-class>
+    <display-name>AgeAdminProxy</display-name>
+    <servlet-name>AgeAdminProxy</servlet-name>
+    <servlet-class>uk.ac.ebi.age.admin.server.service.AgeAdminProxy</servlet-class>
   </servlet>
 
   <servlet>
     <description>
   	</description>
-    <display-name>UploadSvc</display-name>
-    <servlet-name>UploadSvc</servlet-name>
+    <display-name>RemoteSvc</display-name>
+    <servlet-name>RemoteSvc</servlet-name>
     <servlet-class>
-  	uk.ac.ebi.age.admin.server.service.UploadSvc</servlet-class>
+  	uk.ac.ebi.age.admin.server.service.RemoteSvc</servlet-class>
   </servlet>
 
   <servlet>
@@ -108,13 +107,14 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>AgeAdminServiceImpl</servlet-name>
+    <servlet-name>AgeAdminProxy</servlet-name>
     <url-pattern>/admin/ageAdminGWT</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>UploadSvc</servlet-name>
+    <servlet-name>RemoteSvc</servlet-name>
     <url-pattern>/upload</url-pattern>
+    <url-pattern>/remote</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

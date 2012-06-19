@@ -205,7 +205,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   sampleConvHint.setConvertRelations(false);
   sampleConvHint.setConvertAttributes(true);
   sampleConvHint.setQualifiersDepth(2);
-  sampleConvHint.setResolveObjectAttributesTarget(false);
+  sampleConvHint.setResolveObjectAttributesTarget(true);
   
   ClassNameExpression clsExp = new ClassNameExpression();
   clsExp.setClassName( BioSDConfigManager.SAMPLEGROUP_CLASS_NAME );

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="BioSD" default="dist" basedir=".">
+<project name="BioSD" default="dist" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 	<description>BioSample Database</description>
 	<!-- set global properties for this build -->
 
@@ -139,5 +139,26 @@
 		</sync>
 
 	</target>
+	
+	 <target name="deps" description="download dependences jars" >
+
+	 	<artifact:dependencies filesetId="dependency.fileset">
+
+			<dependency
+				groupId="org.apache.lucene"
+				artifactId="lucene-highlighter"
+				version="[3.0.1,)"
+			/>
+	 	</artifact:dependencies>
+
+
+	 	<copy todir="lib">
+	 	  <fileset refid="dependency.fileset" />
+	 	  <!-- This mapper strips off all leading directory information -->
+	 	  <mapper type="flatten" />
+	 	</copy>
+
+
+	 </target>
 
 </project>
