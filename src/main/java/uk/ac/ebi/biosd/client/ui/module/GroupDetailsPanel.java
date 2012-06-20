@@ -7,6 +7,7 @@ import java.util.Map;
 
 import uk.ac.ebi.age.ui.client.LinkClickListener;
 import uk.ac.ebi.age.ui.client.LinkManager;
+import uk.ac.ebi.age.ui.client.module.ObjectImprintViewerWindow;
 import uk.ac.ebi.age.ui.client.module.PagingRuler;
 import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
@@ -754,7 +755,8 @@ public class GroupDetailsPanel extends VLayout
      return;
     }
     
-    new SampleViewer(header, event.getRecord()).show();
+    new ObjectImprintViewerWindow( sample ).show();
+//    new SampleViewer(header, event.getRecord()).show();
    }
   });
 

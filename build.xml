@@ -123,6 +123,10 @@
 	<target name="syncRes">
 
 		<sync todir="war" verbose="true">
+			<fileset dir="${AGEVisual}/src/main/webapp">
+				<exclude name="META-INF/"/>
+				<exclude name="WEB-INF/"/>
+			</fileset>
 			<fileset dir="${AGEAdmin}/war">
 				<exclude name="META-INF/"/>
 				<exclude name="WEB-INF/"/>
