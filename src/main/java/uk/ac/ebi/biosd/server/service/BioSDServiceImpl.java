@@ -62,7 +62,6 @@ import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectValue;
 import uk.ac.ebi.age.ui.shared.imprint.Value;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
-import uk.ac.ebi.biosd.client.query.AttributedObject;
 import uk.ac.ebi.biosd.client.query.GroupImprint;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
@@ -342,117 +341,127 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
  private void collectStats()
  {
-  AgeAttributeClass pubsClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.PUBLICATIONS_ATTR_CLASS_NAME );
-  AgeAttributeClass pubMedIdClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.PUBMEDID_ATTR_CLASS_NAME );
-  AgeAttributeClass pubDOIClass = storage.getSemanticModel().getDefinedAgeAttributeClass( BioSDConfigManager.PUBDOI_ATTR_CLASS_NAME );
-  
-  Map<String,String> pubMedMap = new HashMap<String, String>();
-  Map<String,String> doiMap = new HashMap<String, String>();
-  
-  statistics = new BioSDStat();
-  
-  List<? extends AgeObject> groupList = groupsIndex.getObjectList();
-  
-  statistics.setGroups( groupList.size() );
-  
-  int refGrp = 0;
-  
-  for( AgeObject grp : groupList )
+  try
   {
-   Collection<? extends AgeAttribute> ref = grp.getAttributesByClass(referenceAttributeClass, false);
+   storage.lockRead();
 
-   boolean isRef = ref != null && ref.size() > 0 && ref.iterator().next().getValueAsBoolean();
-   
-   if( isRef )
-    refGrp++;
-   
-   int samples = 0;
-   for( AgeRelation rel : grp.getRelations() )
-   {
-    if( rel.getAgeElClass() == groupToSampleRelClass )
-     samples++;
-   }
-   
-//   Collection<? extends AgeRelation> smpRels = grp.getRelationsByClass(groupToSampleRelClass, true);
-//   
-//   
-//   if( smpRels != null )
-//    samples = smpRels.size();
-   
-   statistics.addSamples( samples );
-   
-   if( isRef )
-    statistics.addRefSamples( samples );
+   AgeAttributeClass pubsClass = storage.getSemanticModel().getDefinedAgeAttributeClass(BioSDConfigManager.PUBLICATIONS_ATTR_CLASS_NAME);
+   AgeAttributeClass pubMedIdClass = storage.getSemanticModel().getDefinedAgeAttributeClass(BioSDConfigManager.PUBMEDID_ATTR_CLASS_NAME);
+   AgeAttributeClass pubDOIClass = storage.getSemanticModel().getDefinedAgeAttributeClass(BioSDConfigManager.PUBDOI_ATTR_CLASS_NAME);
 
-   Object dsVal = grp.getAttributeValue(dataSourceAttributeClass);
-   
-   String ds = null;
-   
-   if( dsVal != null )
-    ds = dsVal.toString();
-   
-   if( ds != null )
+   Map<String, String> pubMedMap = new HashMap<String, String>();
+   Map<String, String> doiMap = new HashMap<String, String>();
+
+   statistics = new BioSDStat();
+
+   List< ? extends AgeObject> groupList = groupsIndex.getObjectList();
+
+   statistics.setGroups(groupList.size());
+
+   int refGrp = 0;
+
+   for(AgeObject grp : groupList)
    {
-    BioSDStat dsStat = statistics.getDataSourceStat( ds );
-    dsStat.addGroups(1);
-    dsStat.addSamples(samples);
-    
-    if( isRef )
-     dsStat.addRefSamples( samples );
-   }
-   
-   Collection<? extends AgeAttribute> pubs = grp.getAttributesByClass(pubsClass, false);
-   
-   if( pubs != null )
-   {
-    for( AgeAttribute pub : pubs )
+    Collection< ? extends AgeAttribute> ref = grp.getAttributesByClass(referenceAttributeClass, false);
+
+    boolean isRef = ref != null && ref.size() > 0 && ref.iterator().next().getValueAsBoolean();
+
+    if(isRef)
+     refGrp++;
+
+    int samples = 0;
+    for(AgeRelation rel : grp.getRelations())
     {
-     AgeObject pubObj = ((AgeObjectAttribute)pub).getValue();
-     
-     Object val = pubObj.getAttributeValue(pubMedIdClass);
-     
-     String pmId = null;
-     
-     if( val == null )
-      pmId = null;
-     else
-     {
-      pmId = val.toString();
-      
-      if( pmId.length() == 0 )
-       pmId=null;
-     }
-     
-     val = pubObj.getAttributeValue(pubDOIClass);
-     
-     String doi = null;
-     
-     if( val == null )
-      doi = null;
-     else
-     {
-      doi = val.toString();
-      
-      if( doi.length() == 0 )
-       doi=null;
-     }
-    
-     if( pmId != null )
-      pubMedMap.put(pmId, doi);
+     if(rel.getAgeElClass() == groupToSampleRelClass)
+      samples++;
+    }
 
-     if( doi != null && doiMap.get(doi) == null )
-      doiMap.put(doi,pmId);
+    //    Collection<? extends AgeRelation> smpRels = grp.getRelationsByClass(groupToSampleRelClass, true);
+    //    
+    //    
+    //    if( smpRels != null )
+    //     samples = smpRels.size();
+
+    statistics.addSamples(samples);
+
+    if(isRef)
+     statistics.addRefSamples(samples);
+
+    Object dsVal = grp.getAttributeValue(dataSourceAttributeClass);
+
+    String ds = null;
+
+    if(dsVal != null)
+     ds = dsVal.toString();
+
+    if(ds != null)
+    {
+     BioSDStat dsStat = statistics.getDataSourceStat(ds);
+     dsStat.addGroups(1);
+     dsStat.addSamples(samples);
+
+     if(isRef)
+      dsStat.addRefSamples(samples);
+    }
+
+    Collection< ? extends AgeAttribute> pubs = grp.getAttributesByClass(pubsClass, false);
+
+    if(pubs != null)
+    {
+     for(AgeAttribute pub : pubs)
+     {
+      AgeObject pubObj = ((AgeObjectAttribute) pub).getValue();
+
+      Object val = pubObj.getAttributeValue(pubMedIdClass);
+
+      String pmId = null;
+
+      if(val == null)
+       pmId = null;
+      else
+      {
+       pmId = val.toString();
+
+       if(pmId.length() == 0)
+        pmId = null;
+      }
+
+      val = pubObj.getAttributeValue(pubDOIClass);
+
+      String doi = null;
+
+      if(val == null)
+       doi = null;
+      else
+      {
+       doi = val.toString();
+
+       if(doi.length() == 0)
+        doi = null;
+      }
+
+      if(pmId != null)
+       pubMedMap.put(pmId, doi);
+
+      if(doi != null && doiMap.get(doi) == null)
+       doiMap.put(doi, pmId);
+     }
     }
    }
+
+   int doiCount = 0;
+   for(Map.Entry<String, String> me : doiMap.entrySet())
+    if(me.getValue() == null)
+     doiCount++;
+
+   statistics.setRefGroups(refGrp);
+   statistics.setPublications(pubMedMap.size() + doiCount);
   }
-  
-  int doiCount = 0;
-  for( Map.Entry<String, String> me : doiMap.entrySet() )
-   if( me.getValue() == null )
-    doiCount++;
-  
-  statistics.setRefGroups(refGrp);
-  statistics.setPublications( pubMedMap.size() + doiCount );
+  finally
+  {
+   storage.unlockRead();
+  }
+
  }
  
  @Override
@@ -552,82 +561,55 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   assert log.debug("Query: "+lucQuery);
   
-  
-  
-  List<AgeObject> sel = groupsIndex.select( lucQuery );
-  
-  int nSmp = 0;
-  
-  for( AgeObject go : sel )
-  {
-   Collection<?> smps =  go.getRelationsByClass(groupToSampleRelClass, false);
-   
-   if( smps != null )
-    nSmp+=smps.size();
-  }
-  
-  List<GroupImprint> res = new ArrayList<GroupImprint>();
-  
-  int lim = offset+count;
-  
-  if( lim > sel.size() )
-   lim=sel.size();
-  
-  for( int i=offset; i< lim; i++ )
-  {
-   GroupImprint gr = createGroupObject(sel.get(i), searchGrp? highlighter: null, searchAttrNm, searchAttrVl);
-   
-   if( searchSmp && query.length() > 0 )
-   {
-    sb.setLength(qLen);
-   
-    sb.append(" AND "+BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(gr.getId());
-    gr.setMatchedCount( samplesIndex.count( sb.toString() ) );
-   }
-   
-   res.add(gr);
-  }
-  
-//  Map<AgeObject,ObjectReport> repMap = new HashMap<AgeObject, ObjectReport>();
-//  
-//  for( AgeObject obj : sel )
-//  {
-//   if( obj.getAgeElClass() == sampleClass && searchSmp )
-//   {
-//    AgeObject grpObj = getGroupForSample(obj);
-//    
-//    if( grpObj == null )
-//     continue;
-//    
-//    ObjectReport sgRep = repMap.get(grpObj);
-//    
-//    if( sgRep == null )
-//    {
-//     sgRep = createGroupObject(grpObj);
-//     
-//     repMap.put(grpObj, sgRep);
-//     res.add(sgRep);
-//    }
-//    
-//    sgRep.addMatchedSample( obj.getId() );
-//   }
-//   else if( obj.getAgeElClass() == groupClass && searchGrp )
-//   {
-//    ObjectReport sgRep = repMap.get(obj);
-//    
-//    if( sgRep == null )
-//    {
-//     sgRep = createGroupObject(obj);
-//
-//     repMap.put(obj, sgRep);
-//     res.add(sgRep);
-//    }
-//   }
-//  }
+  List<AgeObject> sel = null;
   Report rep = new Report();
-  rep.setObjects(res);
-  rep.setTotalGroups(sel.size());
-  rep.setTotalSamples(nSmp);
+  
+  try
+  {
+   storage.lockRead();
+
+   sel = groupsIndex.select(lucQuery, offset, count);
+
+   int nSmp = 0;
+
+   for(AgeObject go : sel)
+   {
+    Collection< ? > smps = go.getRelationsByClass(groupToSampleRelClass, false);
+
+    if(smps != null)
+     nSmp += smps.size();
+   }
+
+   List<GroupImprint> res = new ArrayList<GroupImprint>();
+
+   //  int lim = offset+count;
+
+   if(count > sel.size())
+    count = sel.size();
+
+   for(int i = 0; i < count; i++)
+   {
+    GroupImprint gr = createGroupObject(sel.get(i), searchGrp ? highlighter : null, searchAttrNm, searchAttrVl);
+
+    if(searchSmp && query.length() > 0)
+    {
+     sb.setLength(qLen);
+
+     sb.append(" AND " + BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(gr.getId());
+     gr.setMatchedCount(samplesIndex.count(sb.toString()));
+    }
+
+    res.add(gr);
+   }
+
+   rep.setObjects(res);
+   rep.setTotalGroups(sel.size());
+   rep.setTotalSamples(nSmp);
+  }
+  finally
+  {
+   storage.unlockRead();
+  }
   
   return rep;
  }
@@ -1283,6 +1265,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
 
+ /*
  private AttributedObject convertAttributed( Attributed obj, Highlighter hlite, boolean hlNm, boolean hlVl  )
  {
   AttributedObject objAttr = new AttributedObject();
@@ -1357,7 +1340,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 //  
 //  biosdAttr.setQualifiers(bioQl);
 // }
- 
+*/
  
  @Override
  public SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count) throws MaintenanceModeException
@@ -1386,44 +1369,53 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( maintenanceMode )
    throw new MaintenanceModeException();
 
-  
-  AgeObject grpObj = storage.getGlobalObject(grpID);
-  
-  if( grpObj == null )
-   return null;
-  
-  List<AgeObject> res = new ArrayList<AgeObject>(count);
-  
-  int total=0;
-  
-  for( AgeRelation rel : grpObj.getRelations() )
+  try
   {
-   if( rel.getAgeElClass() == groupToSampleRelClass )
-   {
-    total++;
-    
-    if( offset > 0 )
-    {
-     offset--;
-     continue;
-    }
- 
-    if( count == 0 )
-     continue;
+   storage.lockRead();
+
+   AgeObject grpObj = storage.getGlobalObject(grpID);
    
-    count--;
-    
-    res.add(rel.getTargetObject());
-    
+   if( grpObj == null )
+    return null;
+   
+   List<AgeObject> res = new ArrayList<AgeObject>(count);
+   
+   int total=0;
+   
+   for( AgeRelation rel : grpObj.getRelations() )
+   {
+    if( rel.getAgeElClass() == groupToSampleRelClass )
+    {
+     total++;
+     
+     if( offset > 0 )
+     {
+      offset--;
+      continue;
+     }
+     
+     if( count == 0 )
+      continue;
+     
+     count--;
+     
+     res.add(rel.getTargetObject());
+     
+    }
    }
+   
+   SampleList sl = createSampleReport(res, highlighter, searchAtNames, searchAtValues);
+   sl.setTotalRecords(total);
+   
+   return sl;
   }
-  
-  SampleList sl = createSampleReport(res, highlighter, searchAtNames, searchAtValues);
-  sl.setTotalRecords(total);
-  
-  return sl;
+  finally
+  {
+   storage.unlockRead();
+  }
  }
  
+/* 
  public Report getSamplesByGroupX(String grpID, int offset, int count)
  {
   AgeObject grpObj = storage.getGlobalObject(grpID);
@@ -1484,6 +1476,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   return rep;
  }
+*/
 
  
  @Override
@@ -1529,21 +1522,28 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
   
   sb.append(" ) AND ").append(BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(grpId);
-  
-  List<AgeObject> sel = samplesIndex.select( sb.toString() );
-  
- 
-  if( offset > sel.size())
-   return null;
-  
-  int end = (offset+count) > sel.size()? sel.size() : (offset+count); 
-  
-  SampleList lst = createSampleReport( sel.subList(offset, end), highlighter, searchAttrNm, searchAttrVl );
-  lst.setTotalRecords(sel.size());
-  
-  return lst;
+
+  try
+  {
+   storage.lockRead();
+
+   List<AgeObject> sel = samplesIndex.select( sb.toString(), offset, count );
+   
+   
+//   int end = count > sel.size()? sel.size() : count; 
+   
+   SampleList lst = createSampleReport( sel, highlighter, searchAttrNm, searchAttrVl );
+   lst.setTotalRecords(sel.size());
+   
+   return lst;
+  }
+  finally
+  {
+   storage.unlockRead();
+  }
  }
- 
+
+ /*
  public Report getSamplesByGroupAndQueryX(String grpId, String query, boolean searchAttrNm, boolean searchAttrVl, int offset, int count)
  {
   StringBuilder sb = new StringBuilder();
@@ -1607,89 +1607,66 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    res.add(sampRep);
   }
   
-//  for( AgeObject obj : sel )
-//  {
-//   if( obj.getAgeElClass() == sampleClass )
-//   {
-//    AgeObject grpObj = getGroupForSample(obj);
-//    
-//    if( grpObj == null || ! grpObj.getId().equals(grpId)  )
-//     continue;
-//    
-//    ObjectReport sampRep = new ObjectReport();
-//
-//     sampRep.setId( obj.getId() );
-//
-//     sampRep.addAttribute("ID", obj.getId(), true, 0);
-//     
-//     Object descVal = obj.getAttributeValue(desciptionAttributeClass);
-//     sampRep.setDescription( descVal!=null?descVal.toString():null );
-//     
-//     for( AgeAttribute atr : obj.getAttributes() )
-//     {
-//      String attrname = atr.getAgeElClass().getName();
-//
-//      sampRep.addAttribute(attrname, atr.getValue().toString(), atr.getAgeElClass().isCustom(),atr.getOrder());
-//
-//      if( atr.getQualifiers() != null )
-//      {
-//       for( AgeAttribute qlf  : atr.getQualifiers() )
-//        sampRep.addAttribute( attrname+"["+qlf.getAgeElClass().getName()+"]", qlf.getValue().toString(), atr.getAgeElClass().isCustom(), qlf.getOrder());
-//      }
-//
-//     }
-//     res.add(sampRep);
-//   }
-//  }
   Report rep = new Report();
   rep.setObjects(res);
   rep.setTotalGroups(total);
   
   return rep;
  }
-
+*/
+ 
  @Override
  public void exportData( PrintWriter out, String[] grps )
  {
-  
+
   out.println("<Biosamples>");
-  
-  for( AgeObject ao : groupsIndex.getObjectList() )
+
+  try
   {
-   if( grps != null )
+   storage.lockRead();
+
+   for(AgeObject ao : groupsIndex.getObjectList())
    {
-    boolean ok=false;
-    
-    for( String grp : grps )
+    if(grps != null)
     {
-     if( ao.getId().equals(grp) )
+     boolean ok = false;
+
+     for(String grp : grps)
      {
-      ok = true;
-      break;
+      if(ao.getId().equals(grp))
+      {
+       ok = true;
+       break;
+      }
      }
+
+     if(!ok)
+      continue;
     }
-    
-    if( !ok )
-     continue;
+
+    String grpId = StringUtils.htmlEscaped(ao.getId());
+
+    out.print("<SampleGroup id=\"");
+    out.print(grpId);
+    out.println("\">");
+
+    exportAttributed(ao, out);
+
+    for(AgeRelation rel : ao.getRelations())
+    {
+     if(rel.getAgeElClass() == groupToSampleRelClass)
+      exportSample(rel.getTargetObject(), grpId, out);
+    }
+
+    out.println("</SampleGroup>");
    }
-   
-   String grpId = StringUtils.htmlEscaped(ao.getId());
-   
-   out.print("<SampleGroup id=\"");
-   out.print(grpId);
-   out.println("\">");
-   
-   exportAttributed( ao, out );
-   
-   for( AgeRelation rel : ao.getRelations() )
-   {
-    if( rel.getAgeElClass() == groupToSampleRelClass )
-     exportSample( rel.getTargetObject(), grpId, out );
-   }
-   
-   out.println("</SampleGroup>");
+
   }
-  
+  finally
+  {
+   storage.unlockRead();
+  }
+
   out.println("</Biosamples>");
 
  }
@@ -1808,13 +1785,22 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( maintenanceMode )
    throw new MaintenanceModeException();
 
-  
-  AgeObject smpObj = storage.getGlobalObject(sampleId);
-  
-  if( smpObj == null || ! smpObj.getAgeElClass().isClassOrSubclass(sampleClass) )
-   return null;
-  
-  return smpObj;
+
+  try
+  {
+   storage.lockRead();
+
+   AgeObject smpObj = storage.getGlobalObject(sampleId);
+   
+   if( smpObj == null || ! smpObj.getAgeElClass().isClassOrSubclass(sampleClass) )
+    return null;
+   
+   return smpObj;
+  }
+  finally
+  {
+   storage.unlockRead();
+  }
  }
 
  @Override
@@ -1823,13 +1809,21 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( maintenanceMode )
    throw new MaintenanceModeException();
 
-  
-  AgeObject smpObj = storage.getGlobalObject(groupId);
-  
-  if( smpObj == null || ! smpObj.getAgeElClass().isClassOrSubclass(groupClass) )
-   return null;
-  
-  return smpObj;
+  try
+  {
+   storage.lockRead();
+   
+   AgeObject smpObj = storage.getGlobalObject(groupId);
+   
+   if( smpObj == null || ! smpObj.getAgeElClass().isClassOrSubclass(groupClass) )
+    return null;
+   
+   return smpObj;
+  }
+  finally
+  {
+   storage.unlockRead();
+  }
  }
 
  private static class Int
