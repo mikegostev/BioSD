@@ -113,6 +113,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
  private ImprintingHint sampleConvHint;
  
+
  private static class GroupKey
  {
   String grpName;
@@ -301,7 +302,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    throw new BioSDInitException("Init failed. Can't create group index",e);
   }
   
-  assert log.info("Indices building time: "+StringUtils.millisToString(System.currentTimeMillis()-startTime)+" Tag extraction: "+tagExtr.getTime()+"ms. Owner extraction: "+tagExtr.getTime()+"ms");
+  assert log.info("Indices building time: "+StringUtils.millisToString(System.currentTimeMillis()-startTime));
 
   
   
@@ -854,54 +855,36 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class TagsExtractor implements TextValueExtractor
  {
-  private StringBuilder sb = new StringBuilder();
   private PermissionManager permMngr = Configuration.getDefaultConfiguration().getPermissionManager();
 
-  private long execTime=0;
-  
   @Override
   public String getValue(AgeObject ao)
   {
-   long startTime=0;
-   
-   assert (startTime=System.currentTimeMillis()) > 0 || true ;
    
    Collection<TagRef> tags = permMngr.getEffectiveTags( ao );
    
    if( tags == null )
     return "";
    
-   sb.setLength(0);
+   StringBuilder sb = new StringBuilder();
    
    for( TagRef tr : tags )
     sb.append(tr.getClassiferName().length()).append(tr.getClassiferName()).append(tr.getTagName()).append(" ");
     
    String val = sb.toString(); 
    
-   assert ( execTime += (System.currentTimeMillis()-startTime)  ) > 0 || true ;
-     
    return val;
   }
   
-  public long getTime()
-  {
-   return execTime;
-  }
  }
  
  class OwnerExtractor implements TextValueExtractor
  {
-  private long execTime=0;
-
   private AnnotationManager annorMngr = Configuration.getDefaultConfiguration().getAnnotationManager();
 
   @Override
   public String getValue(AgeObject ao)
   {
-   long startTime=0;
-   
-   assert (startTime=System.currentTimeMillis()) > 0 || true ;
-
    Entity entId = ao;
    
    String own = null;
@@ -931,26 +914,18 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
     if( own == null )
      own = "";
    }
-   assert ( execTime += (System.currentTimeMillis()-startTime)  ) > 0 || true ;
 
    return own;
   }
   
-  public long getTime()
-  {
-   return execTime;
-  }
-
  }
  
  class AttrValuesExtractor implements TextValueExtractor
  {
-  StringBuilder sb = new StringBuilder();
-  Set<String> tokSet = new HashSet<String>();
- 
   public String getValue(AgeObject gobj)
   {
-   sb.setLength(0);
+   StringBuilder sb = new StringBuilder();
+   Set<String> tokSet = new HashSet<String>();;
    
    for( AgeAttribute attr : gobj.getAttributes() )
    {
@@ -975,21 +950,20 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for( String tk : tokSet )
     sb.append( tk ).append(' ');
     
-   tokSet.clear();  
-     
-   return sb.toString();
+    
+   String res = sb.toString();
+   
+   return res;
   }
  }
  
  class SampleAttrValuesExtractor implements TextValueExtractor
  {
-  StringBuilder sb = new StringBuilder();
-  Set<String> tokSet = new HashSet<String>();
- 
   public String getValue(AgeObject gobj)
   {
-   sb.setLength(0);
-   
+   StringBuilder sb = new StringBuilder();
+   Set<String> tokSet = new HashSet<String>();;
+  
    for(AgeRelation rel : gobj.getRelations())
    {
     if(rel.getAgeElClass() == groupToSampleRelClass)
@@ -1021,15 +995,15 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for( String tk : tokSet )
     sb.append( tk ).append(' ');
 
-   tokSet.clear();
-   return sb.toString();
+   
+   String res = sb.toString();
+   
+   return res;
   }
  }
  
  class RefGroupExtractor implements TextValueExtractor
  {
-  StringBuilder sb = new StringBuilder();
-
   public String getValue(AgeObject gobj)
   {
    for( AgeAttribute attr : gobj.getAttributes() )
@@ -1044,9 +1018,6 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class SampleAttrNamesExtractor implements TextValueExtractor
  {
-  StringBuilder sb = new StringBuilder();
-  Set<String> tokSet = new HashSet<String>();
-
   public String getValue(AgeObject gobj)
   {
 
@@ -1055,8 +1026,9 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    if(rels == null)
     return "";
 
-   sb.setLength(0);
-   
+   StringBuilder sb = new StringBuilder();
+   Set<String> tokSet = new HashSet<String>();
+
    for(AgeRelation rel : rels)
    {
     if(rel.getAgeElClass() == groupToSampleRelClass)
@@ -1079,23 +1051,19 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for( String tk : tokSet )
     sb.append( tk ).append(' ');
 
-   tokSet.clear();
-
-   return sb.toString();
+   String res = sb.toString();
+   
+   return res;
   }
  }
 
  class AttrNamesExtractor implements TextValueExtractor
  {
-  StringBuilder sb = new StringBuilder();
-  Set<String> tokSet = new HashSet<String>();
 
   public String getValue(AgeObject gobj)
   {
-   sb.setLength(0);
-   
-//   if( gobj.getId().equals("SAME316677") )
-//    System.out.println("Hello");
+   StringBuilder sb = new StringBuilder();
+   Set<String> tokSet = new HashSet<String>();;
    
    for( AgeAttribute attr : gobj.getAttributes() )
    {
@@ -1112,10 +1080,9 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for( String tk : tokSet )
     sb.append( tk ).append(' ');
 
-   tokSet.clear();
-
+   String res = sb.toString();
    
-   return sb.toString();
+   return res;
   }
  }
  
@@ -1826,8 +1793,4 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
 
- private static class Int
- {
-  int value;
- }
 }
