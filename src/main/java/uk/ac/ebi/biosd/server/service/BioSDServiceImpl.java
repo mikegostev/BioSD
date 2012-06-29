@@ -1594,6 +1594,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
    for(AgeObject ao : groupsIndex.getObjectList())
    {
+    Set<AgeAttributeClass> attrset = new HashSet<AgeAttributeClass>();
+    
     if(grps != null)
     {
      boolean ok = false;
@@ -1611,20 +1613,31 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
       continue;
     }
 
-    String grpId = StringUtils.htmlEscaped(ao.getId());
+    String grpId = StringUtils.xmlEscaped(ao.getId());
 
     out.print("<SampleGroup id=\"");
     out.print(grpId);
     out.println("\">");
 
-    exportAttributed(ao, out);
+    exportAttributed(ao, out, null);
 
     for(AgeRelation rel : ao.getRelations())
     {
      if(rel.getAgeElClass() == groupToSampleRelClass)
-      exportSample(rel.getTargetObject(), grpId, out);
+      exportSample(rel.getTargetObject(), grpId, out, attrset);
     }
 
+    out.println("<SampleAttributes>");
+
+    for( AgeAttributeClass aac : attrset )
+    {
+     out.print("<attribute class=\"");
+     out.print(StringUtils.xmlEscaped(aac.getName()));
+     out.println("\" classDefined=\""+(aac.isCustom()?"false":"true")+"\" dataType=\""+aac.getDataType().name()+"\"/>");
+    }
+    
+    out.println("</SampleAttributes>");
+    
     out.println("</SampleGroup>");
    }
 
@@ -1638,31 +1651,34 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
  }
  
- private void exportAttributed( Attributed ao,PrintWriter out )
+ private void exportAttributed( Attributed ao,PrintWriter out, Set<AgeAttributeClass> atset )
  {
   for( AgeAttributeClass aac : ao.getAttributeClasses() )
   {
+   if( atset != null )
+    atset.add(aac);
+   
    out.print("<attribute class=\"");
-   out.print(StringUtils.htmlEscaped(aac.getName()));
+   out.print(StringUtils.xmlEscaped(aac.getName()));
    out.println("\" classDefined=\""+(aac.isCustom()?"false":"true")+"\" dataType=\""+aac.getDataType().name()+"\">");
 
    for( AgeAttribute attr : ao.getAttributesByClass(aac, false) )
    {
     out.println("<value>");
     
-    exportAttributed( attr, out );
+    exportAttributed( attr, out, null );
 
     if( aac.getDataType() != DataType.OBJECT )
-     out.print(StringUtils.htmlEscaped(attr.getValue().toString()));
+     out.print(StringUtils.xmlEscaped(attr.getValue().toString()));
     else
     {
      AgeObject tgtObj = (AgeObject)attr.getValue();
      
-     out.print("<object id=\""+StringUtils.htmlEscaped(tgtObj.getId())+"\" class=\"");
-     out.print(StringUtils.htmlEscaped(tgtObj.getAgeElClass().getName()));
+     out.print("<object id=\""+StringUtils.xmlEscaped(tgtObj.getId())+"\" class=\"");
+     out.print(StringUtils.xmlEscaped(tgtObj.getAgeElClass().getName()));
      out.println("\" classDefined=\""+(tgtObj.getAgeElClass().isCustom()?"false":"true")+"\">");
  
-     exportAttributed( tgtObj, out );
+     exportAttributed( tgtObj, out, null );
     
      out.println("</object>");
     }
@@ -1674,13 +1690,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
  
- private void exportSample( Attributed ao, String grpId, PrintWriter out )
+ private void exportSample( Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset )
  {
   out.print("<Sample id=\"");
-  out.print(StringUtils.htmlEscaped(ao.getId()));
+  out.print(StringUtils.xmlEscaped(ao.getId()));
   out.println("\" groupId=\"" +grpId +"\">");
 
-  exportAttributed( ao, out );
+  exportAttributed( ao, out, atset );
 
   
   out.println("</Sample>");
