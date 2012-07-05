@@ -44,6 +44,12 @@
 			<artifactId>admin</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>3.6.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
