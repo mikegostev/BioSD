@@ -206,3 +206,54 @@ span.sHL
 {
 	background-color: yellow;
 }
+
+table.objectView
+{
+	border: 1px solid black;
+	border-collapse: collapse 
+}
+
+table.objectValue, table.qualifiersEmbedded, table.objectEmbedded
+{
+	margin: 0;
+    border: none;
+	border-collapse: collapse 
+}
+
+table.objectView div.valueString
+{
+	padding: 2px
+}
+
+table.objectView td, table.objectValue td, table.qualifiersEmbedded td,  table.objectEmbedded td
+{
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	padding: 0;
+}
+
+
+
+table.objectView td.attrName
+{
+	padding: 2px;
+	text-align: right;
+	font-weight: bold;
+	background-color: #fffff0;
+	width: 1%;
+	white-space: nowrap;
+}
+
+tr.firstRow > td.firstCell
+{
+	border-top: none;
+	border-left: none;
+}
+
+
+tr.firstRow > td
+{
+	border-top: none;
+	border-left: 1px solid black;
+}
+
