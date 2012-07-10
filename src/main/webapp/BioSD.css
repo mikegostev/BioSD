@@ -257,3 +257,8 @@ tr.firstRow > td
 	border-left: 1px solid black;
 }
 
+table.qualifiersEmbedded div.valueString
+{
+	white-space: nowrap;
+}
+
