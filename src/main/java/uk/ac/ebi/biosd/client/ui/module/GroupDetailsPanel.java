@@ -601,13 +601,16 @@ public class GroupDetailsPanel extends VLayout
   
   fields[0] = new ListGridField("__num", "N" );
   fields[0].setWidth(25);
-
+  fields[0].setCanSort(false);
+  fields[0].setCanGroupBy(false);
   
   int i=1;
   for( ClassImprint cls : header )
   {
    fields[i] = new ListGridField(cls.getId(), cls.isCustom()?cls.getName():("<b>"+cls.getName()+"</b>") );
    fields[i].setShowHover(true);
+   fields[i].setCanSort(false);
+   fields[i].setCanGroupBy(false);
    
    if( cls.getName().equals("Pride ID") )
     prideKey = cls.getId();

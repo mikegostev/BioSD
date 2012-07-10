@@ -239,10 +239,23 @@ table.objectView td.attrName
 	padding: 2px;
 	text-align: right;
 	font-weight: bold;
-	background-color: #fffff0;
+	background-color: #a1c7c7;
 	width: 1%;
 	white-space: nowrap;
 }
+
+table.qualifiersEmbedded td.attrName
+{
+		background-color: #d1f7f7;
+	
+}
+
+table.objectEmbedded td.attrName
+{
+		background-color: #d1f7f7;
+	
+}
+
 
 tr.firstRow > td.firstCell
 {
