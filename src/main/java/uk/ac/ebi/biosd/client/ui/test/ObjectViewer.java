@@ -19,7 +19,7 @@ public class ObjectViewer extends Window
  
   int height = 0;
   
-  final int rowHeight = 28;
+  final int rowHeight = 22;
   
   for( AttributeImprint at : obj.getAttributes() )
   {
@@ -44,7 +44,7 @@ public class ObjectViewer extends Window
   if( height > MAX_HEIGHT )
    height = MAX_HEIGHT;
   
-  setHeight(height+10); 
+  setHeight(height+25); 
   setCanDragReposition(true);  
   setCanDragResize(true);  
   setShowMinimizeButton(false);

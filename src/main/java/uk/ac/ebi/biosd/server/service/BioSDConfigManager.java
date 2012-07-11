@@ -13,6 +13,7 @@ public class BioSDConfigManager extends AgeAdminConfigManager
  public static final String SAMPLE_NAME_FIELD_NAME = "sname";
  public static final String SAMPLE_VALUE_FIELD_NAME = "svalue";
  public static final String GROUP_NAME_FIELD_NAME = "gname";
+ public static final String GROUP_SAMPLES_FIELD_NAME = "smpcount";
  public static final String GROUP_VALUE_FIELD_NAME = "gvalue";
  public static final String GROUP_REFERENCE_FIELD_NAME = "gref";
  public static final String GROUP_ID_FIELD_NAME = "gid";

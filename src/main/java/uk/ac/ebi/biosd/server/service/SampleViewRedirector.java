@@ -14,10 +14,13 @@ import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.Session;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.model.AgeObject;
+import uk.ac.ebi.age.model.AgeRelation;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 
 public class SampleViewRedirector extends ServiceServlet
 {
+ public static final String formatParameter = "format";
+ public static final String sample2GroupRelation = "belongsTo";
 
  private static final long serialVersionUID = 1L;
 
@@ -68,6 +71,28 @@ public class SampleViewRedirector extends ServiceServlet
    return;
   }
    
+  String fmt = req.getParameter(formatParameter);
+  
+  if( fmt != null && "xml".equalsIgnoreCase(fmt) )
+  {
+   resp.setContentType("text/xml");
+   
+   String grpId = null;
+   
+   for( AgeRelation rel : sample.getRelations() )
+   {
+    if( sample2GroupRelation.equals( rel.getAgeElClass().getName() ) )
+    {
+     grpId = rel.getTargetObjectId();
+     break;
+    }
+   }
+   
+   biosd.exportSample(sample, grpId, resp.getWriter(), null);
+   
+   return;
+  }
+  
   RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/SampleViewer.jsp?");
   req.setAttribute("Object",sample);
   dispatcher.forward(req,resp);

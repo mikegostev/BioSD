@@ -49,6 +49,7 @@ import uk.ac.ebi.age.storage.DataChangeListener;
 import uk.ac.ebi.age.storage.MaintenanceModeListener;
 import uk.ac.ebi.age.storage.exeption.IndexIOException;
 import uk.ac.ebi.age.storage.index.KeyExtractor;
+import uk.ac.ebi.age.storage.index.Selection;
 import uk.ac.ebi.age.storage.index.SortedTextIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextIndex;
@@ -221,13 +222,14 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   TagsExtractor tagExtr = new TagsExtractor();
   OwnerExtractor ownExtr = new OwnerExtractor();
   
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new SampleAttrNamesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new SampleAttrValuesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor() ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, tagExtr ) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, ownExtr ) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new SampleAttrNamesExtractor()) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new SampleAttrValuesExtractor()) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor()) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor()) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor()) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, tagExtr));
+  extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, ownExtr) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_SAMPLES_FIELD_NAME, new SamplesCountExtractor(), true ) );
   
   assert ( startTime = System.currentTimeMillis() ) != 0;
 
@@ -562,35 +564,37 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   assert log.debug("Query: "+lucQuery);
   
-  List<AgeObject> sel = null;
+  Selection sel = null;
   Report rep = new Report();
   
   try
   {
    storage.lockRead();
 
-   sel = groupsIndex.select(lucQuery, offset, count);
+   sel = groupsIndex.select(lucQuery, offset, count, Collections.singletonList(BioSDConfigManager.GROUP_SAMPLES_FIELD_NAME));
 
    int nSmp = 0;
 
-   for(AgeObject go : sel)
-   {
-    Collection< ? > smps = go.getRelationsByClass(groupToSampleRelClass, false);
-
-    if(smps != null)
-     nSmp += smps.size();
-   }
+//   for(AgeObject go : sel)
+//   {
+//    Collection< ? > smps = go.getRelationsByClass(groupToSampleRelClass, false);
+//
+//    if(smps != null)
+//     nSmp += smps.size();
+//   }
 
    List<GroupImprint> res = new ArrayList<GroupImprint>();
 
    //  int lim = offset+count;
 
-   if(count > sel.size())
-    count = sel.size();
+   List<AgeObject> groups = sel.getObjects();
+   
+   if(count > groups.size())
+    count = groups.size();
 
    for(int i = 0; i < count; i++)
    {
-    GroupImprint gr = createGroupObject(sel.get(i), searchGrp ? highlighter : null, searchAttrNm, searchAttrVl);
+    GroupImprint gr = createGroupObject(groups.get(i), searchGrp ? highlighter : null, searchAttrNm, searchAttrVl);
 
     if(searchSmp && query.length() > 0)
     {
@@ -604,8 +608,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    }
 
    rep.setObjects(res);
-   rep.setTotalGroups(sel.size());
-   rep.setTotalSamples(nSmp);
+   rep.setTotalGroups(sel.getTotalCount());
+   rep.setTotalSamples(sel.getAggregator(BioSDConfigManager.GROUP_SAMPLES_FIELD_NAME));
   }
   finally
   {
@@ -1015,6 +1019,23 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    return "";
   }
  }
+ 
+ class SamplesCountExtractor implements TextValueExtractor
+ {
+  public String getValue(AgeObject gobj)
+  {
+   int count = 0;
+   
+   for( AgeRelation rel : gobj.getRelations() )
+   {
+    if( rel.getAgeElClass() == groupToSampleRelClass )
+     count++;
+   }
+   
+   return String.valueOf(count);
+  }
+ }
+
  
  class SampleAttrNamesExtractor implements TextValueExtractor
  {
@@ -1494,13 +1515,13 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    storage.lockRead();
 
-   List<AgeObject> sel = samplesIndex.select( sb.toString(), offset, count );
+   Selection sel = samplesIndex.select( sb.toString(), offset, count, null );
    
    
 //   int end = count > sel.size()? sel.size() : count; 
    
-   SampleList lst = createSampleReport( sel, highlighter, searchAttrNm, searchAttrVl );
-   lst.setTotalRecords(sel.size());
+   SampleList lst = createSampleReport( sel.getObjects(), highlighter, searchAttrNm, searchAttrVl );
+   lst.setTotalRecords(sel.getTotalCount());
    
    return lst;
   }
@@ -1690,7 +1711,8 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   }
  }
  
- private void exportSample( Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset )
+ @Override
+ public void exportSample( Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset )
  {
   out.print("<Sample id=\"");
   out.print(StringUtils.xmlEscaped(ao.getId()));

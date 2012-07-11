@@ -1,8 +1,11 @@
 package uk.ac.ebi.biosd.server.service;
 
 import java.io.PrintWriter;
+import java.util.Set;
 
+import uk.ac.ebi.age.model.AgeAttributeClass;
 import uk.ac.ebi.age.model.AgeObject;
+import uk.ac.ebi.age.model.Attributed;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
@@ -42,5 +45,7 @@ public abstract class BioSDService
  public abstract AgeObject getSample(String sampleId) throws MaintenanceModeException;
 
  public abstract AgeObject getGroup(String groupId) throws MaintenanceModeException;
+
+ public abstract void exportSample(Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset);
 
 }
