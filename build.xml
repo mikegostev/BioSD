@@ -102,7 +102,7 @@
 				<pathelement location="${AGEVisual}/src/main/java" />
 				<path refid="build.lib" />
 			</classpath>
-			<jvmarg value="-Xmx256M" />
+			<jvmarg value="-Xmx512M" />
 			<arg value="-war" />
 			<arg value="${build}" />
 			<arg value="uk.ac.ebi.biosd.BioSD" />

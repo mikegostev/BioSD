@@ -66,7 +66,21 @@ public class GroupViewRedirector extends ServiceServlet
    return;
   }
    
-  RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/GroupViewer.jsp?");
+  
+  String fmt = req.getParameter(BioSDConfigManager.FORMAT_PARAM);
+  
+  if( fmt != null && "xml".equalsIgnoreCase(fmt) )
+  {
+   resp.setContentType("text/xml");
+   
+   biosd.exportGroup(group, resp.getWriter());
+   
+   return;
+  }
+
+  
+  
+  RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/ObjectViewer.jsp?");
   req.setAttribute("Object",group);
   dispatcher.forward(req,resp);
 

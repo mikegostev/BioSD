@@ -19,9 +19,6 @@ import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 
 public class SampleViewRedirector extends ServiceServlet
 {
- public static final String formatParameter = "format";
- public static final String sample2GroupRelation = "belongsTo";
-
  private static final long serialVersionUID = 1L;
 
  @Override
@@ -35,7 +32,7 @@ public class SampleViewRedirector extends ServiceServlet
    return;
   }
   
-  System.out.println("SampleReq: "+req.getPathInfo());
+//  System.out.println("SampleReq: "+req.getPathInfo());
   
   String sampleId = null;
   
@@ -71,17 +68,19 @@ public class SampleViewRedirector extends ServiceServlet
    return;
   }
    
-  String fmt = req.getParameter(formatParameter);
+  String fmt = req.getParameter(BioSDConfigManager.FORMAT_PARAM);
   
   if( fmt != null && "xml".equalsIgnoreCase(fmt) )
   {
    resp.setContentType("text/xml");
    
+//   resp.getWriter().println("<?xml-stylesheet type=\"text/css\" href=\"samplexml.css\"?>");
+   
    String grpId = null;
    
    for( AgeRelation rel : sample.getRelations() )
    {
-    if( sample2GroupRelation.equals( rel.getAgeElClass().getName() ) )
+    if( BioSDConfigManager.SAMPLEINGROUP_REL_CLASS_NAME.equals( rel.getAgeElClass().getName() ) )
     {
      grpId = rel.getTargetObjectId();
      break;
@@ -93,7 +92,7 @@ public class SampleViewRedirector extends ServiceServlet
    return;
   }
   
-  RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/SampleViewer.jsp?");
+  RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/ObjectViewer.jsp?");
   req.setAttribute("Object",sample);
   dispatcher.forward(req,resp);
   

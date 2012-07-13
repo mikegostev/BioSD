@@ -7,13 +7,16 @@ import java.util.Map;
 
 import uk.ac.ebi.age.ui.client.LinkClickListener;
 import uk.ac.ebi.age.ui.client.LinkManager;
+import uk.ac.ebi.age.ui.client.ObjectProviderService;
 import uk.ac.ebi.age.ui.client.module.ObjectImprintViewerWindow;
 import uk.ac.ebi.age.ui.client.module.PagingRuler;
 import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectId;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
 import uk.ac.ebi.age.ui.shared.imprint.Value;
 import uk.ac.ebi.biosd.client.BioSDGWTService;
+import uk.ac.ebi.biosd.client.BioSDGWTServiceAsync;
 import uk.ac.ebi.biosd.client.query.AttributedImprint;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.AttributeReport;
@@ -55,6 +58,8 @@ public class GroupDetailsPanel extends VLayout
  private String query;
  private boolean searchAtNames;
  private boolean searchAtValues;
+ 
+ private ObjectProviderService objectSvc = new BioSDObjectProvider();
  
  private List< Pair<String, String> > otherInfoList;
  private Map<String, List<AttributedImprint> > attMap = new HashMap<String, List<AttributedImprint>>();
@@ -758,7 +763,7 @@ public class GroupDetailsPanel extends VLayout
      return;
     }
     
-    new ObjectImprintViewerWindow( sample ).show();
+    new ObjectImprintViewerWindow( sample, 1, objectSvc ).show();
 //    new SampleViewer(header, event.getRecord()).show();
    }
   });
@@ -774,4 +779,16 @@ public class GroupDetailsPanel extends VLayout
   
  }
 
+ private static class BioSDObjectProvider implements ObjectProviderService
+ {
+  private BioSDGWTServiceAsync biosd =  BioSDGWTService.Util.getInstance();
+  
+  @Override
+  public void getObject(ObjectId id, AsyncCallback<ObjectImprint> cb)
+  {
+   biosd.getObjectImprint( id, cb );
+  }
+  
+ }
+ 
 }

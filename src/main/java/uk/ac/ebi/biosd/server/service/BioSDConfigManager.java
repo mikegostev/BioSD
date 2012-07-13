@@ -34,6 +34,9 @@ public class BioSDConfigManager extends AgeAdminConfigManager
 
  public static final String SAMPLE_ACCS_ATTR_CLASS_NAME = "Sample Accession";
 
+ public static final String FORMAT_PARAM = "format";
+
+ 
  private static BioSDConfigManager instance = null;
  
  public BioSDConfigManager(ServletContext servletContext)

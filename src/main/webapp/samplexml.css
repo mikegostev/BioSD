@@ -1,0 +1,15 @@
+Sample
+{
+	display: table;
+	border: 1px solid black;
+}
+
+attribute 
+{
+	display: table-row;
+}
+
+value 
+{
+	display: table-cell;
+}

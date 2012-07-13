@@ -1,5 +1,8 @@
 package uk.ac.ebi.biosd.client;
 
+import uk.ac.ebi.age.ext.user.exception.NotAuthorizedException;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectId;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
@@ -39,6 +42,9 @@ public interface BioSDGWTService extends RemoteService
 
  SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offs, int count)
   throws MaintenanceModeException;
+
+
+ ObjectImprint getObjectImprint(ObjectId id) throws MaintenanceModeException, NotAuthorizedException;
 
 
 

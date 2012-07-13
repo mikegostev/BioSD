@@ -1,6 +1,9 @@
 package uk.ac.ebi.biosd.server.service;
 
 import uk.ac.ebi.age.admin.server.service.SessionRemoteServiceServlet;
+import uk.ac.ebi.age.ext.user.exception.NotAuthorizedException;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectId;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
 import uk.ac.ebi.biosd.client.BioSDGWTService;
 import uk.ac.ebi.biosd.client.query.Report;
 import uk.ac.ebi.biosd.client.query.SampleList;
@@ -31,10 +34,10 @@ public class BioSDServlet extends SessionRemoteServiceServlet implements BioSDGW
   return BioSDService.getInstance().getSamplesByGroupAndQuery(grpId, query, searchAtNames, searchAtValues, offs, cnt);
  }
 
-// @Override
-// public Report getAllGroups(int offs, int count, boolean refOnly)
-// {
-//  return BioSDService.getInstance().getAllGroups(offs, count, refOnly);
-// }
+ @Override
+ public ObjectImprint getObjectImprint(ObjectId id) throws MaintenanceModeException, NotAuthorizedException
+ {
+  return BioSDService.getInstance().getObjectImprint( id );
+ }
 
 }

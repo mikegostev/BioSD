@@ -25,6 +25,7 @@ import org.apache.lucene.util.Version;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
+import uk.ac.ebi.age.authz.ACR.Permit;
 import uk.ac.ebi.age.authz.BuiltInUsers;
 import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.SecurityChangedListener;
@@ -32,6 +33,7 @@ import uk.ac.ebi.age.ext.annotation.AnnotationDBException;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.ext.authz.TagRef;
 import uk.ac.ebi.age.ext.entity.Entity;
+import uk.ac.ebi.age.ext.user.exception.NotAuthorizedException;
 import uk.ac.ebi.age.model.AgeAttribute;
 import uk.ac.ebi.age.model.AgeAttributeClass;
 import uk.ac.ebi.age.model.AgeClass;
@@ -59,6 +61,7 @@ import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder.StringProcessor;
 import uk.ac.ebi.age.ui.server.imprint.ImprintingHint;
 import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
+import uk.ac.ebi.age.ui.shared.imprint.ObjectId;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectValue;
 import uk.ac.ebi.age.ui.shared.imprint.Value;
@@ -203,10 +206,12 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 //  orExp.addExpression(clsExp);
   
   sampleConvHint = new ImprintingHint();
-  sampleConvHint.setConvertRelations(false);
+  sampleConvHint.setConvertRelations(true);
   sampleConvHint.setConvertAttributes(true);
   sampleConvHint.setQualifiersDepth(2);
   sampleConvHint.setResolveObjectAttributesTarget(true);
+  sampleConvHint.setResolveRelationsTarget(false);
+  sampleConvHint.setConvertImplicitRelations(false);
   
   ClassNameExpression clsExp = new ClassNameExpression();
   clsExp.setClassName( BioSDConfigManager.SAMPLEGROUP_CLASS_NAME );
@@ -1124,6 +1129,39 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  }
 
  
+ public ObjectImprint getObjectImprint( ObjectId id ) throws MaintenanceModeException, NotAuthorizedException
+ {
+  if( maintenanceMode )
+   throw new MaintenanceModeException();
+  
+  
+  String user = Configuration.getDefaultConfiguration().getSessionManager().getEffectiveUser();
+  
+  try
+  {
+   storage.lockRead();
+
+   AgeObject obj = storage.getObject( id.getClusterId(), id.getModuleId(), id.getObjectId() );
+   
+   if( obj == null )
+    return null;
+   
+   if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
+   {
+    if( Configuration.getDefaultConfiguration().getPermissionManager().checkPermission(SystemAction.READ, user, obj) != Permit.ALLOW  )
+     throw new NotAuthorizedException();
+   }
+   
+   ImprintBuilder ibld = new ImprintBuilder( htmlEscProc, htmlEscProc, null, null);
+   
+   return ibld.convert(obj, sampleConvHint);
+  }
+  finally
+  {
+   storage.unlockRead();
+  }
+ }
+ 
  private SampleList createSampleReport(List<AgeObject> samples, Highlighter hlite, boolean hlNm, boolean hlVl )
  {
   SampleList sl = new SampleList();
@@ -1723,6 +1761,20 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   
   out.println("</Sample>");
  }
+ 
+ @Override
+ public void exportGroup( Attributed ao, PrintWriter out )
+ {
+  out.print("<SampleGroup id=\"");
+  out.print(StringUtils.xmlEscaped(ao.getId()));
+  out.println("\">");
+
+  exportAttributed( ao, out, null );
+
+  
+  out.println("</SampleGroup>");
+ }
+
 
  
 // @Override

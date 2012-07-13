@@ -220,12 +220,20 @@ table.objectValue, table.qualifiersEmbedded, table.objectEmbedded
 	border-collapse: collapse 
 }
 
+table.relView, table.relView td
+{
+	margin: 0;
+    border: 1px solid black;
+	border-collapse: collapse 
+}
+
+
 table.objectView div.valueString
 {
 	padding: 2px
 }
 
-table.objectView td, table.objectValue td, table.qualifiersEmbedded td,  table.objectEmbedded td
+table.objectView td, table.objectValue td
 {
 	border-top: 1px solid black;
 	border-left: 1px solid black;
@@ -233,14 +241,26 @@ table.objectView td, table.objectValue td, table.qualifiersEmbedded td,  table.o
 }
 
 
+table.qualifiersEmbedded td,  table.objectEmbedded td
+{
+	border-top: 1px dotted black;
+	border-left: 1px dotted black;
+	padding: 0;
+}
 
-table.objectView td.attrName
+table.objectView td.attrName, table.relView td.relName
 {
 	padding: 2px;
 	text-align: right;
 	font-weight: bold;
 	background-color: #a1c7c7;
 	width: 1%;
+	white-space: nowrap;
+}
+
+table.relView td.relTarget
+{
+	padding: 2px;
 	white-space: nowrap;
 }
 
@@ -267,7 +287,7 @@ tr.firstRow > td.firstCell
 tr.firstRow > td
 {
 	border-top: none;
-	border-left: 1px solid black;
+	xxx-border-left: 1px solid black;
 }
 
 table.qualifiersEmbedded div.valueString
@@ -275,3 +295,12 @@ table.qualifiersEmbedded div.valueString
 	white-space: nowrap;
 }
 
+.blockLabel
+{
+	font-size: 14pt;
+}
+
+div#ae_results_box table
+{
+	font-size: 11pt;
+}
