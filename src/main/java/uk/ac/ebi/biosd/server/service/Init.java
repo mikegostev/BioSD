@@ -1,11 +1,14 @@
 package uk.ac.ebi.biosd.server.service;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
+import uk.ac.ebi.age.admin.server.mng.AgeAdminConfigManager;
 import uk.ac.ebi.age.admin.server.mng.AgeAdminException;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.model.IdScope;
@@ -39,6 +42,7 @@ public class Init implements ServletContextListener
  /**
   * @see ServletContextListener#contextInitialized(ServletContextEvent)
   */
+ @Override
  public void contextInitialized(ServletContextEvent arg0)
  {
   long startTime=0;
@@ -108,6 +112,27 @@ public class Init implements ServletContextListener
   
   conf.setSyntaxProfile(sp);
   
+  String prm = cfg.getConfigParameter(AgeAdminConfigManager.STARTUP_ONLINE_MODE_PARAM);
+  
+  conf.setOnlineMode( prm == null || ( ! "off".equalsIgnoreCase(prm) && ! "false".equalsIgnoreCase(prm) ));
+  
+  prm = cfg.getConfigParameter(AgeAdminConfigManager.INSTANCE_NAME_PARAM);
+  
+  if( prm == null )
+  {
+   try
+   {
+    prm = InetAddress.getLocalHost().getHostName();
+   }
+   catch(UnknownHostException e)
+   {
+    prm = "INST"+System.currentTimeMillis();
+   }
+  }
+  
+  conf.setInstanceName(prm);
+  
+  
   try
   {
    adm = new AgeAdmin(conf, storage);
@@ -142,6 +167,7 @@ public class Init implements ServletContextListener
  /**
   * @see ServletContextListener#contextDestroyed(ServletContextEvent)
   */
+ @Override
  public void contextDestroyed(ServletContextEvent arg0)
  {
   BioSDService service = BioSDService.getInstance();

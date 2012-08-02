@@ -55,4 +55,6 @@ public abstract class BioSDService
 
  public abstract void exportGroup(Attributed ao, PrintWriter out);
 
+ public abstract void exportData(PrintWriter out, long since);
+
 }

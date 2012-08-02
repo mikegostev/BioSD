@@ -152,6 +152,32 @@
     <url-pattern>/group/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <description>
+  	</description>
+    <display-name>OnlineStatus</display-name>
+    <servlet-name>OnlineStatus</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.StatusServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>OnlineStatus</servlet-name>
+    <url-pattern>/status</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>InstanceId</display-name>
+    <servlet-name>InstanceId</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.InstanceIdServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InstanceId</servlet-name>
+    <url-pattern>/instanceId</url-pattern>
+  </servlet-mapping>
+
   <listener>
     <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
   </listener>

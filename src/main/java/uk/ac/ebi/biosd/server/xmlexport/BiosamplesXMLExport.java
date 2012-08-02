@@ -38,16 +38,36 @@ public class BiosamplesXMLExport extends ServiceServlet
   }
   
   String groupIds = req.getParameter("group");
+  String sinceParam = req.getParameter("since");
   
   String[] grpLst = null;
   
   if( groupIds != null )
    grpLst = groupIds.split(";");
   
+  long since = 0;
+  
+  if( sinceParam != null )
+  {
+   try
+   {
+    since = Long.parseLong(sinceParam);
+    
+   }
+   catch(Exception e)
+   {
+    resp.getWriter().print("Invalid 'since' parameter value. Should be long value (ms since 1970)");
+    return;
+   }
+  }
+  
   resp.setContentType("text/xml; charset=UTF-8");
   resp.setHeader("Content-Disposition", "attachment; filename=\"biosamples.xml\"");
 
-  biosd.exportData( resp.getWriter(), grpLst );
+  if( since != 0 )
+   biosd.exportData(resp.getWriter(), since);
+  else
+   biosd.exportData( resp.getWriter(), grpLst );
  }
 
 }

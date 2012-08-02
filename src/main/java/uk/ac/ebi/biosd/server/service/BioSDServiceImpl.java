@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.util.Version;
 
+import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
@@ -33,6 +35,10 @@ import uk.ac.ebi.age.ext.annotation.AnnotationDBException;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.ext.authz.TagRef;
 import uk.ac.ebi.age.ext.entity.Entity;
+import uk.ac.ebi.age.ext.submission.SubmissionDBException;
+import uk.ac.ebi.age.ext.submission.SubmissionMeta;
+import uk.ac.ebi.age.ext.submission.SubmissionQuery;
+import uk.ac.ebi.age.ext.submission.SubmissionReport;
 import uk.ac.ebi.age.ext.user.exception.NotAuthorizedException;
 import uk.ac.ebi.age.model.AgeAttribute;
 import uk.ac.ebi.age.model.AgeAttributeClass;
@@ -76,6 +82,8 @@ import uk.ac.ebi.mg.assertlog.LogFactory;
 
 import com.pri.util.ArrayObjectRecycler;
 import com.pri.util.StringUtils;
+import com.pri.util.collection.FilterIterator;
+import com.pri.util.collection.Predicate;
 
 public class BioSDServiceImpl extends BioSDService implements SecurityChangedListener
 {
@@ -109,11 +117,11 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  private volatile boolean  maintenanceMode = false;
  
- private WeakHashMap<String, UserCacheObject> userCache  = new WeakHashMap<String, UserCacheObject>();
+ private final WeakHashMap<String, UserCacheObject> userCache  = new WeakHashMap<String, UserCacheObject>();
  
- private Analyzer analizer = new StandardAnalyzer(Version.LUCENE_30);
- private QueryParser queryParser = new QueryParser( Version.LUCENE_30, BioSDConfigManager.GROUP_VALUE_FIELD_NAME, analizer );
- private SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class='sHL'>","</span>");
+ private final Analyzer analizer = new StandardAnalyzer(Version.LUCENE_30);
+ private final QueryParser queryParser = new QueryParser( Version.LUCENE_30, BioSDConfigManager.GROUP_VALUE_FIELD_NAME, analizer );
+ private final SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class='sHL'>","</span>");
 
  private ImprintingHint sampleConvHint;
  
@@ -124,7 +132,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   boolean refGroup;
  }
  
- private Comparator<GroupKey> groupComparator = new Comparator<GroupKey>()
+ private final Comparator<GroupKey> groupComparator = new Comparator<GroupKey>()
  {
   @Override
   public int compare(GroupKey o1, GroupKey o2)
@@ -139,7 +147,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  };
  
 
- private ImprintBuilder.StringProcessor htmlEscProc = new StringProcessor()
+ private final ImprintBuilder.StringProcessor htmlEscProc = new StringProcessor()
  {
   @Override
   public String process(String str)
@@ -857,6 +865,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
 
 
+ @Override
  public void shutdown()
  {
   storage.shutdown();
@@ -864,7 +873,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class TagsExtractor implements TextValueExtractor
  {
-  private PermissionManager permMngr = Configuration.getDefaultConfiguration().getPermissionManager();
+  private final PermissionManager permMngr = Configuration.getDefaultConfiguration().getPermissionManager();
 
   @Override
   public String getValue(AgeObject ao)
@@ -889,7 +898,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class OwnerExtractor implements TextValueExtractor
  {
-  private AnnotationManager annorMngr = Configuration.getDefaultConfiguration().getAnnotationManager();
+  private final AnnotationManager annorMngr = Configuration.getDefaultConfiguration().getAnnotationManager();
 
   @Override
   public String getValue(AgeObject ao)
@@ -931,6 +940,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class AttrValuesExtractor implements TextValueExtractor
  {
+  @Override
   public String getValue(AgeObject gobj)
   {
    StringBuilder sb = new StringBuilder();
@@ -968,6 +978,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class SampleAttrValuesExtractor implements TextValueExtractor
  {
+  @Override
   public String getValue(AgeObject gobj)
   {
    StringBuilder sb = new StringBuilder();
@@ -1013,6 +1024,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class RefGroupExtractor implements TextValueExtractor
  {
+  @Override
   public String getValue(AgeObject gobj)
   {
    for( AgeAttribute attr : gobj.getAttributes() )
@@ -1027,6 +1039,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class SamplesCountExtractor implements TextValueExtractor
  {
+  @Override
   public String getValue(AgeObject gobj)
   {
    int count = 0;
@@ -1044,6 +1057,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  
  class SampleAttrNamesExtractor implements TextValueExtractor
  {
+  @Override
   public String getValue(AgeObject gobj)
   {
 
@@ -1086,6 +1100,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  class AttrNamesExtractor implements TextValueExtractor
  {
 
+  @Override
   public String getValue(AgeObject gobj)
   {
    StringBuilder sb = new StringBuilder();
@@ -1115,6 +1130,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  class GroupIDExtractor implements TextValueExtractor
  {
  
+  @Override
   public String getValue(AgeObject gobj)
   {
    for(AgeRelation rel : gobj.getRelations())
@@ -1129,6 +1145,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  }
 
  
+ @Override
  public ObjectImprint getObjectImprint( ObjectId id ) throws MaintenanceModeException, NotAuthorizedException
  {
   if( maintenanceMode )
@@ -1642,63 +1659,78 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 */
  
  @Override
- public void exportData( PrintWriter out, String[] grps )
+ public void exportData( PrintWriter out, long since )
  {
-
-  out.println("<Biosamples>");
-
+ 
   try
   {
    storage.lockRead();
 
-   for(AgeObject ao : groupsIndex.getObjectList())
+   SubmissionQuery sq = new SubmissionQuery();
+   
+   sq.setModifiedFrom( since );
+   sq.setTotal(1);
+   sq.setLimit(Integer.MAX_VALUE);
+   
+   SubmissionReport  subs = AgeAdmin.getDefaultInstance().getSubmissions(sq);
+   
+   final HashSet<String> clustSet = new HashSet<String>();
+   
+   for( SubmissionMeta sm : subs.getSubmissions() )
    {
-    Set<AgeAttributeClass> attrset = new HashSet<AgeAttributeClass>();
-    
-    if(grps != null)
-    {
-     boolean ok = false;
-
-     for(String grp : grps)
-     {
-      if(ao.getId().equals(grp))
-      {
-       ok = true;
-       break;
-      }
-     }
-
-     if(!ok)
-      continue;
-    }
-
-    String grpId = StringUtils.xmlEscaped(ao.getId());
-
-    out.print("<SampleGroup id=\"");
-    out.print(grpId);
-    out.println("\">");
-
-    exportAttributed(ao, out, null);
-
-    for(AgeRelation rel : ao.getRelations())
-    {
-     if(rel.getAgeElClass() == groupToSampleRelClass)
-      exportSample(rel.getTargetObject(), grpId, out, attrset);
-    }
-
-    out.println("<SampleAttributes>");
-
-    for( AgeAttributeClass aac : attrset )
-    {
-     out.print("<attribute class=\"");
-     out.print(StringUtils.xmlEscaped(aac.getName()));
-     out.println("\" classDefined=\""+(aac.isCustom()?"false":"true")+"\" dataType=\""+aac.getDataType().name()+"\"/>");
-    }
-    
-    out.println("</SampleAttributes>");
-    
-    out.println("</SampleGroup>");
+//    System.out.println(sm.getModificationTime());
+    clustSet.add(sm.getId());
    }
+   
+   Iterator<? extends AgeObject> grpIt = new FilterIterator<AgeObject>(groupsIndex.getObjectList().iterator(), new Predicate<AgeObject>()
+    {
+     @Override
+     public boolean evaluate(AgeObject ao)
+     {
+      return clustSet.contains(ao.getModuleKey().getClusterId());
+     }
+    });
+   
+   exportDataAsXML(out, grpIt);
+
+  }
+  catch(SubmissionDBException e)
+  {
+   out.print("ERROR: "+e.getMessage());
+  }
+  finally
+  {
+   storage.unlockRead();
+  }
+ }
+
+ 
+ @Override
+ public void exportData( PrintWriter out, final String[] grps )
+ {
+  try
+  {
+   storage.lockRead();
+
+   Iterator<? extends AgeObject> grpIt=null;
+   
+   if( grps != null )
+    grpIt = new FilterIterator<AgeObject>(groupsIndex.getObjectList().iterator(), new Predicate<AgeObject>()
+    {
+     @Override
+     public boolean evaluate(AgeObject ao)
+     {
+      for(String grp : grps)
+       if( ao.getId().equals(grp) )
+        return true;
+     
+      return false;
+     }
+    });
+   else
+    grpIt = groupsIndex.getObjectList().iterator();
+   
+   exportDataAsXML(out, grpIt);
 
   }
   finally
@@ -1706,9 +1738,51 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    storage.unlockRead();
   }
 
+ }
+ 
+ private void exportDataAsXML( PrintWriter out, Iterator<? extends AgeObject> grpsIT )
+ {
+
+  out.println("<Biosamples>");
+
+  while(grpsIT.hasNext())
+  {
+   AgeObject ao = grpsIT.next();
+   
+   Set<AgeAttributeClass> attrset = new HashSet<AgeAttributeClass>();
+
+   String grpId = StringUtils.xmlEscaped(ao.getId());
+
+   out.print("<SampleGroup id=\"");
+   out.print(grpId);
+   out.println("\">");
+
+   exportAttributed(ao, out, null);
+
+   for(AgeRelation rel : ao.getRelations())
+   {
+    if(rel.getAgeElClass() == groupToSampleRelClass)
+     exportSample(rel.getTargetObject(), grpId, out, attrset);
+   }
+
+   out.println("<SampleAttributes>");
+
+   for(AgeAttributeClass aac : attrset)
+   {
+    out.print("<attribute class=\"");
+    out.print(StringUtils.xmlEscaped(aac.getName()));
+    out.println("\" classDefined=\"" + (aac.isCustom() ? "false" : "true") + "\" dataType=\"" + aac.getDataType().name() + "\"/>");
+   }
+
+   out.println("</SampleAttributes>");
+
+   out.println("</SampleGroup>");
+  }
+
   out.println("</Biosamples>");
 
  }
+
  
  private void exportAttributed( Attributed ao,PrintWriter out, Set<AgeAttributeClass> atset )
  {
@@ -1723,7 +1797,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
    for( AgeAttribute attr : ao.getAttributesByClass(aac, false) )
    {
-    out.println("<value>");
+    out.print("<value>");
     
     exportAttributed( attr, out, null );
 
