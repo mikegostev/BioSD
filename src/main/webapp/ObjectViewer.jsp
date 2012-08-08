@@ -75,7 +75,7 @@
 				<div id="ae_content">
 					<div id="ae_navi">
 						<a href="http://www.ebi.ac.uk/">EBI</a> &gt; <a
-							href="http://www.ebi.ac.uk/biosamples">bisamples</a> &gt; <%= obj.getAgeElClass().getName()+" "+obj.getId()%>
+							href="http://www.ebi.ac.uk/biosamples">biosamples</a> &gt; <%= obj.getAgeElClass().getName()+" "+obj.getId()%>
 					</div>
 					<div id="ae_summary_box">
 						<div id="ae_accession">

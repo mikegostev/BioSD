@@ -277,16 +277,16 @@ table.objectEmbedded td.attrName
 }
 
 
-tr.firstRow > td.firstCell
+td.firstCell
 {
-	border-top: none;
-	border-left: none;
+	xxx-border-top: none !important;
+	border-left: none !important;
 }
 
 
 tr.firstRow > td
 {
-	border-top: none;
+	border-top: none !important;
 	xxx-border-left: 1px solid black;
 }
 
