@@ -20,6 +20,7 @@ import uk.ac.ebi.age.service.id.impl.SeqIdGeneratorImpl;
 import uk.ac.ebi.age.storage.AgeStorageAdm;
 import uk.ac.ebi.age.storage.impl.ser.SerializedStorage;
 import uk.ac.ebi.age.storage.impl.ser.SerializedStorageConfiguration;
+import uk.ac.ebi.biosd.shared.Constants;
 import uk.ac.ebi.mg.assertlog.Log;
 import uk.ac.ebi.mg.assertlog.LogFactory;
 
@@ -155,6 +156,8 @@ public class Init implements ServletContextListener
    e.printStackTrace();
    return;
   }
+  
+  conf.getRemoteRequestManager().addRemoteRequestListener(Constants.BIOSD_TAG_CONTROL_COMMAND, new BioSDTagController(adm));
   
   Configuration.getDefaultConfiguration().getAuthDB().addSecurityChangedListener(biosd);
   

@@ -18,7 +18,7 @@
 	<path id="build.lib">
 		<fileset dir="${gwt.home}" includes="*.jar"/>
 		<fileset dir="buildlib/" includes="*.jar"/>
-		<fileset dir="${AGEVisual}/lib/"/>
+		<fileset dir="${AGEVisual}/buildlib/"/>
 	</path>
 
 	<path id="age.lib">
@@ -59,8 +59,8 @@
 
 		<copy todir="${build}/WEB-INF/lib/">
 			<fileset dir="${AGE}/lib/" />
-			<fileset dir="${AGEAdmin}/war/WEB-INF/lib/" />
-			<fileset dir="${AGEVisual}/lib/"/>
+			<fileset dir="${AGEAdmin}/lib/" />
+			<fileset dir="war/WEB-INF/lib/"/>
 			<fileset dir="lib/"/>
 		</copy>
 
@@ -146,15 +146,39 @@
 	
 	 <target name="deps" description="download dependences jars" >
 
+ 		<artifact:remoteRepository id="smartgwt" url="http://www.smartclient.com/maven2" />
+
 	 	<artifact:dependencies filesetId="dependency.fileset">
 
 			<dependency
 				groupId="org.apache.lucene"
 				artifactId="lucene-highlighter"
-				version="[3.0.1,)"
+				version="[3.0.1,4.0.0-ALPHA)"
 			/>
 	 	</artifact:dependencies>
 
+	 	<artifact:dependencies filesetId="build.fileset">
+	 		<remoteRepository refid="smartgwt" />
+
+	 		<dependency
+				groupId="com.smartgwt"
+				artifactId="smartgwt"
+				version="[3.0,)"
+			/>
+	 	 	
+	 		<dependency
+	 			groupId="javax.servlet"
+	 			artifactId="servlet-api"
+	 			version="2.5" scope="provided"
+	 		/>
+		</artifact:dependencies>
+
+	 	
+	 	<copy todir="buildlib">
+	 	  <fileset refid="build.fileset" />
+	 	  <!-- This mapper strips off all leading directory information -->
+	 	  <mapper type="flatten" />
+	 	</copy>
 
 	 	<copy todir="lib">
 	 	  <fileset refid="dependency.fileset" />
