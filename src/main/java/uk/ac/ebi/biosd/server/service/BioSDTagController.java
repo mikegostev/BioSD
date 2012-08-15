@@ -10,7 +10,6 @@ import uk.ac.ebi.age.admin.server.mng.AgeAdmin;
 import uk.ac.ebi.age.admin.server.mng.Configuration;
 import uk.ac.ebi.age.admin.server.mng.RemoteRequestListener;
 import uk.ac.ebi.age.admin.server.service.ServiceRequest;
-import uk.ac.ebi.age.admin.shared.SubmissionConstants;
 import uk.ac.ebi.age.annotation.AnnotationManager;
 import uk.ac.ebi.age.annotation.Topic;
 import uk.ac.ebi.age.authz.ACR.Permit;
@@ -18,10 +17,13 @@ import uk.ac.ebi.age.authz.AuthDB;
 import uk.ac.ebi.age.authz.BuiltInUsers;
 import uk.ac.ebi.age.authz.Session;
 import uk.ac.ebi.age.authz.exception.TagException;
+import uk.ac.ebi.age.ext.annotation.AnnotationDBException;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.ext.authz.TagRef;
 import uk.ac.ebi.age.ext.entity.ClusterEntity;
 import uk.ac.ebi.age.ext.submission.SubmissionDBException;
+import uk.ac.ebi.age.model.AgeClass;
+import uk.ac.ebi.age.model.AgeObject;
 import uk.ac.ebi.age.transaction.ReadLock;
 import uk.ac.ebi.age.transaction.Transaction;
 import uk.ac.ebi.age.transaction.TransactionException;
@@ -89,25 +91,29 @@ public class BioSDTagController implements RemoteRequestListener
   }
 
 
-  for( String id : sbmId )
+  if( sbmId != null )
   {
-   try
+   for( String id : sbmId )
    {
-    if( ! config.getSubmissionDB().hasSubmission(id) )
+    try
     {
-     out.println("ERROR: submission doesn't exist: "+id);
-     return false;
+     if( ! config.getSubmissionDB().hasSubmission(id) )
+     {
+      out.println("ERROR: submission doesn't exist: "+id);
+      return false;
+     }
     }
-   }
-   catch(SubmissionDBException e)
-   {
-    out.println("ERROR: submission DB error: " + e.getMessage() + " (" + e.getClass().getName() + ")");
+    catch(SubmissionDBException e)
+    {
+     out.println("ERROR: submission DB error: " + e.getMessage() + " (" + e.getClass().getName() + ")");
+    }
    }
   }
   
+  
   AuthDB authDB = config.getAuthDB();
 
-  String tagsStr = upReq.getParams().get(SubmissionConstants.SUBMISSON_TAGS);
+  String tagsStr = upReq.getParams().get(TagControlConstants.TAGS_TO_ADD);
 
   List<TagRef> addTags = null;
 
@@ -121,37 +127,11 @@ public class BioSDTagController implements RemoteRequestListener
     return false;
    }
 
-   ReadLock authLock = authDB.getReadLock();
-
-   try
-   {
-    boolean error = false;
-
-    for(TagRef tr : addTags)
-    {
-     if(authDB.getTag(authLock, tr.getClassiferName(), tr.getTagName()) == null)
-     {
-      out.println("ERROR: invalid tag: " + tr.getClassiferName() + ":" + tr.getTagName());
-      error = true;
-     }
-    }
-
-    if(error)
-     return false;
-   }
-   catch(TagException e)
-   {
-    out.println("ERROR: getTag method error: " + e.getMessage() + " (" + e.getClass().getName() + ")");
+   if( ! checkTags(authDB, addTags, out))
     return false;
-   }
-   finally
-   {
-    authDB.releaseLock(authLock);
-   }
-
   }
 
-  tagsStr = upReq.getParams().get(SubmissionConstants.SUBMISSON_TAGS_RM);
+  tagsStr = upReq.getParams().get(TagControlConstants.TAGS_TO_REMOVE);
 
   List<TagRef> delTags = null;
 
@@ -164,126 +144,147 @@ public class BioSDTagController implements RemoteRequestListener
     out.println("ERROR: Invalid tag string: " + tagsStr);
     return false;
    }
-
-   ReadLock authLock = authDB.getReadLock();
-
-   try
-   {
-    boolean error = false;
-
-    for(TagRef tr : delTags)
-    {
-     if(authDB.getTag(authLock, tr.getClassiferName(), tr.getTagName()) == null)
-     {
-      out.println("ERROR: invalid tag: " + tr.getClassiferName() + ":" + tr.getTagName());
-      error = true;
-     }
-    }
-
-    if(error)
-     return false;
-   }
-   catch(TagException e)
-   {
-    out.println("ERROR: getTag method error: " + e.getMessage() + " (" + e.getClass().getName() + ")");
-    return false;
-   }
-   finally
-   {
-    authDB.releaseLock(authLock);
-   }
-
   }
 
   AnnotationManager annotationManager = config.getAnnotationManager();
 
   ClusterEntity cEnt = new ClusterEntity();
 
-  List<TagRef> addTagsSel = new ArrayList<TagRef>();
+  List<TagRef> auxList = new ArrayList<TagRef>();
 
-  Transaction trn = annotationManager.startTransaction();
 
-  try
+  boolean ok = false;
+  
+  Transaction trn = null;
+  
+  if(  addTags != null ||  delTags != null )
   {
-
-   for(String id : sbmId)
-   {
-    boolean changed = false;
-
-    cEnt.setEntityID(id);
-
-    @SuppressWarnings("unchecked")
-    List<TagRef> tags = (List<TagRef>) annotationManager.getAnnotation(trn, Topic.TAG, cEnt, false);
-
-    if(tags == null)
-     tags = new ArrayList<TagRef>();
-
-    if(delTags != null)
-    {
-     for(TagRef tr : delTags)
-     {
-      int pos = Collections.binarySearch(tags, tr);
-
-      if(pos >= 0)
-      {
-       tags.remove(pos);
-       changed = true;
-      }
-     }
-    }
-
-    if(addTags != null)
-    {
-     addTagsSel.clear();
-
-     for(TagRef tr : addTags)
-     {
-      int pos = Collections.binarySearch(tags, tr);
-      
-      if(pos < 0)
-       addTagsSel.add(tr);
-      else if( tr.getTagValue() != null || tags.get(pos).getTagValue() != null )
-      {
-       tags.set(pos, tr);
-       changed = true;
-      }
-     }
-
-     if(addTagsSel.size() > 0)
-     {
-      changed = true;
-      tags.addAll(addTagsSel);
-     }
-    }
-
-    if(changed)
-    {
-     Collections.sort(tags);
-     config.getAnnotationManager().addAnnotation(trn, Topic.TAG, cEnt, (Serializable) tags);
-    }
-   }
-   
-   annotationManager.commitTransaction(trn);
-
-   out.println("OK");
- 
-  }
-  catch(Exception e)
-  {
-   out.println("ERROR: problem with tag storing: " + e.getMessage() + " (" + e.getClass().getName() + ")");
-
    try
    {
-    annotationManager.rollbackTransaction(trn);
+    trn = annotationManager.startTransaction();
+
+    if(sampleId != null)
+     if( !updateObjectTags(trn, sampleId, addTags, delTags, auxList, BioSDConfigManager.SAMPLE_CLASS_NAME, out) )
+      return false;
+
+    if(groupId != null)
+     if( !updateObjectTags(trn, groupId, addTags, delTags, auxList, BioSDConfigManager.SAMPLEGROUP_CLASS_NAME, out) )
+      return false;
+
+
+    if(sbmId != null)
+    {
+     for(String id : sbmId)
+     {
+      cEnt.setEntityID(id);
+
+      @SuppressWarnings("unchecked")
+      List<TagRef> tags = (List<TagRef>) annotationManager.getAnnotation(trn, Topic.TAG, cEnt, false);
+
+      tags = prepareTags(tags, addTags, delTags, auxList);
+
+      if(tags == null)
+       continue;
+
+      if(tags.size() == 0)
+       config.getAnnotationManager().removeAnnotation(trn, Topic.TAG, cEnt, false);
+      else
+       config.getAnnotationManager().addAnnotation(trn, Topic.TAG, cEnt, (Serializable) tags);
+     }
+    }
+
+    annotationManager.commitTransaction(trn);
+    ok = true;
+
+    out.println("OK");
+
    }
-   catch(TransactionException e1)
+   catch(Exception e)
    {
-    out.println("ERROR: transaction rollback error");
-    e1.printStackTrace();
-  
+    out.println("ERROR: problem with tag storing: " + e.getMessage() + " (" + e.getClass().getName() + ")");
    }
-   
-   return false;
+   finally
+   {
+    if(!ok)
+    {
+
+     try
+     {
+      annotationManager.rollbackTransaction(trn);
+     }
+     catch(TransactionException e1)
+     {
+      out.println("ERROR: transaction rollback error");
+      e1.printStackTrace();
+
+     }
+
+     return false;
+    }
+   }
+  }
+  
+  ReadLock rLock = null;
+  
+  if( "on".equalsIgnoreCase(upReq.getParams().get(TagControlConstants.LIST_TAGS)) )
+  {
+   try
+   {
+    rLock = annotationManager.getReadLock();
+    
+    if(sampleId != null)
+     if( !printObjectTags(rLock, sampleId, BioSDConfigManager.SAMPLE_CLASS_NAME, out) )
+      return false;
+    
+    if( groupId != null )
+     if( !printObjectTags(rLock, groupId, BioSDConfigManager.SAMPLEGROUP_CLASS_NAME, out) )
+      return false;
+     
+    if( sbmId != null )
+    {
+
+     for(String id : sbmId)
+     {
+      cEnt.setEntityID(id);
+
+      @SuppressWarnings("unchecked")
+      List<TagRef> tags = (List<TagRef>) annotationManager.getAnnotation(rLock, Topic.TAG, cEnt, false);
+
+      if(tags == null)
+       return true;
+
+      out.print("Submission " + id + ": ");
+
+      int i = 0;
+      for(TagRef tr : tags)
+      {
+       if(i++ != 0)
+        out.print(';');
+
+       out.print(tr.getClassiferName());
+       out.print(':');
+       out.print(tr.getTagName());
+
+       if(tr.getTagValue() != null)
+       {
+        out.print('=');
+        out.print(tr.getTagValue());
+       }
+      }
+
+      out.print('\n');
+     }
+    }
+   }
+   catch(AnnotationDBException e)
+   {
+    out.println("ERROR: " + e.getMessage() + " (" + e.getClass().getName() + ")");
+    return false;
+   }
+   finally
+   {
+    annotationManager.releaseLock(rLock);
+   }
   }
   
   return true;
@@ -324,5 +325,176 @@ public class BioSDTagController implements RemoteRequestListener
   }
   
   return tags;
+ }
+ 
+ private boolean checkTags( AuthDB authDB, List<TagRef> addTags, final PrintWriter out )
+ {
+   ReadLock authLock = authDB.getReadLock();
+
+   try
+   {
+    boolean error = false;
+
+    for(TagRef tr : addTags)
+    {
+     if(authDB.getTag(authLock, tr.getClassiferName(), tr.getTagName()) == null)
+     {
+      out.println("ERROR: invalid tag: " + tr.getClassiferName() + ":" + tr.getTagName());
+      error = true;
+     }
+    }
+
+    if(error)
+     return false;
+   }
+   catch(TagException e)
+   {
+    out.println("ERROR: getTag method error: " + e.getMessage() + " (" + e.getClass().getName() + ")");
+    return false;
+   }
+   finally
+   {
+    authDB.releaseLock(authLock);
+   }
+
+   return true;
+  }
+ 
+ private List<TagRef> prepareTags( List<TagRef> origTags,  List<TagRef> addTags,  List<TagRef> delTags,  List<TagRef> auxList )
+ {
+  boolean changed = false;
+  
+  if(delTags != null && origTags != null && origTags.size() > 0 )
+  {
+   for(TagRef tr : delTags)
+   {
+    int pos = Collections.binarySearch(origTags, tr);
+
+    if(pos >= 0)
+    {
+     origTags.remove(pos);
+     changed = true;
+    }
+   }
+  }
+
+  if(addTags != null)
+  {
+   if(origTags == null)
+    origTags = new ArrayList<TagRef>();
+
+   auxList.clear();
+
+   for(TagRef tr : addTags)
+   {
+    int pos = Collections.binarySearch(origTags, tr);
+    
+    if(pos < 0)
+     auxList.add(tr);
+    else if( tr.getTagValue() != null || origTags.get(pos).getTagValue() != null )
+    {
+     origTags.set(pos, tr);
+     changed = true;
+    }
+   }
+
+   if(auxList.size() > 0)
+   {
+    changed = true;
+    origTags.addAll(auxList);
+   }
+  }
+
+  if(changed)
+  {
+   Collections.sort(origTags);
+   return origTags;
+  }
+  
+  if( origTags == null )
+   return com.pri.util.collection.Collections.emptyList();
+ 
+  return null;
+ }
+ 
+ private boolean updateObjectTags( Transaction trn, String[] ids, List<TagRef> addTags, List<TagRef> delTags, List<TagRef> auxList, String className, PrintWriter out) throws AnnotationDBException
+ {
+  AnnotationManager annotationManager = config.getAnnotationManager();
+
+  AgeClass sampleClass = admin.getStorageAdmin().getSemanticModel().getDefinedAgeClass(className);
+
+  for(String id : ids)
+  {
+   AgeObject sample = admin.getStorageAdmin().getGlobalObject(id);
+
+   if(sample.getAgeElClass() != sampleClass)
+   {
+    out.println("Object with ID=" + id + " is not of class " + className);
+    return false;
+   }
+
+   @SuppressWarnings("unchecked")
+   List<TagRef> tags = (List<TagRef>) annotationManager.getAnnotation(trn, Topic.TAG, sample, false);
+
+   tags = prepareTags(tags, addTags, delTags, auxList);
+
+   if(tags == null)
+    continue;
+
+   if(tags.size() == 0)
+    annotationManager.removeAnnotation(trn, Topic.TAG, sample, false);
+   else
+    annotationManager.addAnnotation(trn, Topic.TAG, sample, (Serializable) tags);
+   
+  }
+
+  return true;
+ }
+ 
+ private boolean printObjectTags( ReadLock lck, String[] ids, String className, PrintWriter out) throws AnnotationDBException
+ {
+  AnnotationManager annotationManager = config.getAnnotationManager();
+
+  AgeClass sampleClass = admin.getStorageAdmin().getSemanticModel().getDefinedAgeClass(className);
+
+  for(String id : ids)
+  {
+   AgeObject sample = admin.getStorageAdmin().getGlobalObject(id);
+
+   if(sample.getAgeElClass() != sampleClass)
+   {
+    out.println("Object with ID=" + id + " is not of class " + className);
+    return false;
+   }
+
+   @SuppressWarnings("unchecked")
+   List<TagRef> tags = (List<TagRef>) annotationManager.getAnnotation(lck, Topic.TAG, sample, false);
+
+   if( tags == null )
+    return true;
+
+   out.print(className +" "+id+": ");
+   
+   int i=0;
+   for( TagRef tr : tags )
+   {
+    if( i++ != 0)
+     out.print(';');
+    
+    out.print(tr.getClassiferName());
+    out.print(':');
+    out.print(tr.getTagName());
+    
+    if( tr.getTagValue() != null )
+    {
+     out.print('=');
+     out.print(tr.getTagValue());
+    }
+   }
+   
+   out.print('\n');
+  }
+
+  return true;
  }
 }
