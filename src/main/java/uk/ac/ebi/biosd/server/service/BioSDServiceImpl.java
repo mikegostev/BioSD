@@ -1385,7 +1385,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 // }
 */
  
- @Override
+ @Deprecated
  public SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count) throws MaintenanceModeException
  {
   if( query != null && query.trim().length() == 0 )
@@ -1549,28 +1549,58 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    throw new MaintenanceModeException();
 
   
+  
+  String user = Configuration.getDefaultConfiguration().getSessionManager().getEffectiveUser();
+
+  
+  if( query == null )
+   query = "";
+  else
+   query=query.trim();
+  
+  
   StringBuilder sb = new StringBuilder();
   
-  sb.append("( ");
-  
-  if( searchAttrNm )
-   sb.append(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME).append(":(").append(query).append(')');
-
-  if( searchAttrVl )
+  if( query.length() > 0  )
   {
-   if( searchAttrNm )
-    sb.append(" OR ");
-   
-   sb.append(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(')');
+   sb.append("( ");
+
+   if(searchAttrNm)
+     sb.append(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME).append(":(").append(query).append(") OR ");
+
+   if(searchAttrVl)
+     sb.append(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME).append(":(").append(query).append(") OR ");
+
+   sb.setLength(sb.length() - 4);
+
+   sb.append(" ) AND ");
   }
   
-  sb.append(" ) AND ").append(BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(grpId);
+
+  if( ! BuiltInUsers.SUPERVISOR.getName().equals(user) )
+  {
+   UserCacheObject uco = getUserCacheobject(user);
+
+   sb.append("(").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getAllowTags()).append(") OR ")
+   .append(BioSDConfigManager.OWNER_FIELD_NAME).append(":(").append(user).append("))").append(" AND ");
+
+   if(uco.getDenyTags().length() > 0)
+    sb.append("NOT ").append(BioSDConfigManager.SECTAGS_FIELD_NAME).append(":(").append(uco.getDenyTags()).append(") AND ");
+  }
+
+  sb.setLength(sb.length() - 5);
+
+  sb.append(" AND ").append(BioSDConfigManager.GROUP_ID_FIELD_NAME).append(":").append(grpId);
+    
+  String lucQuery = sb.toString(); 
+  
+  assert log.debug("Sample Query: "+lucQuery);
 
   try
   {
    storage.lockRead();
 
-   Selection sel = samplesIndex.select( sb.toString(), offset, count, null );
+   Selection sel = samplesIndex.select( lucQuery, offset, count, null );
    
    
 //   int end = count > sel.size()? sel.size() : count; 

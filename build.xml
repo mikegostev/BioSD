@@ -155,17 +155,22 @@
 				artifactId="lucene-highlighter"
 				version="[3.0.1,4.0.0-ALPHA)"
 			/>
+
+	 	
 	 	</artifact:dependencies>
 
+	 	
 	 	<artifact:dependencies filesetId="build.fileset">
 	 		<remoteRepository refid="smartgwt" />
 
-	 		<dependency
+
+	 		
+		 	<dependency
 				groupId="com.smartgwt"
 				artifactId="smartgwt"
 				version="[3.0,)"
-			/>
-	 	 	
+			/>	 	 	
+	 		
 	 		<dependency
 	 			groupId="javax.servlet"
 	 			artifactId="servlet-api"

@@ -34,8 +34,8 @@ public abstract class BioSDService
  public abstract Report selectSampleGroups(String value, boolean searchSmp, boolean searchGrp, boolean searchAttrNm, boolean searchAttrVl, boolean refOnly, int offset, int count)
    throws MaintenanceModeException;
 
- public abstract SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count)
-   throws MaintenanceModeException;
+// public abstract SampleList getSamplesByGroup(String grpID, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count)
+//   throws MaintenanceModeException;
 
  public abstract SampleList getSamplesByGroupAndQuery(String grpId, String query, boolean searchAtNames, boolean searchAtValues, int offset, int count)
    throws MaintenanceModeException;

@@ -59,10 +59,10 @@ public class GroupDetailsPanel extends VLayout
  private boolean searchAtNames;
  private boolean searchAtValues;
  
- private ObjectProviderService objectSvc = new BioSDObjectProvider();
+ private final ObjectProviderService objectSvc = new BioSDObjectProvider();
  
  private List< Pair<String, String> > otherInfoList;
- private Map<String, List<AttributedImprint> > attMap = new HashMap<String, List<AttributedImprint>>();
+ private final Map<String, List<AttributedImprint> > attMap = new HashMap<String, List<AttributedImprint>>();
 // private List< AttributedImprint > publList;
 // private List< AttributedImprint > contList;
  
@@ -368,7 +368,7 @@ public class GroupDetailsPanel extends VLayout
   
 //  WaitWindow.showWait();
   
-  BioSDGWTService.Util.getInstance().getSamplesByGroup(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
+  BioSDGWTService.Util.getInstance().getSamplesByGroupAndQuery(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    new AsyncCallback<SampleList>(){
 
    @Override
@@ -781,7 +781,7 @@ public class GroupDetailsPanel extends VLayout
 
  private static class BioSDObjectProvider implements ObjectProviderService
  {
-  private BioSDGWTServiceAsync biosd =  BioSDGWTService.Util.getInstance();
+  private final BioSDGWTServiceAsync biosd =  BioSDGWTService.Util.getInstance();
   
   @Override
   public void getObject(ObjectId id, AsyncCallback<ObjectImprint> cb)

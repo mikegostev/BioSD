@@ -461,9 +461,15 @@ public class BioSDTagController implements RemoteRequestListener
   {
    AgeObject sample = admin.getStorageAdmin().getGlobalObject(id);
 
+   if( sample == null )
+   {
+    out.println("ERROR: Object with ID=" + id + " doesn't exist");
+    return false;
+   }
+   
    if(sample.getAgeElClass() != sampleClass)
    {
-    out.println("Object with ID=" + id + " is not of class " + className);
+    out.println("ERROR: Object with ID=" + id + " is not of class " + className);
     return false;
    }
 
@@ -471,7 +477,7 @@ public class BioSDTagController implements RemoteRequestListener
    List<TagRef> tags = (List<TagRef>) annotationManager.getAnnotation(lck, Topic.TAG, sample, false);
 
    if( tags == null )
-    return true;
+    tags = com.pri.util.collection.Collections.emptyList();
 
    out.print(className +" "+id+": ");
    
