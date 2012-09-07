@@ -56,9 +56,9 @@ import uk.ac.ebi.age.storage.AgeStorage;
 import uk.ac.ebi.age.storage.DataChangeListener;
 import uk.ac.ebi.age.storage.MaintenanceModeListener;
 import uk.ac.ebi.age.storage.exeption.IndexIOException;
+import uk.ac.ebi.age.storage.index.AttachedSortedTextIndex;
 import uk.ac.ebi.age.storage.index.KeyExtractor;
 import uk.ac.ebi.age.storage.index.Selection;
-import uk.ac.ebi.age.storage.index.SortedTextIndex;
 import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextIndex;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
@@ -94,7 +94,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  private static final String GROUP_INDEX_NAME="GROUPINDEX";
  private static final String SAMPLE_INDEX_NAME="SAMPLEINDEX";
  
- private SortedTextIndex<GroupKey> groupsIndex;
+ private AttachedSortedTextIndex<GroupKey> groupsIndex;
  private TextIndex samplesIndex;
  
  private AgeQuery groupSelectQuery;
@@ -252,7 +252,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   {
    assert ( idxTime = System.currentTimeMillis() ) != 0;
 
-    groupsIndex = storage.createSortedTextIndex(GROUP_INDEX_NAME, groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
+    groupsIndex = storage.createAttachedSortedTextIndex(GROUP_INDEX_NAME, groupSelectQuery, extr, new KeyExtractor<GroupKey>(){
 
     ArrayObjectRecycler<GroupKey> fact = new ArrayObjectRecycler<GroupKey>(4);
     
@@ -1857,7 +1857,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  public void exportSample( Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset )
  {
   out.print("<Sample id=\"");
-  out.print(StringUtils.xmlEscaped(ao.getId()));
+  out.print(StringUtils.xmlEscaped(((AgeObject)ao).getId()));
   out.println("\" groupId=\"" +grpId +"\">");
 
   exportAttributed( ao, out, atset );
@@ -1870,7 +1870,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  public void exportGroup( Attributed ao, PrintWriter out )
  {
   out.print("<SampleGroup id=\"");
-  out.print(StringUtils.xmlEscaped(ao.getId()));
+  out.print(StringUtils.xmlEscaped(((AgeObject)ao).getId()));
   out.println("\">");
 
   exportAttributed( ao, out, null );
