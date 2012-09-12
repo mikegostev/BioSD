@@ -177,7 +177,7 @@ public class GroupDetailsPanel extends VLayout
   }
    
   int total = r.getAttributeAsInt("__total");
-  int matched = r.getAttributeAsInt("__matched");
+  final int matched = r.getAttributeAsInt("__matched");
  
   ds.addField(new DataSourceTextField("__smm", "Total/matched samples"));
 
@@ -205,63 +205,84 @@ public class GroupDetailsPanel extends VLayout
   spc.setHeight(5);
   addMember(spc);
   
-  if( matched > 0 )
+
+  DynamicForm lnkform = new DynamicForm();
+  lnkform.setWidth(500);
+  lnkform.setStyleName("sampleListLink");
+
+  lnkform.setNumCols(3);
+
+  final LinkItem li = new LinkItem("allsamples");
+  li.setTitle("Show");
+  li.setLinkTitle("Show all samples");
+  li.setShowTitle(false);
+  li.setDisabled(true);
+  li.setShowFocused(false);
+
+
+  final LinkItem li2 = new LinkItem("selsamples");
+  li2.setTitle("Show");
+  li2.setLinkTitle("Show samples matching the query");
+  li2.setWidth(250);
+  li2.setShowTitle(false);
+  li2.setDisabled(matched==0);
+  li2.setShowFocused(false);
+
+
+  final LinkItem li3 = new LinkItem("hidesamples");
+  li3.setTitle("Hide");
+  li3.setLinkTitle("Hide samples");
+  li3.setShowTitle(false);
+  li3.setShowFocused(false);
+
+  li.addClickHandler(new ClickHandler()
   {
-
-   DynamicForm lnkform = new DynamicForm();
-   lnkform.setWidth(500);
-   lnkform.setStyleName("sampleListLink");
-
-   lnkform.setNumCols(6);
-
-   LinkItem li = new LinkItem("allsamples");
-   li.setTitle("Show");
-   li.setLinkTitle("all samples");
-
-   li.addClickHandler(new ClickHandler()
+   @Override
+   public void onClick(ClickEvent event)
    {
-    @Override
-    public void onClick(ClickEvent event)
-    {
-     showAllSamples(1);
-    }
-   });
+    li.setDisabled(true);
+    li2.setDisabled(matched==0);
+    li3.setDisabled(false);
 
-   LinkItem li2 = new LinkItem("selsamples");
-   li2.setTitle("Show");
-   li2.setLinkTitle("samples matching the query");
+    showAllSamples(1);
+   }
+  });
 
-   li2.addClickHandler(new ClickHandler()
+  li2.addClickHandler(new ClickHandler()
+  {
+   @Override
+   public void onClick(ClickEvent event)
    {
-    @Override
-    public void onClick(ClickEvent event)
-    {
-     showMatchedSamples(1);
-    }
-   });
+    li.setDisabled(false);
+    li2.setDisabled(true);
+    li3.setDisabled(false);
 
-   LinkItem li3 = new LinkItem("hidesamples");
-   li3.setTitle("Hide");
-   li3.setLinkTitle("samples");
+    showMatchedSamples(1);
+   }
+  });
 
-   li3.addClickHandler(new ClickHandler()
+  li3.addClickHandler(new ClickHandler()
+  {
+   @Override
+   public void onClick(ClickEvent event)
    {
-    @Override
-    public void onClick(ClickEvent event)
-    {
-     Canvas[] membs = getMembers();
+    li.setDisabled(false);
+    li2.setDisabled(matched==0);
+    li3.setDisabled(true);
 
-     if(membs[membs.length - 1] instanceof ListGrid)
-      removeMember(membs[membs.length - 1]);
+    Canvas[] membs = getMembers();
 
-     pager.setVisible(false);
-    }
-   });
+    if(membs[membs.length - 1] instanceof ListGrid)
+     removeMember(membs[membs.length - 1]);
 
-   lnkform.setFields(li, li2, li3);
+    pager.setVisible(false);
 
-   addMember(lnkform);
-  }
+   }
+  });
+
+  lnkform.setFields(li, li2, li3);
+
+  addMember(lnkform);
   
   spc = new Canvas();
   spc.setHeight(5);
@@ -368,7 +389,7 @@ public class GroupDetailsPanel extends VLayout
   
 //  WaitWindow.showWait();
   
-  BioSDGWTService.Util.getInstance().getSamplesByGroupAndQuery(groupID, query, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
+  BioSDGWTService.Util.getInstance().getSamplesByGroupAndQuery(groupID, null, searchAtNames, searchAtValues,(pNum-1)*ResultPane.MAX_SAMPLES_PER_PAGE, ResultPane.MAX_SAMPLES_PER_PAGE,
    new AsyncCallback<SampleList>(){
 
    @Override
