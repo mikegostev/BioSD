@@ -227,7 +227,12 @@ public class GroupDetailsPanel extends VLayout
   li2.setShowTitle(false);
   li2.setDisabled(matched==0);
   li2.setShowFocused(false);
-
+  
+  if( matched==0 )
+  {
+   li2.setShowDisabled(false);
+   li2.setCellStyle("linkDisabled");
+  }
 
   final LinkItem li3 = new LinkItem("hidesamples");
   li3.setTitle("Hide");

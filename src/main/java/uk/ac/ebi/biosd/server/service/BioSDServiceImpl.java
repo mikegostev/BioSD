@@ -692,6 +692,9 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   if( hlighter == null )
    return s;
   
+  if( s.startsWith("http://") )
+   return s;
+  
   try
   {
    String out = hlighter.getBestFragment(analizer, "", s);

@@ -33,7 +33,15 @@ h1 {
 
 .sampleListLink .staticTextItemDisabled a
 {
-	color: gray;
+    background-color: #0099A0;
+    color: white;
+    text-decoration: none;
+}
+
+.sampleListLink .linkDisabled a
+{
+    color: gray;
+    text-decoration: none;
 }
 
 .dialogVPanel {

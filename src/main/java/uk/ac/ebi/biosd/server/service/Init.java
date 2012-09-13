@@ -23,6 +23,7 @@ import uk.ac.ebi.age.storage.impl.ser.SerializedStorageConfiguration;
 import uk.ac.ebi.biosd.shared.Constants;
 import uk.ac.ebi.mg.assertlog.Log;
 import uk.ac.ebi.mg.assertlog.LogFactory;
+import uk.ac.ebi.mg.executor.DefaultExecutorService;
 
 import com.pri.util.StringUtils;
 
@@ -50,6 +51,8 @@ public class Init implements ServletContextListener
   
   assert ( startTime = System.currentTimeMillis() ) != 0;
 
+  DefaultExecutorService.init();
+  
   BioSDConfigManager cfg = new BioSDConfigManager( arg0.getServletContext() );
 
   BioSDConfigManager.setInstance(cfg);
@@ -184,6 +187,9 @@ public class Init implements ServletContextListener
 
   if( BioSDConfigManager.instance().isMaster() )
    IdGenerator.getInstance().shutdown();
+  
+  DefaultExecutorService.shutdown();
+
  }
 
 
