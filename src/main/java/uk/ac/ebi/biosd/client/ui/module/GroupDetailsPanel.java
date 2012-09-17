@@ -28,6 +28,7 @@ import uk.ac.ebi.biosd.client.ui.test.ObjectViewer;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
@@ -383,7 +384,7 @@ public class GroupDetailsPanel extends VLayout
    cCount+=attr.getName().length()+attr.getValue().length();
   }
 
-  repstr += "</div><div><a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;"+theme+"&quot;)'>more</a></div>";
+  repstr += "</div><div><a class='el' href='javascript:linkClicked(&quot;"+groupID+"&quot;,&quot;"+ SafeHtmlUtils.htmlEscape(theme)+"&quot;)'>more</a></div>";
   
   return repstr;
  }
