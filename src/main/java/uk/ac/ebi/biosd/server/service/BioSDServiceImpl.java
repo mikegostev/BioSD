@@ -238,7 +238,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_NAME_FIELD_NAME, new SampleAttrNamesExtractor()) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SAMPLE_VALUE_FIELD_NAME, new SampleAttrValuesExtractor()) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_NAME_FIELD_NAME, new AttrNamesExtractor()) );
-  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new AttrValuesExtractor()) );
+  extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_VALUE_FIELD_NAME, new GrpAttrValuesExtractor()) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.GROUP_REFERENCE_FIELD_NAME, new RefGroupExtractor()) );
   extr.add( new TextFieldExtractor(BioSDConfigManager.SECTAGS_FIELD_NAME, tagExtr));
   extr.add( new TextFieldExtractor(BioSDConfigManager.OWNER_FIELD_NAME, ownExtr) );
@@ -586,19 +586,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
    sel = groupsIndex.select(lucQuery, offset, count, Collections.singletonList(BioSDConfigManager.GROUP_SAMPLES_FIELD_NAME));
 
-   int nSmp = 0;
-
-//   for(AgeObject go : sel)
-//   {
-//    Collection< ? > smps = go.getRelationsByClass(groupToSampleRelClass, false);
-//
-//    if(smps != null)
-//     nSmp += smps.size();
-//   }
-
    List<GroupImprint> res = new ArrayList<GroupImprint>();
-
-   //  int lim = offset+count;
 
    List<AgeObject> groups = sel.getObjects();
    
@@ -939,6 +927,67 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    return own;
   }
   
+ }
+ 
+ class GrpAttrValuesExtractor implements TextValueExtractor
+ {
+  @Override
+  public String getValue(AgeObject gobj)
+  {
+   StringBuilder sb = new StringBuilder();
+   Set<String> tokSet = new HashSet<String>();;
+   
+   getTokens(gobj, tokSet);
+    
+   for( String tk : tokSet )
+    sb.append( tk ).append(' ');
+    
+    
+   String res = sb.toString();
+   
+   return res;
+  }
+  
+  private void getTokens( AgeObject obj, Set<String> tokSet )
+  {
+   for( AgeAttribute attr : obj.getAttributes() )
+   {
+    Object objval = attr.getValue();
+    
+    if(objval == null)
+     continue;
+    
+    String strVal=null;
+    
+    if( attr.getAgeElClass().getDataType().isTextual() )
+     strVal = objval.toString();
+    
+    if( strVal != null && strVal.length() > 0 )
+    {
+     tokSet.add( strVal );
+     
+     if( attr.getAgeElClass().getName().equals("Submission Identifier") )
+      tokSet.addAll(StringUtils.splitString(strVal, '-'));
+
+     continue;
+    }
+    
+    if( attr.getAgeElClass().getDataType() == DataType.OBJECT )
+     getTokens((AgeObject)objval,tokSet);
+     
+    if( attr.getAttributes() != null )
+    {
+     for( AgeAttribute qual : attr.getAttributes() )
+     {
+      Object qval = qual.getValue();
+      
+      if( qual.getAgeElClass().getDataType().isTextual() )
+       tokSet.add( qval.toString() );
+     }
+    }
+
+   }
+  }
  }
  
  class AttrValuesExtractor implements TextValueExtractor
