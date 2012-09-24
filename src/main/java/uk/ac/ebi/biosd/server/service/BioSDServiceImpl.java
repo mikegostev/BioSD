@@ -63,8 +63,8 @@ import uk.ac.ebi.age.storage.index.TextFieldExtractor;
 import uk.ac.ebi.age.storage.index.TextIndex;
 import uk.ac.ebi.age.storage.index.TextValueExtractor;
 import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder;
-import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder.StringProcessor;
 import uk.ac.ebi.age.ui.server.imprint.ImprintingHint;
+import uk.ac.ebi.age.ui.server.imprint.StringProcessor;
 import uk.ac.ebi.age.ui.shared.imprint.AttributeImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ClassImprint;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectId;
@@ -147,7 +147,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  };
  
 
- private final ImprintBuilder.StringProcessor htmlEscProc = new StringProcessor()
+ private final StringProcessor htmlEscProc = new StringProcessor()
  {
   @Override
   public String process(String str)
