@@ -1,6 +1,7 @@
 package uk.ac.ebi.biosd.server.service;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,12 +16,28 @@ import uk.ac.ebi.age.authz.Session;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.model.AgeObject;
 import uk.ac.ebi.age.model.AgeRelation;
+import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder;
+import uk.ac.ebi.age.ui.server.imprint.ImprintingHint;
+import uk.ac.ebi.age.ui.shared.render.ImprintJSONRenderer;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 
 public class SampleViewRedirector extends ServiceServlet
 {
  private static final long serialVersionUID = 1L;
 
+ private static final ImprintingHint hint;
+
+ static
+ {
+  hint = new ImprintingHint();
+  hint.setConvertRelations(true);
+  hint.setConvertAttributes(true);
+  hint.setQualifiersDepth(2);
+  hint.setResolveObjectAttributesTarget(true);
+  hint.setResolveRelationsTarget(false);
+  hint.setConvertImplicitRelations(false);
+ }
+ 
  @Override
  protected void service(HttpServletRequest req, HttpServletResponse resp, Session sess) throws ServletException, IOException
  {
@@ -70,7 +87,7 @@ public class SampleViewRedirector extends ServiceServlet
    
   String fmt = req.getParameter(BioSDConfigManager.FORMAT_PARAM);
   
-  if( fmt != null && "xml".equalsIgnoreCase(fmt) )
+  if( "xml".equalsIgnoreCase(fmt) )
   {
    resp.setContentType("text/xml");
    
@@ -89,6 +106,14 @@ public class SampleViewRedirector extends ServiceServlet
    
    biosd.exportSample(sample, grpId, resp.getWriter(), null);
    
+   return;
+  }
+  else if("json".equalsIgnoreCase(fmt))
+  {
+   resp.setContentType("application/json");
+
+   ImprintJSONRenderer.render(ImprintBuilder.convert(Collections.singletonList(sample), hint, null, null, null, null), resp.getWriter());
+
    return;
   }
   

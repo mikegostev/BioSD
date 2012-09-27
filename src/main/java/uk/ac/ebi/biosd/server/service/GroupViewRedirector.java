@@ -1,6 +1,7 @@
 package uk.ac.ebi.biosd.server.service;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,11 +15,27 @@ import uk.ac.ebi.age.authz.PermissionManager;
 import uk.ac.ebi.age.authz.Session;
 import uk.ac.ebi.age.ext.authz.SystemAction;
 import uk.ac.ebi.age.model.AgeObject;
+import uk.ac.ebi.age.ui.server.imprint.ImprintBuilder;
+import uk.ac.ebi.age.ui.server.imprint.ImprintingHint;
+import uk.ac.ebi.age.ui.shared.render.ImprintJSONRenderer;
 import uk.ac.ebi.biosd.client.shared.MaintenanceModeException;
 
 public class GroupViewRedirector extends ServiceServlet
 {
+ 
+ private static final ImprintingHint hint;
 
+ static
+ {
+  hint = new ImprintingHint();
+  hint.setConvertRelations(true);
+  hint.setConvertAttributes(true);
+  hint.setQualifiersDepth(2);
+  hint.setResolveObjectAttributesTarget(true);
+  hint.setResolveRelationsTarget(false);
+  hint.setConvertImplicitRelations(false);
+ }
+ 
  private static final long serialVersionUID = 1L;
 
  @Override
@@ -69,15 +86,25 @@ public class GroupViewRedirector extends ServiceServlet
   
   String fmt = req.getParameter(BioSDConfigManager.FORMAT_PARAM);
   
-  if( fmt != null && "xml".equalsIgnoreCase(fmt) )
+  if( fmt != null )
   {
-   resp.setContentType("text/xml");
-   
-   biosd.exportGroup(group, resp.getWriter());
-   
-   return;
-  }
+   if("xml".equalsIgnoreCase(fmt))
+   {
+    resp.setContentType("text/xml");
 
+    biosd.exportGroup(group, resp.getWriter());
+
+    return;
+   }
+   else if( "json".equalsIgnoreCase(fmt) )
+   {
+    resp.setContentType("application/json");
+    
+    ImprintJSONRenderer.render(ImprintBuilder.convert(Collections.singletonList( group ),hint,null,null,null,null),resp.getWriter());
+    
+    return;
+   }
+  }
   
   
   RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/ObjectViewer.jsp?");

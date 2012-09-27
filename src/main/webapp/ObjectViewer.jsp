@@ -1,6 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@page import="uk.ac.ebi.age.ui.server.render.ObjectViewHtmlRenderer"%>
-<%@page import="java.io.IOException"%>
 <%@page import="uk.ac.ebi.age.model.AgeObjectAttribute"%>
 <%@page import="uk.ac.ebi.age.model.Attributed"%>
 <html lang="en">
