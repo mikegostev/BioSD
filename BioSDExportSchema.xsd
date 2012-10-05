@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.ebi.ac.uk/fg/biosd/SampleGroup" 
+	xmlns:tns="http://www.ebi.ac.uk/fg/biosd/SampleGroup"
+	elementFormDefault="qualified">
+
+
+	<xs:complexType name="attributeType">
+		<xs:choice>
+			<xs:element name="simpleValue" type="tns:scalarValueElement"
+				maxOccurs="unbounded" />
+			<xs:element name="objectValue" type="tns:objectValueElement"
+				maxOccurs="unbounded" />
+		</xs:choice>
+
+		<xs:attribute name="class" type="xs:string" use="required" />
+		<xs:attribute name="classDefined" type="xs:boolean" use="required" />
+		<xs:attribute name="dataType" type="xs:string" use="required" />
+
+	</xs:complexType>
+
+	<xs:complexType name="relationType">
+		<xs:attribute name="class" type="xs:string" use="required" />
+		<xs:attribute name="targetClass" type="xs:string" use="required" />
+		<xs:attribute name="targetId" type="xs:string" use="required" />
+	</xs:complexType>
+
+
+	<xs:complexType name="scalarValueElement" mixed="true">
+		<xs:sequence>
+			<xs:element name="attribute" type="tns:attributeType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="simpleValue" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="objectValueElement" mixed="false">
+		<xs:sequence>
+			<xs:element name="attribute" type="tns:attributeType"
+				minOccurs="0" maxOccurs="unbounded" />
+		    <xs:element name="object" type="tns:objectType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="objectType">
+		<xs:sequence>
+			<xs:element name="attribute" type="tns:attributeType"
+				maxOccurs="unbounded" />
+			<xs:element name="relation" type="tns:relationType"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+
+		<xs:attribute name="class" type="xs:string" use="required" />
+		<xs:attribute name="classDefined" type="xs:boolean" use="required" />
+		<xs:attribute name="id" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:element name="SampleGroup">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="attribute" type="tns:attributeType"
+					maxOccurs="unbounded" />
+			    <xs:element name="relation" type="tns:relationType"
+				    maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Sample">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="attribute" type="tns:attributeType"
+					maxOccurs="unbounded" />
+			    <xs:element name="relation" type="tns:relationType"
+				    maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required" />
+			<xs:attribute name="groupId" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
+</schema>

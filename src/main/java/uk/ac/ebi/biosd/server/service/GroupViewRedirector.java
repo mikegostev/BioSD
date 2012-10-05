@@ -92,7 +92,7 @@ public class GroupViewRedirector extends ServiceServlet
    {
     resp.setContentType("text/xml");
 
-    biosd.exportGroup(group, resp.getWriter());
+    biosd.exportGroup(group, resp.getWriter(), true);
 
     return;
    }

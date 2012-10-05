@@ -6,7 +6,6 @@ import java.util.Set;
 import uk.ac.ebi.age.ext.user.exception.NotAuthorizedException;
 import uk.ac.ebi.age.model.AgeAttributeClass;
 import uk.ac.ebi.age.model.AgeObject;
-import uk.ac.ebi.age.model.Attributed;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectId;
 import uk.ac.ebi.age.ui.shared.imprint.ObjectImprint;
 import uk.ac.ebi.biosd.client.query.Report;
@@ -49,11 +48,11 @@ public abstract class BioSDService
 
  public abstract AgeObject getGroup(String groupId) throws MaintenanceModeException;
 
- public abstract void exportSample(Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset);
+ public abstract void exportSample(AgeObject ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset, boolean showRels);
 
  public abstract ObjectImprint getObjectImprint(ObjectId id) throws MaintenanceModeException, NotAuthorizedException;
 
- public abstract void exportGroup(Attributed ao, PrintWriter out);
+ public abstract void exportGroup(AgeObject ao, PrintWriter out, boolean showRels);
 
  public abstract void exportData(PrintWriter out, long since);
 

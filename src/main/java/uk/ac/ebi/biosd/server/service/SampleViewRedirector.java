@@ -104,7 +104,7 @@ public class SampleViewRedirector extends ServiceServlet
     }
    }
    
-   biosd.exportSample(sample, grpId, resp.getWriter(), null);
+   biosd.exportSample(sample, grpId, resp.getWriter(), null, true);
    
    return;
   }

@@ -1844,7 +1844,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
    for(AgeRelation rel : ao.getRelations())
    {
     if(rel.getAgeElClass() == groupToSampleRelClass)
-     exportSample(rel.getTargetObject(), grpId, out, attrset);
+     exportSample(rel.getTargetObject(), grpId, out, attrset, false);
    }
 
    out.println("<SampleAttributes>");
@@ -1879,12 +1879,19 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
 
    for( AgeAttribute attr : ao.getAttributesByClass(aac, false) )
    {
-    out.print("<value>");
+    if( aac.getDataType() == DataType.OBJECT )
+     out.print("<objectValue>");
+    else
+     out.print("<simpleValue>");
     
     exportAttributed( attr, out, null );
 
     if( aac.getDataType() != DataType.OBJECT )
+    {
+     out.print("<value>");
      out.print(StringUtils.xmlEscaped(attr.getValue().toString()));
+     out.print("</value>");
+    }
     else
     {
      AgeObject tgtObj = (AgeObject)attr.getValue();
@@ -1898,7 +1905,10 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
      out.println("</object>");
     }
 
-    out.println("</value>");
+    if( aac.getDataType() == DataType.OBJECT )
+     out.println("</objectValue>");
+    else
+     out.println("</simpleValue>");
    }
 
    out.println("</attribute>");
@@ -1906,27 +1916,71 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  }
  
  @Override
- public void exportSample( Attributed ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset )
+ public void exportSample( AgeObject ao, String grpId, PrintWriter out, Set<AgeAttributeClass> atset, boolean showRels )
  {
   out.print("<Sample id=\"");
-  out.print(StringUtils.xmlEscaped(((AgeObject)ao).getId()));
+  out.print(StringUtils.xmlEscaped(ao.getId()));
   out.println("\" groupId=\"" +grpId +"\">");
 
   exportAttributed( ao, out, atset );
 
+  if( showRels && ao.getRelations() != null )
+  {
+   for( AgeRelation rl : ao.getRelations() )
+   {
+    if( rl.isInferred() )
+     continue;
+
+    String clsName = rl.getAgeElClass().getName();
+
+    out.print("<relation class=\"");
+    out.print(StringUtils.xmlEscaped(clsName));
+    out.print("\" targetId=\"");
+    out.print(StringUtils.xmlEscaped(rl.getTargetObjectId()));
+    out.print("\" targetClass=\"" +rl.getTargetObject());
+    out.print(StringUtils.xmlEscaped(rl.getTargetObject().getAgeElClass().getName()));
+    out.println("\" />");
+    
+   }
+   
+  }
+   
   
   out.println("</Sample>");
  }
  
  @Override
- public void exportGroup( Attributed ao, PrintWriter out )
+ public void exportGroup( AgeObject ao, PrintWriter out, boolean showRels )
  {
-  out.print("<SampleGroup id=\"");
-  out.print(StringUtils.xmlEscaped(((AgeObject)ao).getId()));
+  out.print("<SampleGroup xmlns=\"http://www.ebi.ac.uk/fg/biosd/SampleGroup\" id=\"");
+  out.print(StringUtils.xmlEscaped(ao.getId()));
   out.println("\">");
 
   exportAttributed( ao, out, null );
 
+  if( showRels && ao.getRelations() != null )
+  {
+   for( AgeRelation rl : ao.getRelations() )
+   {
+    String clsName = rl.getAgeElClass().getName();
+
+    if( rl.getInverseRelation().getAgeElClass() == sampleInGroupRelClass )
+     clsName = "containedIn";
+    else if( rl.isInferred() )
+     continue;
+
+
+    out.print("<relation class=\"");
+    out.print(StringUtils.xmlEscaped(clsName));
+    out.print("\" targetId=\"");
+    out.print(StringUtils.xmlEscaped(rl.getTargetObjectId()));
+    out.print("\" targetClass=\"" +rl.getTargetObject());
+    out.print(StringUtils.xmlEscaped(rl.getTargetObject().getAgeElClass().getName()));
+    out.println("\" />");
+    
+   }
+   
+  }
   
   out.println("</SampleGroup>");
  }
