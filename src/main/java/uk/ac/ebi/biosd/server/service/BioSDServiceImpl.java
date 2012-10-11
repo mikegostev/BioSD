@@ -1952,7 +1952,7 @@ public class BioSDServiceImpl extends BioSDService implements SecurityChangedLis
  @Override
  public void exportGroup( AgeObject ao, PrintWriter out, boolean showRels )
  {
-  out.print("<SampleGroup xmlns=\"http://www.ebi.ac.uk/fg/biosd/SampleGroup\" id=\"");
+  out.print("<SampleGroup xmlns=\"http://www.ebi.ac.uk/biosamples/SampleGroupExportV1\" id=\"");
   out.print(StringUtils.xmlEscaped(ao.getId()));
   out.println("\">");
 

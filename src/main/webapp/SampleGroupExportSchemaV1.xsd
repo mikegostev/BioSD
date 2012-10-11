@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.ebi.ac.uk/fg/biosd/SampleGroup" 
-	xmlns:tns="http://www.ebi.ac.uk/fg/biosd/SampleGroup"
+	targetNamespace="http://www.ebi.ac.uk/biosamples/SampleGroupExportV1" 
+	xmlns:tns="http://www.ebi.ac.uk/biosamples/SampleGroupExportV1"
 	elementFormDefault="qualified">
 
 
@@ -30,7 +30,7 @@
 		<xs:sequence>
 			<xs:element name="attribute" type="tns:attributeType"
 				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="simpleValue" minOccurs="1" maxOccurs="1">
+			<xs:element name="value" minOccurs="1" maxOccurs="1">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 					</xs:restriction>
@@ -49,9 +49,9 @@
 
 	<xs:complexType name="objectType">
 		<xs:sequence>
-			<xs:element name="attribute" type="tns:attributeType"
+			<xs:element name="attribute" type="tns:attributeType" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="relation" type="tns:relationType"
+			<xs:element name="relation" type="tns:relationType"  minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
 
