@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@page import="java.io.IOException"%>
+<%@page import="javax.servlet.jsp.JspWriter"%>
 <%@page import="uk.ac.ebi.age.model.AgeObjectAttribute"%>
 <%@page import="uk.ac.ebi.age.model.Attributed"%>
 <html lang="en">
